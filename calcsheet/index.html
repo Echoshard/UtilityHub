@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CalcSheet Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sheet-container">
+        <!-- Header -->
+        <header class="sheet-header">
+            <div class="header-left">
+                <a href="../index.html" class="btn-back">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    <span>Hub</span>
+                </a>
+                <h1>CalcSheet</h1>
+            </div>
+            <div class="header-right">
+                <button class="action-btn" id="loadExampleBtn" style="background: #3b82f6;">Load Example</button>
+                <button class="action-btn" id="openChartBtn">Create Chart</button>
+                <label class="action-btn secondary" style="margin: 0;">
+                    <span>Import CSV</span>
+                    <input type="file" id="csvLoader" accept=".csv" style="display:none;">
+                </label>
+                <button class="action-btn secondary" id="exportCsvBtn">Export CSV</button>
+                <button class="action-btn secondary" id="openHelpBtn">Help (?)</button>
+                <button class="action-btn danger" id="clearSheetBtn">Clear Sheet</button>
+            </div>
+        </header>
+
+        <!-- Formula Bar -->
+        <div class="formula-bar">
+            <div class="active-cell-indicator" id="activeCellLabel">A1</div>
+            <div class="formula-symbol">fx</div>
+            <input type="text" class="formula-input" id="formulaInput" placeholder="Enter text, numbers, or formulas (e.g. =SUM(A1:A5), =QUERY(A1:B10, 'SELECT Col1 WHERE Col2 > 10'))">
+        </div>
+
+        <!-- Spreadsheet Grid Container -->
+        <div class="grid-scroll-area">
+            <table class="spreadsheet-table" id="sheetTable">
+                <thead>
+                    <tr id="headerRow">
+                        <!-- Top-left empty corner cell -->
+                        <th class="corner-cell"></th>
+                        <!-- Column headers will be generated dynamically -->
+                    </tr>
+                </thead>
+                <tbody id="sheetBody">
+                    <!-- Rows will be generated dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Chart Plotter Modal Overlay -->
+        <div class="chart-modal" id="chartModal">
+            <div class="chart-modal-content">
+                <div class="chart-modal-header">
+                    <h2>Chart Plotter</h2>
+                    <button class="close-modal" id="closeChartBtn">✕</button>
+                </div>
+                <div class="chart-modal-body">
+                    <!-- Left Sidebar - Settings -->
+                    <div class="chart-settings">
+                        <div class="setting-group">
+                            <label>Chart Type</label>
+                            <select id="chartType">
+                                <option value="bar">Bar Chart</option>
+                                <option value="line">Line Chart</option>
+                                <option value="pie">Pie Chart</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label>Data Label Range (X-Axis)</label>
+                            <input type="text" id="chartLabelRange" placeholder="e.g. A1:A5">
+                        </div>
+                        <div class="setting-group">
+                            <label>Data Value Range (Y-Axis)</label>
+                            <input type="text" id="chartValueRange" placeholder="e.g. B1:B5">
+                        </div>
+                        <button class="action-btn" id="renderChartBtn" style="width: 100%; margin-top: 10px;">Plot Chart</button>
+                    </div>
+                    <!-- Right Sidebar - Visuals -->
+                    <div class="chart-view">
+                        <canvas id="chartCanvas" width="480" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Modal Overlay -->
+        <div class="chart-modal" id="helpModal">
+            <div class="chart-modal-content" style="width: min(640px, 95vw);">
+                <div class="chart-modal-header">
+                    <h2>CalcSheet Formulas & QUERY Help</h2>
+                    <button class="close-modal" id="closeHelpBtn">✕</button>
+                </div>
+                <div class="chart-modal-body" style="flex-direction: column; overflow-y: auto; max-height: 70vh; gap: 14px; font-size: 0.9rem; line-height: 1.5; color: #cbd5e1; user-select: text;">
+                    <div>
+                        <h3 style="color: #fff; margin-bottom: 4px; font-size: 1rem;">Basic Operators</h3>
+                        <p>Begin equations with <code>=</code>. Support cell coordinates (e.g. A1, B3, C10) and standard math signs: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, and parentheses <code>( )</code>.</p>
+                        <p><em>Example:</em> <code>=A1 + B2 * (C3 / 2)</code></p>
+                    </div>
+                    <div style="height: 1px; background: var(--border-color);"></div>
+                    <div>
+                        <h3 style="color: #fff; margin-bottom: 4px; font-size: 1rem;">Functions</h3>
+                        <p>Perform calculations over cell ranges (specified as <code>StartCell:EndCell</code>):</p>
+                        <ul style="margin-left: 20px; margin-top: 4px;">
+                            <li><code>=SUM(range)</code>: Sums all numerical values in range.</li>
+                            <li><code>=AVERAGE(range)</code>: Finds average of all numerical values.</li>
+                            <li><code>=MIN(range)</code>: Finds the minimum value.</li>
+                            <li><code>=MAX(range)</code>: Finds the maximum value.</li>
+                        </ul>
+                        <p style="margin-top: 4px;"><em>Example:</em> <code>=SUM(A1:B10)</code></p>
+                    </div>
+                    <div style="height: 1px; background: var(--border-color);"></div>
+                    <div>
+                        <h3 style="color: #fff; margin-bottom: 4px; font-size: 1rem;">SQL-like QUERY(range, "query")</h3>
+                        <p>Executes a query on data tables. Columns in the range are mapped to <code>Col1</code>, <code>Col2</code>, <code>Col3</code>, etc.</p>
+                        <p style="margin-top: 4px;"><strong>Supported Clauses:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 2px;">
+                            <li><code>SELECT ColA, ColB</code> (or <code>SELECT *</code>)</li>
+                            <li><code>WHERE ColA > 10 AND ColB === 'Active'</code> (standard JS logic)</li>
+                            <li><code>ORDER BY ColA [ASC | DESC]</code></li>
+                        </ul>
+                        <p style="margin-top: 6px;"><em>Example:</em> <code>=QUERY(A1:C10, "SELECT Col1, Col3 WHERE Col2 > 25 ORDER BY Col3 DESC")</code></p>
+                        <p style="margin-top: 4px; font-style: italic; color: var(--accent);">Note: Results will automatically "spill" vertically and horizontally into adjacent cells starting from the formula cell.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
