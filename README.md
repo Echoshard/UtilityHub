@@ -86,6 +86,3 @@ Interactive infinite-canvas flowchart board and mind mapper.
 ## 🚀 Getting Started
 
 1.  **Launch via Double-click**: Simply open the root [index.html](index.html) file directly in your favorite web browser (Chrome, Edge, Firefox, or Safari).
-2.  **Launch via Mini-Server**:
-    *   If you have Python installed, run `python -m http.server 8000` in the directory, and navigate to `http://localhost:8000`.
-    *   If you have Node.js, run `npx serve .` and navigate to `http://localhost:3000`.
