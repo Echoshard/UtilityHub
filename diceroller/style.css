@@ -1,0 +1,373 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap');
+
+:root {
+    --bg-main: #020617;
+    --bg-panel: #0b0f19;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    --text-primary: #f8fafc;
+    --text-muted: #64748b;
+    --accent: #a855f7; /* Purple Glow */
+    --accent-glow: rgba(168, 85, 247, 0.4);
+    
+    --font-ui: 'Inter', sans-serif;
+    --font-display: 'Outfit', sans-serif;
+    
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+.roller-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.roller-header {
+    height: 60px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 10;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.02);
+    transition: var(--transition);
+}
+
+.btn-back:hover {
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.roller-header h1 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* Workspace */
+.roller-workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 250px;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border-color);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.divider {
+    height: 1px;
+    background: var(--border-color);
+}
+
+/* Inputs and Selects */
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.setting-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Advantage Slider Styling */
+.slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+#advantageSlider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #1e293b;
+    outline: none;
+    cursor: pointer;
+}
+
+#advantageSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+#advantageSlider::-webkit-slider-thumb:hover {
+    background: #c084fc;
+}
+
+#diceSizeSlider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #1e293b;
+    outline: none;
+    cursor: pointer;
+}
+
+#diceSizeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+#diceSizeSlider::-webkit-slider-thumb:hover {
+    background: #c084fc;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    user-select: none;
+    margin-top: -2px;
+}
+
+.slider-labels span {
+    transition: color 0.15s ease;
+    cursor: pointer;
+}
+
+.slider-labels span.active {
+    color: var(--accent);
+    text-shadow: 0 0 5px var(--accent-glow);
+}
+
+input[type="text"], select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    outline: none;
+    font-size: 0.9rem;
+    width: 100%;
+}
+input[type="text"]:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Action Buttons */
+.action-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+}
+
+.action-btn:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.action-btn.danger {
+    background: #ef4444;
+}
+.action-btn.danger:hover {
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
+.action-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Quick Dice Grid */
+.quick-dice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.quick-btn {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: #cbd5e1;
+    padding: 10px 0;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.quick-btn:hover {
+    color: #fff;
+    border-color: var(--accent);
+    background: rgba(168, 85, 247, 0.05);
+}
+
+/* Center Tray Container */
+.tray-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #05070c;
+    position: relative;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* 3D Dice Tray Viewport */
+.dice-tray {
+    flex: 1;
+    border: 2px solid #1e293b;
+    border-radius: 12px;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    background: #090d16;
+    position: relative;
+    overflow: hidden;
+    perspective: 1000px; /* Crucial for 3D depth */
+}
+
+/* Tray Grid Backdrop Line overlay */
+.tray-floor-grid {
+    position: absolute;
+    inset: 0;
+    background-size: 40px 40px;
+    background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.015) 1px, transparent 1px);
+    pointer-events: none;
+}
+
+#diceCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ==========================================
+   RESULT PANEL DISPLAY (Big, Bold)
+   ========================================== */
+.result-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 160px;
+    justify-content: center;
+}
+
+.result-label {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.result-sum {
+    font-family: var(--font-display);
+    font-size: 5rem; /* Large Bold Letters */
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    transition: var(--transition);
+}
+
+.result-breakdown {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.5;
+}
+.result-breakdown span {
+    font-weight: 600;
+    color: #fff;
+}

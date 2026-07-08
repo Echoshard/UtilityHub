@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Dice Roller</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="roller-container">
+        <!-- Header -->
+        <header class="roller-header">
+            <div class="header-left">
+                <a href="../index.html" class="btn-back">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    <span>Hub</span>
+                </a>
+                <h1>3D Dice Roller</h1>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="roller-workspace">
+            <!-- Left Controls Panel -->
+            <aside class="sidebar controls-panel">
+                <h2>Roll Controls</h2>
+                
+                <div class="setting-group">
+                    <label>Dice Notation</label>
+                    <input type="text" id="notationInput" value="4d6+10" placeholder="e.g. 2d6+5, 1d20+8">
+                </div>
+
+                <div class="setting-group">
+                    <label>Dice Theme Style</label>
+                    <select id="styleSelect">
+                        <option value="obsidian" selected>Obsidian Neon</option>
+                        <option value="ruby">Ruby Glass</option>
+                        <option value="gold">Metallic Gold</option>
+                        <option value="emerald">Emerald Glow</option>
+                        <option value="ice">Frost Sapphire</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label>Advantage / Disadvantage</label>
+                    <div class="slider-container">
+                        <input type="range" id="advantageSlider" min="-1" max="1" step="1" value="0">
+                        <div class="slider-labels">
+                            <span class="label-dis" id="labelDis">Disadv</span>
+                            <span class="label-norm active" id="labelNorm">Normal</span>
+                            <span class="label-adv" id="labelAdv">Adv</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label>Dice Size: <span id="diceSizeVal">200%</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="diceSizeSlider" min="50" max="300" step="10" value="200">
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <h2>Quick Spawn</h2>
+                <div class="quick-dice-grid">
+                    <button class="quick-btn" data-sides="4">d4</button>
+                    <button class="quick-btn" data-sides="6">d6</button>
+                    <button class="quick-btn" data-sides="8">d8</button>
+                    <button class="quick-btn" data-sides="10">d10</button>
+                    <button class="quick-btn" data-sides="12">d12</button>
+                    <button class="quick-btn" data-sides="20">d20</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="action-row">
+                    <button class="action-btn" id="rollBtn">Roll Dice</button>
+                    <button class="action-btn danger" id="clearBtn">Clear Tray</button>
+                </div>
+            </aside>
+
+            <!-- Center Dice Tray & Large Result Overlay -->
+            <main class="tray-container">
+                <!-- 3D Viewport Tray -->
+                <div class="dice-tray" id="diceTray">
+                    <canvas id="diceCanvas"></canvas>
+                </div>
+
+                <!-- Big Result Overlay Panel -->
+                <div class="result-panel">
+                    <div class="result-label">Total Roll</div>
+                    <div class="result-sum" id="resultSum">--</div>
+                    <div class="result-breakdown" id="resultBreakdown">Enter notation and roll to start!</div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

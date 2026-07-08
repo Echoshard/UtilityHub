@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMapper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="mindmap-container">
+        <!-- Header -->
+        <header class="mindmap-header">
+            <div class="header-left">
+                <a href="../index.html" class="btn-back">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Back to Hub</span>
+                </a>
+                <h1>MindMapper Diagrammer</h1>
+            </div>
+            <div class="header-right">
+                <button id="addNodeBtn" class="control-btn add-btn">+ Add Node</button>
+                <button id="arrangeBtn" class="action-btn">Auto-Arrange</button>
+                <button id="clearBtn" class="action-btn">Clear Canvas</button>
+
+                <label class="action-btn" style="cursor: pointer; display: inline-flex; align-items: center;">
+                    <span>Load JSON</span>
+                    <input type="file" id="loadJsonInput" accept=".json" style="display: none;">
+                </label>
+                
+                <button id="saveJsonBtn" class="action-btn">Save JSON</button>
+                <button id="exportPngBtn" class="action-btn accent-btn">Export PNG</button>
+            </div>
+        </header>
+
+        <!-- Workspace -->
+        <main class="mindmap-workspace">
+            <!-- Sidebar Panel -->
+            <aside class="mindmap-sidebar" id="sidebar">
+                <div id="noSelectionHint" class="sidebar-hint">
+                    <p>Double-click the canvas or click <strong>+ Add Node</strong> to spawn node cards.</p>
+                    <p>Select a node to edit its style details or drag its connection handle (the small green <span class="plus-icon">+</span> ring) onto another node to link them!</p>
+                </div>
+
+                <div id="nodeSettings" class="node-settings hidden">
+                    <h2>Edit Selected Node</h2>
+                    
+                    <div class="setting-group">
+                        <label for="nodeText">Label</label>
+                        <textarea id="nodeText" rows="3" placeholder="Node Text..."></textarea>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>Color Style</label>
+                        <div class="color-presets" id="colorPresetsContainer">
+                            <!-- Preset Swatches generated dynamically -->
+                        </div>
+                        <input type="color" id="nodeColorPicker" style="width: 100%; margin-top: 8px; height: 34px; border: none; border-radius: 6px; cursor: pointer; background: none;">
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="nodeShape">Shape</label>
+                        <select id="nodeShape">
+                            <option value="pill">Pill</option>
+                            <option value="rounded-rect">Rounded Rectangle</option>
+                            <option value="oval">Oval</option>
+                            <option value="arrow">Arrow</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="nodeRotationSlider">Rotation: <span id="nodeRotationVal">0</span>°</label>
+                        <input type="range" id="nodeRotationSlider" min="0" max="360" step="5" value="0">
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="nodeSizeSlider">Font Size: <span id="nodeSizeVal">14</span>px</label>
+                        <input type="range" id="nodeSizeSlider" min="12" max="24" step="1" value="14">
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <button id="deleteNodeBtn" class="action-btn danger-btn" style="width: 100%;">Delete Node</button>
+                </div>
+            </aside>
+
+            <!-- Interactive Canvas -->
+            <section class="canvas-area" id="canvasArea">
+                <!-- SVG overlays connection lines underneath absolute nodes -->
+                <svg class="svg-canvas" id="svgCanvas">
+                    <!-- Marker for line arrows -->
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="18" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#6366f1" />
+                        </marker>
+                    </defs>
+                    <!-- Zoom and Pan container group for SVGs -->
+                    <g id="zoomGroup">
+                        <g id="linksGroup"></g>
+                        <!-- Temporary connection line currently being dragged -->
+                        <line id="tempLine" class="temp-link hidden" x1="0" y1="0" x2="0" y2="0" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4" marker-end="url(#arrow)"></line>
+                    </g>
+                </svg>
+
+                <!-- HTML Absolute positioned cards overlay -->
+                <div class="nodes-container" id="nodesContainer"></div>
+
+                <!-- Drag select selection box overlay -->
+                <div id="selectionBox" class="selection-box hidden"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Hidden canvas utilized to render image exports -->
+    <canvas id="exportCanvas" style="display: none;"></canvas>
+
+    <script src="app.js"></script>
+</body>
+</html>

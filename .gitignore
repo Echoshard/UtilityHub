@@ -1,0 +1,36 @@
+# Windows OS Metadata
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editors & IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Log files and temps
+*.log
+*.tmp
+*.temp
+
+# AI Agents config and logs
+.gemini/
+.agents/
+transcript.jsonl
+transcript_full.jsonl
+task.md
+implementation_plan.md
+walkthrough.md
+scratch/
+brain/
+config/
+
+# Node dependencies
+node_modules/
+package-lock.json
+npm-debug.log*

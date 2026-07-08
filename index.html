@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSuite Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // --- DASHBOARD APP CONFIGURATION ---
+        // Change any value to false to disable and lock its card on the hub.
+        const APP_CONFIG = {
+            qr: true,
+            markdown: true,
+            recipes: true,
+            tts: true,
+            slideshow: true,
+            blockgame: true,
+            pixelart: true,
+            audioforge: true,
+            calcsheet: true,
+            diceroller: true,
+            chiptune: true,
+            mindmap: true
+        };
+    </script>
+</head>
+
+<body>
+    <div class="background-glow"></div>
+    <div class="hub-container">
+        <header class="hub-header">
+            <h2 class="hub-title">LocalApp Hub</h2>
+            <p class="hub-subtitle">A collection of utilities. </p>
+        </header>
+
+        <main class="hub-grid">
+            <!-- App 1: QR Pulse -->
+            <a href="QRCode/index.html" class="app-card qr-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        <line x1="17" y1="7" x2="17.01" y2="7"></line>
+                        <line x1="17" y1="17" x2="17.01" y2="17"></line>
+                        <line x1="7" y1="17" x2="7.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">QR Pulse</h2>
+                    <p class="card-description">Generate, customize, and stylize vector QR codes. Complete with dynamic
+                        dot shapes, custom colors, center logos, and format downloads.</p>
+                </div>
+                <div class="card-badge">Launch QR Maker</div>
+            </a>
+
+            <!-- App 2: MarkDowner -->
+            <a href="MarkdownViewer/index.html" class="app-card md-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">MarkDowner</h2>
+                    <p class="card-description">A robust, side-by-side Markdown editor and rendered preview engine.
+                        Features document autosave drafts, template loading, statistics tracking, and high-fidelity PDF
+                        print layout.</p>
+                </div>
+                <div class="card-badge">Launch Editor</div>
+            </a>
+
+            <!-- App 3: Recipes Cabinet -->
+            <a href="Recpies/index.html" class="app-card recipe-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        <path d="M8 6h6M8 10h6"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Recipes Cabinet</h2>
+                    <p class="card-description">Offline recipe book and editor. Open and modify family JSON recipe books directly in the browser, search by categories or ingredients, and compile PDF cookbook prints.</p>
+                </div>
+                <div class="card-badge">Launch Cabinet</div>
+            </a>
+
+            <!-- App 4: ReadAloud -->
+            <a href="TTS/index.html" class="app-card tts-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">ReadAloud</h2>
+                    <p class="card-description">Text-to-Speech synthesizer. Paste any text, choose from browser-provided
+                        system voices, adjust speed, pitch, and volume, and follow along with real-time word
+                        highlighting.</p>
+                </div>
+                <div class="card-badge">Launch Reader</div>
+            </a>
+
+            <!-- App 5: Media Slideshow -->
+            <a href="mediaslideshow/index.html" class="app-card slideshow-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Media Slideshow</h2>
+                    <p class="card-description">Photo & Video slideshow with Ken Burns zoom transitions, background
+                        music playlist, and folder scanner using local browser storage.</p>
+                </div>
+                <div class="card-badge">Launch Slideshow</div>
+            </a>
+
+            <!-- App 6: Block Attack Arcade -->
+            <a href="blockgame/index.html" class="app-card blockgame-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Block Attack Arcade</h2>
+                    <p class="card-description">Retro arcade game suite featuring high-speed block swap/stack matches
+                        and classic line-clearing block puzzle games with sound FX.</p>
+                </div>
+                <div class="card-badge">Launch Arcade</div>
+            </a>
+
+            <!-- App 7: Pixel Art Studio -->
+            <a href="pixelart/index.html" class="app-card pixelart-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Pixel Art Studio</h2>
+                    <p class="card-description">Pixel art and frame-by-frame animation suite. Create custom character
+                        sprites, paint grids, manage animations, and export sheets.</p>
+                </div>
+                <div class="card-badge">Launch Studio</div>
+            </a>
+
+            <!-- App 8: AudioForge -->
+            <a href="audioforge/index.html" class="app-card audioforge-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">AudioForge</h2>
+                    <p class="card-description">Audio wave cutter and effects manager. Load local audio files, view
+                        waveforms, crop, add fades, and export WAV clips.</p>
+                </div>
+                <div class="card-badge">Launch Forge</div>
+            </a>
+
+            <!-- App 9: CalcSheet -->
+            <a href="calcsheet/index.html" class="app-card calcsheet-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                        <line x1="15" y1="3" x2="15" y2="21"></line>
+                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                        <line x1="3" y1="15" x2="21" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">CalcSheet</h2>
+                    <p class="card-description">Data spreadsheet engine featuring formula dependency solvers, custom
+                        `=QUERY()` SQL-style filtering, and canvas chart plots.</p>
+                </div>
+                <div class="card-badge">Launch Calc</div>
+            </a>
+
+            <!-- App 10: 3D Dice Roller -->
+            <a href="diceroller/index.html" class="app-card diceroller-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1"></circle>
+                        <circle cx="15.5" cy="8.5" r="1"></circle>
+                        <circle cx="8.5" cy="15.5" r="1"></circle>
+                        <circle cx="15.5" cy="15.5" r="1"></circle>
+                        <circle cx="12" cy="12" r="1.5"></circle>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">3D Dice Roller</h2>
+                    <p class="card-description">RPG and board game dice tray. Type custom math notations (like 4d6+10)
+                        to roll 3D physical dice in five premium style skins.</p>
+                </div>
+                <div class="card-badge">Launch Roller</div>
+            </a>
+
+            <!-- App 11: Chiptune Composer -->
+            <a href="chiptune/index.html" class="app-card composer-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Chiptune Composer</h2>
+                    <p class="card-description">Interactive 8-bit loop tracker sequencer. Click notes on a timeline grid across four synthesizer channels (Triangle, Square, Bass, Noise) and export WAV loops.</p>
+                </div>
+                <div class="card-badge">Launch Composer</div>
+            </a>
+
+            <!-- App 12: MindMapper -->
+            <a href="mindmap/index.html" class="app-card mindmap-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                        <path d="M10 6.5h4c1.1 0 2 .9 2 2V14"></path>
+                        <path d="M6.5 10v4"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">MindMapper</h2>
+                    <p class="card-description">Interactive diagram whiteboard. Drag node cards, connect them with curved bezier arrow paths, customize shapes, and trigger spring-physics auto-arrangements.</p>
+                </div>
+                <div class="card-badge">Launch Mapper</div>
+            </a>
+        </main>
+
+        <footer class="hub-footer">
+            <p>Designed for Windows File System</p>
+        </footer>
+    </div>
+    <script>
+        // Folder name mappings
+        const FOLDER_TO_KEY = {
+            'qrcode': 'qr',
+            'markdownviewer': 'markdown',
+            'recpies': 'recipes',
+            'tts': 'tts',
+            'mediaslideshow': 'slideshow',
+            'blockgame': 'blockgame',
+            'pixelart': 'pixelart',
+            'audioforge': 'audioforge',
+            'calcsheet': 'calcsheet',
+            'diceroller': 'diceroller',
+            'chiptune': 'chiptune',
+            'mindmap': 'mindmap'
+        };
+
+        // Apply configuration and disable selected apps
+        document.querySelectorAll('.app-card').forEach(card => {
+            const href = card.getAttribute('href') || '';
+            const folder = href.split('/')[0].toLowerCase();
+            const key = FOLDER_TO_KEY[folder];
+
+            // Add disabled class if config is false or if explicitly hardcoded
+            if ((key && APP_CONFIG[key] === false) || card.classList.contains('disabled') || card.hasAttribute('data-disabled')) {
+                card.classList.add('disabled');
+                
+                // Intercept clicks
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                });
+
+                // Update badge to "Disabled"
+                const badge = card.querySelector('.card-badge');
+                if (badge) {
+                    badge.textContent = 'Disabled';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

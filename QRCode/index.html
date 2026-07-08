@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Pulse | Premium QR Code Studio</title>
+  <meta name="description" content="Generate high-quality, fully customized QR codes with custom colors, gradients, custom dot shapes, and logos. Download instantly as PNG, SVG, or JPEG.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+        </svg>
+        <h1>QR Pulse</h1>
+      </div>
+      <p class="tagline">Create stunning, high-fidelity custom QR codes instantly</p>
+    </header>
+
+    <main class="app-main">
+      <!-- Left Panel: Settings -->
+      <section class="control-panel" aria-label="QR Code Customizations">
+        
+        <!-- Input section -->
+        <div class="section-card">
+          <h2 class="section-title">
+            <span class="step-num">1</span>
+            Enter URL / Text
+          </h2>
+          <div class="input-group">
+            <input type="text" id="qr-data" value="https://google.com" placeholder="https://example.com or any text..." aria-label="QR Code Text or URL">
+            <span class="focus-border"></span>
+          </div>
+        </div>
+
+        <!-- Style options section -->
+        <div class="section-card">
+          <h2 class="section-title">
+            <span class="step-num">2</span>
+            Colors & Style
+          </h2>
+          
+          <div class="options-grid">
+            <!-- Background Color -->
+            <div class="option-item">
+              <label for="bg-color">Background Color</label>
+              <div class="color-picker-wrapper">
+                <input type="color" id="bg-color" value="#ffffff">
+                <span class="color-hex-label" id="bg-color-val">#ffffff</span>
+              </div>
+            </div>
+
+            <!-- Foreground Type Selection -->
+            <div class="option-item full-width">
+              <label>Foreground Style</label>
+              <div class="segmented-control">
+                <input type="radio" id="fg-solid" name="fg-type" value="solid" checked>
+                <label for="fg-solid" class="segment-label">Solid</label>
+                
+                <input type="radio" id="fg-gradient" name="fg-type" value="gradient">
+                <label for="fg-gradient" class="segment-label">Gradient</label>
+              </div>
+            </div>
+
+            <!-- Solid Foreground Color Picker (shown when 'Solid' selected) -->
+            <div class="option-item" id="solid-fg-wrapper">
+              <label for="fg-color">QR Color</label>
+              <div class="color-picker-wrapper">
+                <input type="color" id="fg-color" value="#111111">
+                <span class="color-hex-label" id="fg-color-val">#111111</span>
+              </div>
+            </div>
+
+            <!-- Gradient Options (shown when 'Gradient' selected) -->
+            <div class="gradient-settings full-width hidden" id="gradient-settings-wrapper">
+              <div class="options-grid">
+                <div class="option-item">
+                  <label for="gradient-color-1">Gradient Start</label>
+                  <div class="color-picker-wrapper">
+                    <input type="color" id="gradient-color-1" value="#6366f1">
+                    <span class="color-hex-label" id="grad-1-val">#6366f1</span>
+                  </div>
+                </div>
+                
+                <div class="option-item">
+                  <label for="gradient-color-2">Gradient End</label>
+                  <div class="color-picker-wrapper">
+                    <input type="color" id="gradient-color-2" value="#a855f7">
+                    <span class="color-hex-label" id="grad-2-val">#a855f7</span>
+                  </div>
+                </div>
+
+                <div class="option-item">
+                  <label for="gradient-type">Gradient Type</label>
+                  <select id="gradient-type">
+                    <option value="linear" selected>Linear</option>
+                    <option value="radial">Radial</option>
+                  </select>
+                </div>
+
+                <div class="option-item" id="gradient-rotation-item">
+                  <label for="gradient-rotation">Rotation (<span id="rotation-val">0</span>°)</label>
+                  <input type="range" id="gradient-rotation" min="0" max="360" value="0" step="15" class="slider">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shapes section -->
+        <div class="section-card">
+          <h2 class="section-title">
+            <span class="step-num">3</span>
+            Shapes & Branding
+          </h2>
+
+          <div class="options-grid">
+            <!-- Dot Style -->
+            <div class="option-item">
+              <label for="dot-style">Dot Pattern</label>
+              <select id="dot-style">
+                <option value="rounded" selected>Rounded</option>
+                <option value="dots">Dots</option>
+                <option value="classy">Classy</option>
+                <option value="classy-rounded">Classy Rounded</option>
+                <option value="square">Square</option>
+                <option value="extra-rounded">Extra Rounded</option>
+              </select>
+            </div>
+
+            <!-- Corner Square Style -->
+            <div class="option-item">
+              <label for="corner-square-style">Corner Squares</label>
+              <select id="corner-square-style">
+                <option value="extra-rounded" selected>Extra Rounded</option>
+                <option value="dot">Dots</option>
+                <option value="square">Square</option>
+              </select>
+            </div>
+
+            <!-- Corner Dot Style -->
+            <div class="option-item">
+              <label for="corner-dot-style">Corner Dots</label>
+              <select id="corner-dot-style">
+                <option value="dot" selected>Dot</option>
+                <option value="square">Square</option>
+              </select>
+            </div>
+
+            <!-- Error Correction Level -->
+            <div class="option-item">
+              <label for="error-correction">Error Correction</label>
+              <select id="error-correction">
+                <option value="Q" selected>High (Recommended)</option>
+                <option value="H">Highest (Best for Logos)</option>
+                <option value="M">Medium</option>
+                <option value="L">Standard</option>
+              </select>
+            </div>
+
+            <!-- Logo Upload -->
+            <div class="option-item full-width">
+              <label>Logo Upload (Optional)</label>
+              <div class="file-upload-wrapper">
+                <div class="file-upload-btn-wrapper">
+                  <button type="button" class="btn-secondary" id="logo-trigger">Choose Image</button>
+                  <span id="logo-filename">No image chosen</span>
+                  <input type="file" id="logo-upload" accept="image/*" class="hidden">
+                </div>
+                <button type="button" class="btn-link hidden" id="logo-clear">Clear Logo</button>
+              </div>
+            </div>
+
+            <!-- Logo options (shown only if logo uploaded) -->
+            <div class="logo-options full-width hidden" id="logo-options-wrapper">
+              <div class="options-grid">
+                <div class="option-item">
+                  <label for="logo-size">Logo Size (<span id="logo-size-val">0.3</span>)</label>
+                  <input type="range" id="logo-size" min="0.1" max="0.5" value="0.3" step="0.05" class="slider">
+                </div>
+                <div class="option-item checkbox-item">
+                  <input type="checkbox" id="logo-clear-bg" checked>
+                  <label for="logo-clear-bg">Clear background behind logo</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right Panel: Preview and Download -->
+      <section class="preview-panel" aria-label="QR Code Preview and Download">
+        <div class="preview-card">
+          <div class="preview-box">
+            <!-- QR code renders here -->
+            <div id="qrcode-container" class="qrcode-container"></div>
+            <!-- Loading indicator/Glow element -->
+            <div class="preview-glow"></div>
+          </div>
+          
+          <div class="download-section">
+            <div class="download-controls">
+              <div class="select-wrapper">
+                <select id="download-format" aria-label="Download File Format">
+                  <option value="png" selected>PNG</option>
+                  <option value="svg">SVG</option>
+                  <option value="jpeg">JPEG</option>
+                </select>
+              </div>
+              <button id="btn-download" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="download-icon">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Download QR Code
+              </button>
+            </div>
+            <p class="download-hint">Ready to scan. Changes are compiled instantly.</p>
+          </div>
+        </div>
+      </main>
+      
+      <footer class="app-footer">
+        <p>&copy; 2026 QR Pulse. Powered by <a href="https://github.com/kozakdenys/qr-code-styling" target="_blank" rel="noopener">qr-code-styling</a>. Client-side execution.</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- CDN scripts with fallback loading -->
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js" onerror="loadFallbackCDN()"></script>
+  <script>
+    function loadFallbackCDN() {
+      console.warn("Primary CDN (jsDelivr) failed. Loading fallback from unpkg...");
+      const fallbackScript = document.createElement("script");
+      fallbackScript.src = "https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js";
+      fallbackScript.onerror = () => {
+        console.error("All CDNs failed to load the QR code library.");
+        alert("Fatal Error: Could not load the QR code library. Please check your network connection.");
+      };
+      document.head.appendChild(fallbackScript);
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>

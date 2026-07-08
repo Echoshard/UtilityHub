@@ -1,0 +1,399 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg-main: #020617;
+    --bg-glass: rgba(15, 23, 42, 0.45);
+    --border-color: rgba(255, 255, 255, 0.06);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    
+    /* App Gradient Accent Colors */
+    --qr-glow: linear-gradient(135deg, #ec4899, #8b5cf6);
+    --md-glow: linear-gradient(135deg, #6366f1, #06b6d4);
+    --game-glow: linear-gradient(135deg, #f59e0b, #ef4444);
+    --tts-glow: linear-gradient(135deg, #10b981, #14b8a6);
+    --slideshow-glow: linear-gradient(135deg, #a855f7, #ec4899);
+    --blockgame-glow: linear-gradient(135deg, #06b6d4, #3b82f6);
+    --pixelart-glow: linear-gradient(135deg, #ec4899, #f43f5e);
+    --audioforge-glow: linear-gradient(135deg, #f59e0b, #e11d48);
+    --calcsheet-glow: linear-gradient(135deg, #10b981, #059669);
+    --diceroller-glow: linear-gradient(135deg, #a855f7, #6366f1);
+    --recipe-glow: linear-gradient(135deg, #f97316, #f59e0b);
+    --composer-glow: linear-gradient(135deg, #ec4899, #8b5cf6);
+    --mindmap-glow: linear-gradient(135deg, #6366f1, #14b8a6);
+    
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-display: 'Outfit', var(--font-ui);
+    
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Ambient Background Glows */
+.background-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(0,0,0,0) 100%);
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(80px);
+}
+
+.hub-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    z-index: 1;
+    position: relative;
+}
+
+.hub-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.hub-title {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ffffff 60%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hub-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+/* Grid Layout */
+.hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+/* App Cards Styling */
+.app-card {
+    text-decoration: none;
+    color: inherit;
+    background-color: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    transition: var(--transition);
+    height: 100%;
+}
+
+.app-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--border-hover);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+
+/* Neon Gradient Glow Overlay on Hover */
+.card-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    transition: var(--transition);
+}
+
+.qr-card:hover .card-glow { background: var(--qr-glow); }
+.md-card:hover .card-glow { background: var(--md-glow); }
+.game-card:hover .card-glow { background: var(--game-glow); }
+.tts-card:hover .card-glow { background: var(--tts-glow); }
+.slideshow-card:hover .card-glow { background: var(--slideshow-glow); }
+.blockgame-card:hover .card-glow { background: var(--blockgame-glow); }
+.pixelart-card:hover .card-glow { background: var(--pixelart-glow); }
+.audioforge-card:hover .card-glow { background: var(--audioforge-glow); }
+.calcsheet-card:hover .card-glow { background: var(--calcsheet-glow); }
+.diceroller-card:hover .card-glow { background: var(--diceroller-glow); }
+.recipe-card:hover .card-glow { background: var(--recipe-glow); }
+.composer-card:hover .card-glow { background: var(--composer-glow); }
+.mindmap-card:hover .card-glow { background: var(--mindmap-glow); }
+
+/* Card Icon Containers */
+.card-icon-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.card-icon {
+    width: 28px;
+    height: 28px;
+    stroke: var(--text-primary);
+    transition: var(--transition);
+}
+
+/* Color Accent Hovering for Icons */
+.qr-card:hover .card-icon-container {
+    background: rgba(236, 72, 153, 0.1);
+    border-color: rgba(236, 72, 153, 0.3);
+}
+.qr-card:hover .card-icon { stroke: #ec4899; }
+
+.md-card:hover .card-icon-container {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+.md-card:hover .card-icon { stroke: #6366f1; }
+
+.game-card:hover .card-icon-container {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+.game-card:hover .card-icon { stroke: #f59e0b; }
+
+.tts-card:hover .card-icon-container {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+.tts-card:hover .card-icon { stroke: #10b981; }
+
+.slideshow-card:hover .card-icon-container {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.3);
+}
+.slideshow-card:hover .card-icon { stroke: #a855f7; }
+
+.blockgame-card:hover .card-icon-container {
+    background: rgba(6, 182, 212, 0.1);
+    border-color: rgba(6, 182, 212, 0.3);
+}
+.blockgame-card:hover .card-icon { stroke: #06b6d4; }
+
+.pixelart-card:hover .card-icon-container {
+    background: rgba(236, 72, 153, 0.1);
+    border-color: rgba(236, 72, 153, 0.3);
+}
+.pixelart-card:hover .card-icon { stroke: #ec4899; }
+
+.audioforge-card:hover .card-icon-container {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+.audioforge-card:hover .card-icon { stroke: #f59e0b; }
+
+.calcsheet-card:hover .card-icon-container {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+.calcsheet-card:hover .card-icon { stroke: #10b981; }
+
+.diceroller-card:hover .card-icon-container {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.3);
+}
+.diceroller-card:hover .card-icon { stroke: #a855f7; }
+
+.recipe-card:hover .card-icon-container {
+    background: rgba(249, 115, 22, 0.1);
+    border-color: rgba(249, 115, 22, 0.3);
+}
+.recipe-card:hover .card-icon { stroke: #f97316; }
+
+.composer-card:hover .card-icon-container {
+    background: rgba(236, 72, 153, 0.1);
+    border-color: rgba(236, 72, 153, 0.3);
+}
+.composer-card:hover .card-icon { stroke: #ec4899; }
+
+.mindmap-card:hover .card-icon-container {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+.mindmap-card:hover .card-icon { stroke: #6366f1; }
+
+/* Disabled Cards Styling */
+.app-card.disabled {
+    pointer-events: none;
+    opacity: 0.18;
+    filter: grayscale(0.9);
+    cursor: not-allowed;
+}
+
+.app-card.disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.app-card.disabled .card-badge {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-muted) !important;
+}
+
+/* Content Elements */
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.card-title {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.card-description {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Badges showing action */
+.card-badge {
+    align-self: flex-start;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.qr-card:hover .card-badge {
+    background: #ec4899;
+    color: #ffffff;
+    border-color: #ec4899;
+    box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4);
+}
+
+.md-card:hover .card-badge {
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #6366f1;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.game-card:hover .card-badge {
+    background: #f59e0b;
+    color: #ffffff;
+    border-color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+
+.tts-card:hover .card-badge {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #10b981;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.slideshow-card:hover .card-badge {
+    background: #a855f7;
+    color: #ffffff;
+    border-color: #a855f7;
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+}
+
+.blockgame-card:hover .card-badge {
+    background: #06b6d4;
+    color: #ffffff;
+    border-color: #06b6d4;
+    box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);
+}
+
+.pixelart-card:hover .card-badge {
+    background: #ec4899;
+    color: #ffffff;
+    border-color: #ec4899;
+    box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4);
+}
+
+.audioforge-card:hover .card-badge {
+    background: #f59e0b;
+    color: #ffffff;
+    border-color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+
+.calcsheet-card:hover .card-badge {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #10b981;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.diceroller-card:hover .card-badge {
+    background: #a855f7;
+    color: #ffffff;
+    border-color: #a855f7;
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+}
+
+/* Footer Section */
+.hub-footer {
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 24px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+    .hub-title {
+        font-size: 2.5rem;
+    }
+    .hub-container {
+        margin: 20px auto;
+        gap: 32px;
+    }
+    .app-card {
+        padding: 28px;
+    }
+}

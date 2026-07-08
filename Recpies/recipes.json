@@ -1,0 +1,47 @@
+[
+    {
+        "id": "rec_12",
+        "title": "Eggplant Caponata",
+        "ingredients": [
+            "2 large eggplants",
+            "2\u20133 green peppers",
+            "1 jar green olives",
+            "4 stalks celery",
+            "3 onions",
+            "2\u20133 tbsp sugar",
+            "1 can tomato paste (8 oz)",
+            "1 cup red wine vinegar"
+        ],
+        "categories": [
+            "Vegetable",
+            "Italian",
+            "Side"
+        ],
+        "creator": "Grandma",
+        "editor": "Admin",
+        "instructions": "Steam all ingredients in olive oil 20 min. Add tomato paste, simmer 20 min. Add vinegar and sugar to taste.",
+        "images": [],
+        "sourceUrl": ""
+    },
+    {
+        "id": "rec_13",
+        "title": "Clams Oreganata",
+        "ingredients": [
+            "1 clove garlic per dozen clams",
+            "1/4 tsp oregano per dozen",
+            "1/2 tbsp parsley per dozen",
+            "2 tsp breadcrumbs per dozen",
+            "Olive oil"
+        ],
+        "categories": [
+            "Seafood",
+            "Appetizer",
+            "Italian"
+        ],
+        "creator": "Family Collection",
+        "editor": "Admin",
+        "instructions": "Combine toppings, sprinkle over clams, drizzle oil, bake/broil at 400\u00b0F for 15 minutes.",
+        "images": [],
+        "sourceUrl": ""
+    }
+]

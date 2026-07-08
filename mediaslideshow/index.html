@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Media Slideshow Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="slideshow.css">
+</head>
+<body>
+
+<!-- Hamburger Trigger -->
+<div class="hamburger" id="hamburger">☰</div>
+
+<!-- Sidebar Menu -->
+<header id="controls">
+  <div class="menu-header">
+    <h2 class="menu-title">Settings</h2>
+    <button class="close-menu" onclick="document.getElementById('controls').classList.remove('show')">✕</button>
+  </div>
+
+  <div class="menu-content">
+    
+    <!-- ADD MEDIA -->
+    <section class="panel">
+      <h3>Add Media</h3>
+      <div class="row-vertical">
+        <label class="btn-upload">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span>Select Local Files</span>
+          <input type="file" id="fileLoader" accept="image/*,video/*,audio/*" multiple style="display:none;">
+        </label>
+        <div class="row" style="margin-top: 4px; display: flex; gap: 8px;">
+          <button id="backupBtn" class="action-primary" style="flex: 1; padding: 8px; font-size: 12px;">Backup</button>
+          <label class="btn-upload" style="flex: 1; padding: 8px; font-size: 12px; font-weight: 500; background: rgba(255,255,255,0.08); border-color: transparent; color: #eee; margin: 0;">
+            <span>Restore</span>
+            <input type="file" id="restoreLoader" accept=".json" style="display:none;">
+          </label>
+        </div>
+      </div>
+      <div class="db-info" id="db-status">Gallery empty. Add media to start!</div>
+    </section>
+
+    <!-- Audio -->
+    <section class="panel" id="audioSection">
+      <h3>Audio</h3>
+      <div class="row">
+        <button onclick="playAudio()">Play</button>
+        <button onclick="stopAudio()">Stop</button>
+        <button onclick="nextAudio()">Next</button>
+        <label><input type="checkbox" id="audioLoop"> Loop</label>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <label style="width:100%">Volume <input id="audioVolume" type="range" min="0" max="1" step="0.01" value="0.8"></label>
+      </div>
+      <div class="row">
+        <label style="width:100%">Track
+          <select id="audioSelect" style="width:100%; margin-top:4px"></select>
+        </label>
+      </div>
+    </section>
+
+    <!-- Slideshow -->
+    <section class="panel" id="slideshowSection">
+      <h3>Slideshow</h3>
+      <div class="row">
+        <button class="action-primary" onclick="startSlideshow()">Start Show</button>
+      </div>
+      <div class="row">
+        <label>Seconds <input id="slideTime" type="number" value="5" min="1"></label>
+        <label>Fade (s) <input id="fadeTime" type="number" value="1" min="0" step="0.1"></label>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="fitContain" checked> Fit to Screen</label>
+      </div>
+      <div class="row">
+        <label style="width: 100%">Transition
+          <select id="transitionSelect" style="width: 100%; margin-top: 4px">
+            <option value="kenburns">Ken Burns Zoom</option>
+            <option value="fade">Cross Fade</option>
+            <option value="slide-h">Slide Horizontal</option>
+            <option value="slide-v">Slide Vertical</option>
+            <option value="zoom">Zoom Burst</option>
+            <option value="crt">CRT Glitch</option>
+          </select>
+        </label>
+      </div>
+      <div class="row" id="kbOptions" style="padding-left: 24px;"> <!-- options for KB -->
+        <label>Zoom <input id="kbZoom" type="number" value="1.2" step="0.1" style="width:50px"></label>
+        <label>Duration <input id="kbDuration" type="number" value="10" step="1" style="width:50px"></label>
+      </div>
+    </section>
+
+    <!-- Video -->
+    <section class="panel" id="videoSection">
+      <h3>Video</h3>
+      <div class="row">
+        <button class="action-primary" id="videoStartBtn" onclick="playVideo()">Start Video</button>
+        <button id="videoNextBtn" onclick="nextVideo()">Next</button>
+        <button id="videoPrevBtn" onclick="prevVideo()">Prev</button>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="videoLoop"> Loop</label>
+        <label><input type="checkbox" id="disableVideos"> Disable</label>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <label style="width:100%">Volume <input id="videoVolume" type="range" min="0" max="1" step="0.01" value="0.8"></label>
+      </div>
+    </section>
+
+    <!-- Preview -->
+    <section class="panel">
+      <h3>Preview Grid</h3>
+      <div class="row">
+        <label><input id="previewVideos" type="checkbox"> Show videos</label>
+      </div>
+      <div class="row" style="margin-top: 8px;">
+        <label style="width: 100%">Thumbnail Size
+          <input id="gridSizeSlider" type="range" min="120" max="400" step="10" value="240" style="width: 100%; margin-top: 4px;">
+        </label>
+      </div>
+      <div class="row">
+        <button id="refreshThumbsBtn">Refresh Thumbnails</button>
+      </div>
+      <div class="row">
+        <label>Auto-scroll Speed <input id="scrollSpeed" type="number" value="1" min="1"></label>
+      </div>
+      <div class="row">
+          <button onclick="endAll()" style="width:100%; margin-top:10px; background:#444; border-color:#444;">Stop Everything</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+          <button id="resetGalleryBtn" class="danger" style="width:100%;">Reset Gallery</button>
+      </div>
+
+    </section>
+  </div>
+</header>
+
+<div id="main">
+  <div id="slideshow"></div>
+  <div id="grid-container"><div id="grid"></div></div>
+</div>
+
+<!-- Image shadowbox -->
+<div id="shadowbox">
+  <button class="close" onclick="closeShadowbox()">✕</button>
+  <img id="shadowImg" src="" alt="">
+</div>
+
+<!-- Focus video overlay (fills window) -->
+<div id="videoBox">
+  <button class="close" onclick="closeVideoBox()">✕</button>
+  <video id="videoFocus" controls playsinline></video>
+</div>
+
+<!-- Deletion confirm modal -->
+<div id="confirmModal" aria-hidden="true">
+  <div id="confirmBox" role="dialog" aria-modal="true">
+    <h4>Delete this image forever?</h4>
+    <p id="confirmPath"></p>
+    <div class="row">
+      <button id="confirmCancel" class="secondary">Cancel (Esc)</button>
+      <button id="confirmOk" class="danger">Delete (Enter)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Config Placeholder for slideshow.js -->
+<script>
+const CONFIG = {
+  imageOnly: false,
+  videoOnly: false,
+  audioVisible: true
+};
+</script>
+<script src="slideshow.js"></script>
+</body>
+</html>
