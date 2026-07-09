@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="style.css">
     <script>
         // --- DASHBOARD APP CONFIGURATION ---
-        // Change any value to false to disable and lock its card on the hub.
+        // Set to false to hide category headers and show all apps in a single grid
+        const SHOW_CATEGORIES = false;
+
+        // Change any value to false to disable/hide its card on the hub.
         const APP_CONFIG = {
             qr: true,
             markdown: true,
@@ -49,8 +52,8 @@
                     <a href="MarkdownViewer/index.html" class="app-card md-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                 <polyline points="14 2 14 8 20 8"></polyline>
                                 <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -69,8 +72,8 @@
                     <a href="TTS/index.html" class="app-card tts-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                             </svg>
@@ -86,8 +89,8 @@
                     <a href="rsvpreader/index.html" class="app-card rsvpreader-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
                             </svg>
@@ -103,8 +106,8 @@
                     <a href="calcsheet/index.html" class="app-card calcsheet-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                 <line x1="9" y1="3" x2="9" y2="21"></line>
                                 <line x1="15" y1="3" x2="15" y2="21"></line>
@@ -123,8 +126,8 @@
                     <a href="mindmap/index.html" class="app-card mindmap-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="7" height="7"></rect>
                                 <rect x="14" y="14" width="7" height="7"></rect>
                                 <rect x="3" y="14" width="7" height="7"></rect>
@@ -143,8 +146,8 @@
                     <a href="pomodoro/index.html" class="app-card pomodoro-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="13" r="8"></circle>
                                 <path d="M12 9v4l3 2"></path>
                                 <path d="M9 2h6"></path>
@@ -153,7 +156,8 @@
                         </div>
                         <div class="card-content">
                             <h2 class="card-title">Pomodoro Timer</h2>
-                            <p class="card-description">Focus timer with 25/15/5/60 presets and a live countdown ring.</p>
+                            <p class="card-description">Focus timer with 25/15/5/60 presets and a live countdown ring.
+                            </p>
                         </div>
                         <div class="card-badge">Launch Timer</div>
                     </a>
@@ -162,8 +166,8 @@
                     <a href="datastudio/index.html" class="app-card datastudio-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 6a8 3 0 0 0 16 0A8 3 0 0 0 4 6z"></path>
                                 <path d="M4 6v6a8 3 0 0 0 16 0V6"></path>
                                 <path d="M4 12v6a8 3 0 0 0 16 0v-6"></path>
@@ -171,7 +175,8 @@
                         </div>
                         <div class="card-content">
                             <h2 class="card-title">Data Studio</h2>
-                            <p class="card-description">JSON/YAML/XML/TOON viewer with a collapsible tree and converter.</p>
+                            <p class="card-description">JSON/YAML/XML/TOON viewer with a collapsible tree and converter.
+                            </p>
                         </div>
                         <div class="card-badge">Launch Studio</div>
                     </a>
@@ -185,8 +190,8 @@
                     <a href="pixelart/index.html" class="app-card pixelart-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 20h9"></path>
                                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                             </svg>
@@ -202,8 +207,8 @@
                     <a href="imageconverter/index.html" class="app-card imageconverter-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="18" height="18" rx="2"></rect>
                                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                 <path d="m21 15-5-5L5 21"></path>
@@ -222,8 +227,8 @@
                     <a href="chiptune/index.html" class="app-card composer-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M9 18V5l12-2v13"></path>
                                 <circle cx="6" cy="18" r="3"></circle>
                                 <circle cx="18" cy="16" r="3"></circle>
@@ -240,8 +245,8 @@
                     <a href="sfxforge/index.html" class="app-card sfxforge-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M3 10v4"></path>
                                 <path d="M7 7v10"></path>
                                 <path d="M11 4v16"></path>
@@ -251,7 +256,8 @@
                         </div>
                         <div class="card-content">
                             <h2 class="card-title">SFX Forge</h2>
-                            <p class="card-description">Procedural retro sound effect generator with presets and WAV export.</p>
+                            <p class="card-description">Procedural retro sound effect generator with presets and WAV
+                                export.</p>
                         </div>
                         <div class="card-badge">Launch Forge</div>
                     </a>
@@ -265,8 +271,8 @@
                     <a href="blockgame/index.html" class="app-card blockgame-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="7" height="7"></rect>
                                 <rect x="14" y="3" width="7" height="7"></rect>
                                 <rect x="14" y="14" width="7" height="7"></rect>
@@ -284,8 +290,8 @@
                     <a href="diceroller/index.html" class="app-card diceroller-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                 <circle cx="8.5" cy="8.5" r="1"></circle>
                                 <circle cx="15.5" cy="8.5" r="1"></circle>
@@ -305,8 +311,8 @@
                     <a href="typinggame/index.html" class="app-card typinggame-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
                                 <line x1="6" y1="8" x2="6" y2="8"></line>
                                 <line x1="10" y1="8" x2="10" y2="8"></line>
@@ -321,7 +327,8 @@
                         </div>
                         <div class="card-content">
                             <h2 class="card-title">Home Row Blaster</h2>
-                            <p class="card-description">Retro sci-fi typing academy, speed/accuracy tests, and arcade games.</p>
+                            <p class="card-description">Retro sci-fi typing academy, speed/accuracy tests, and arcade
+                                games.</p>
                         </div>
                         <div class="card-badge">Launch Blaster</div>
                     </a>
@@ -335,8 +342,8 @@
                     <a href="QRCode/index.html" class="app-card qr-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="7" height="7"></rect>
                                 <rect x="14" y="3" width="7" height="7"></rect>
                                 <rect x="14" y="14" width="7" height="7"></rect>
@@ -358,8 +365,8 @@
                     <a href="passwordgenerator/index.html" class="app-card passwordgenerator-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="11" width="18" height="10" rx="2"></rect>
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 <path d="M12 15v2"></path>
@@ -378,8 +385,8 @@
                     <a href="icongenerator/index.html" class="app-card icongenerator-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="18" height="18" rx="4"></rect>
                                 <path d="M8 3v18"></path>
                                 <path d="M16 3v18"></path>
@@ -398,8 +405,8 @@
                     <a href="audioforge/index.html" class="app-card audioforge-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
@@ -416,8 +423,8 @@
                     <a href="mediaslideshow/index.html" class="app-card slideshow-card">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
-                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                 <polyline points="21 15 16 10 5 21"></polyline>
@@ -470,19 +477,40 @@
             // Add disabled class if config is false or if explicitly hardcoded
             if ((key && APP_CONFIG[key] === false) || card.classList.contains('disabled') || card.hasAttribute('data-disabled')) {
                 card.classList.add('disabled');
-                
+
                 // Intercept clicks
                 card.addEventListener('click', (e) => {
                     e.preventDefault();
                 });
-
-                // Update badge to "Disabled"
-                const badge = card.querySelector('.card-badge');
-                if (badge) {
-                    badge.textContent = 'Disabled';
-                }
             }
         });
+
+        // Handle category display configuration
+        const mainElement = document.querySelector('.hub-main');
+        const sections = document.querySelectorAll('.app-category');
+
+        if (!SHOW_CATEGORIES) {
+            // Flatten all cards into a single unified grid
+            const unifiedGrid = document.createElement('div');
+            unifiedGrid.className = 'hub-grid';
+
+            // Move all active cards into the unified grid
+            document.querySelectorAll('.app-card:not(.disabled)').forEach(card => {
+                unifiedGrid.appendChild(card);
+            });
+
+            // Clear main and append only the unified grid
+            mainElement.innerHTML = '';
+            mainElement.appendChild(unifiedGrid);
+        } else {
+            // If showing categories, hide sections that have no visible cards
+            sections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.app-card:not(.disabled)');
+                if (visibleCards.length === 0) {
+                    section.style.display = 'none';
+                }
+            });
+        }
     </script>
 </body>
 

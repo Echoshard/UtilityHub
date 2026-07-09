@@ -329,10 +329,7 @@ body {
 
 /* Disabled Cards Styling */
 .app-card.disabled {
-    pointer-events: none;
-    opacity: 0.18;
-    filter: grayscale(0.9);
-    cursor: not-allowed;
+    display: none !important;
 }
 
 .app-card.disabled:hover {
