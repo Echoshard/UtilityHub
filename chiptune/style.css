@@ -516,3 +516,15 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--border-hover);
 }
+
+select,
+select option {
+    color-scheme: dark;
+    background-color: var(--bg-panel);
+    color: #fff;
+}
+
+select option:checked {
+    background-color: var(--accent);
+    color: #fff;
+}

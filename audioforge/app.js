@@ -18,6 +18,9 @@ let selectionStart = 0; // Seconds
 let selectionEnd = 0; // Seconds
 let currentZoom = 1.0; // Seconds per width pixel count (base scale)
 let isSelecting = false;
+let selectionDragMode = 'new'; // 'new' | 'start' | 'end'
+const EDGE_SNAP_PX = 12;
+const HANDLE_HIT_PX = 16;
 
 // Element References
 const audioLoader = document.getElementById('audioLoader');
@@ -47,7 +50,6 @@ const zoomInBtn = document.getElementById('zoomInBtn');
 const zoomOutBtn = document.getElementById('zoomOutBtn');
 const downloadWavBtn = document.getElementById('downloadWavBtn');
 
-const btnTrim = document.getElementById('btn-trim');
 const btnDelete = document.getElementById('btn-delete');
 const btnSilence = document.getElementById('btn-silence');
 const btnFadein = document.getElementById('btn-fadein');
@@ -107,14 +109,14 @@ audioLoader.addEventListener('change', (e) => {
 // ==========================================
 function enableAllControls() {
     [playBtn, pauseBtn, stopBtn, zoomInBtn, zoomOutBtn, downloadWavBtn,
-     btnTrim, btnDelete, btnSilence, btnFadein, btnFadeout, gainSlider, btnAmplify].forEach(el => {
+     btnDelete, btnSilence, btnFadein, btnFadeout, gainSlider, btnAmplify].forEach(el => {
         el.disabled = false;
     });
 }
 
 function disableAllControls() {
     [playBtn, pauseBtn, stopBtn, zoomInBtn, zoomOutBtn, downloadWavBtn,
-     btnTrim, btnDelete, btnSilence, btnFadein, btnFadeout, gainSlider, btnAmplify].forEach(el => {
+     btnDelete, btnSilence, btnFadein, btnFadeout, gainSlider, btnAmplify].forEach(el => {
         el.disabled = true;
     });
 }
@@ -189,20 +191,49 @@ function renderWaveform() {
 // ==========================================
 function getOffsetSeconds(clientX) {
     const rect = waveCanvas.getBoundingClientRect();
-    const x = clientX - rect.left;
+    let x = clientX - rect.left;
+    if (x <= EDGE_SNAP_PX) x = 0;
+    if (x >= rect.width - EDGE_SNAP_PX) x = rect.width;
+    x = Math.max(0, Math.min(rect.width, x));
     const pct = x / rect.width;
     return pct * audioBuffer.duration;
 }
 
+function secondsToCanvasX(seconds) {
+    const rect = waveCanvas.getBoundingClientRect();
+    return (seconds / audioBuffer.duration) * rect.width;
+}
+
+function getSelectionDragMode(clientX) {
+    if (!audioBuffer || selectionStart === selectionEnd) return 'new';
+    const rect = waveCanvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const startX = secondsToCanvasX(Math.min(selectionStart, selectionEnd));
+    const endX = secondsToCanvasX(Math.max(selectionStart, selectionEnd));
+
+    if (Math.abs(x - startX) <= HANDLE_HIT_PX) return 'start';
+    if (Math.abs(x - endX) <= HANDLE_HIT_PX) return 'end';
+    return 'new';
+}
+
 waveCanvas.addEventListener('mousedown', (e) => {
     if (!audioBuffer) return;
+    if (e.detail > 1) return;
     isSelecting = true;
     const startSec = getOffsetSeconds(e.clientX);
-    selectionStart = Math.max(0, Math.min(audioBuffer.duration, startSec));
-    selectionEnd = selectionStart;
+    selectionDragMode = getSelectionDragMode(e.clientX);
+
+    if (selectionDragMode === 'start') {
+        selectionStart = startSec;
+    } else if (selectionDragMode === 'end') {
+        selectionEnd = startSec;
+    } else {
+        selectionStart = Math.max(0, Math.min(audioBuffer.duration, startSec));
+        selectionEnd = selectionStart;
+    }
     
     // Position playhead here
-    playOffset = selectionStart;
+    playOffset = startSec;
     updateSelectionUI();
     updateProgressUI();
 });
@@ -210,7 +241,11 @@ waveCanvas.addEventListener('mousedown', (e) => {
 waveCanvas.addEventListener('mousemove', (e) => {
     if (!audioBuffer || !isSelecting) return;
     const currentSec = getOffsetSeconds(e.clientX);
-    selectionEnd = Math.max(0, Math.min(audioBuffer.duration, currentSec));
+    if (selectionDragMode === 'start') {
+        selectionStart = Math.max(0, Math.min(audioBuffer.duration, currentSec));
+    } else {
+        selectionEnd = Math.max(0, Math.min(audioBuffer.duration, currentSec));
+    }
     
     updateSelectionUI();
 });
@@ -225,6 +260,7 @@ window.addEventListener('mouseup', () => {
             selectionStart = selectionEnd;
             selectionEnd = temp;
         }
+        selectionDragMode = 'new';
         updateSelectionUI();
     }
 });
@@ -344,6 +380,19 @@ playBtn.addEventListener('click', () => {
 pauseBtn.addEventListener('click', pauseAudio);
 stopBtn.addEventListener('click', stopAudio);
 
+document.addEventListener('keydown', (e) => {
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA' || e.repeat) return;
+    if (e.code !== 'Space') return;
+    e.preventDefault();
+    if (!audioBuffer) return;
+    if (isPlaying) {
+        stopAudio();
+    } else {
+        playAudio();
+    }
+});
+
 loopCheck.addEventListener('change', (e) => {
     loopPlayback = e.target.checked;
 });
@@ -359,6 +408,20 @@ progressTrack.addEventListener('mousedown', (e) => {
     playOffset = jumpSecs;
     updateProgressUI();
     
+    if (isPlaying) {
+        playAudio(jumpSecs);
+    }
+});
+
+waveCanvas.addEventListener('dblclick', (e) => {
+    if (!audioBuffer) return;
+    const jumpSecs = getOffsetSeconds(e.clientX);
+    playOffset = jumpSecs;
+    selectionStart = jumpSecs;
+    selectionEnd = jumpSecs;
+    updateSelectionUI();
+    updateProgressUI();
+
     if (isPlaying) {
         playAudio(jumpSecs);
     }
@@ -414,26 +477,6 @@ function saveEditState() {
     });
     if (editHistoryStack.length > 5) editHistoryStack.shift();
 }
-
-// Trim / Crop selection (keeps only highlighted range)
-btnTrim.addEventListener('click', () => {
-    if (!audioBuffer || selectionStart === selectionEnd) return;
-    
-    const startRate = audioBuffer.sampleRate;
-    const offsetStart = Math.floor(selectionStart * startRate);
-    const offsetEnd = Math.floor(selectionEnd * startRate);
-    const length = offsetEnd - offsetStart;
-    
-    if (length <= 0) return;
-    
-    const newBuf = audioCtx.createBuffer(audioBuffer.numberOfChannels, length, startRate);
-    for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
-        const data = audioBuffer.getChannelData(ch).subarray(offsetStart, offsetEnd);
-        newBuf.copyToChannel(data, ch);
-    }
-    
-    replaceAudioBuffer(newBuf);
-});
 
 // Delete Selection (cuts segment and joins ends)
 btnDelete.addEventListener('click', () => {

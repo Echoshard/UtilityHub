@@ -413,3 +413,15 @@ body {
     pointer-events: none;
     z-index: 1000;
 }
+
+select,
+select option {
+    color-scheme: dark;
+    background-color: #0b0f19;
+    color: #fff;
+}
+
+select option:checked {
+    background-color: var(--accent);
+    color: #fff;
+}

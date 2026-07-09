@@ -649,3 +649,15 @@ small {
 #confirmBox .secondary:hover {
   border-color: #666;
 }
+
+select,
+select option {
+  color-scheme: dark;
+  background-color: #111;
+  color: #eee;
+}
+
+select option:checked {
+  background-color: #2f80ed;
+  color: #fff;
+}

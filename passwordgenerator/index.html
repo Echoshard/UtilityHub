@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PasswordSmith</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a class="hub-link" href="../index.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>PasswordSmith</h1>
+                    <p>Offline password, PIN, and passphrase generator</p>
+                </div>
+            </div>
+            <div class="top-actions">
+                <button class="button" id="copyPrimaryBtn">Copy Primary</button>
+                <button class="button primary" id="generateBtn">Generate</button>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside class="panel settings-panel">
+                <section>
+                    <h2>Mode</h2>
+                    <div class="mode-grid">
+                        <button class="mode-btn active" data-mode="password">Password</button>
+                        <button class="mode-btn" data-mode="passphrase">Passphrase</button>
+                        <button class="mode-btn" data-mode="pin">PIN</button>
+                    </div>
+                </section>
+
+                <section id="passwordOptions">
+                    <h2>Password Options</h2>
+                    <label class="slider-row">Length <span id="lengthValue">24</span></label>
+                    <input id="lengthRange" type="range" min="4" max="128" value="24">
+
+                    <div class="check-grid">
+                        <label><input id="upperCheck" type="checkbox" checked> Uppercase</label>
+                        <label><input id="lowerCheck" type="checkbox" checked> Lowercase</label>
+                        <label><input id="numberCheck" type="checkbox" checked> Numbers</label>
+                        <label><input id="symbolCheck" type="checkbox" checked> Symbols</label>
+                    </div>
+
+                    <label class="check-row"><input id="requireEachCheck" type="checkbox" checked> Require one from each enabled set</label>
+                    <label class="check-row"><input id="avoidAmbiguousCheck" type="checkbox" checked> Avoid ambiguous characters</label>
+                    <label class="check-row"><input id="avoidRepeatsCheck" type="checkbox"> Avoid adjacent repeats</label>
+                    <label class="check-row"><input id="startLetterCheck" type="checkbox"> Start with a letter</label>
+
+                    <label class="control-label" for="customSymbolsInput">Custom Symbols</label>
+                    <input id="customSymbolsInput" type="text" value="!@#$%^&*_-+=?">
+
+                    <label class="control-label" for="excludeInput">Exclude Characters</label>
+                    <input id="excludeInput" type="text" placeholder="Characters to remove">
+                </section>
+
+                <section id="passphraseOptions" class="hidden">
+                    <h2>Passphrase Options</h2>
+                    <label class="slider-row">Words <span id="wordCountValue">5</span></label>
+                    <input id="wordCountRange" type="range" min="3" max="12" value="5">
+
+                    <label class="control-label" for="separatorInput">Separator</label>
+                    <input id="separatorInput" type="text" value="-">
+
+                    <label class="check-row"><input id="capitalizeWordsCheck" type="checkbox" checked> Capitalize words</label>
+                    <label class="check-row"><input id="appendNumberCheck" type="checkbox" checked> Append number</label>
+                    <label class="check-row"><input id="appendSymbolCheck" type="checkbox"> Append symbol</label>
+                </section>
+
+                <section id="pinOptions" class="hidden">
+                    <h2>PIN Options</h2>
+                    <label class="slider-row">Digits <span id="pinLengthValue">6</span></label>
+                    <input id="pinLengthRange" type="range" min="4" max="32" value="6">
+                    <label class="check-row"><input id="noSequentialPinCheck" type="checkbox" checked> Avoid obvious sequences</label>
+                    <label class="check-row"><input id="noRepeatPinCheck" type="checkbox"> Avoid repeated digits</label>
+                </section>
+
+                <section>
+                    <h2>Batch</h2>
+                    <label class="slider-row">Count <span id="countValue">8</span></label>
+                    <input id="countRange" type="range" min="1" max="100" value="8">
+                    <div class="button-row">
+                        <button class="button" id="downloadTxtBtn">TXT</button>
+                        <button class="button" id="downloadCsvBtn">CSV</button>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="results-panel">
+                <div class="primary-card">
+                    <div class="primary-header">
+                        <span>Primary Output</span>
+                        <button class="icon-btn" id="regeneratePrimaryBtn" title="Regenerate primary">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 3v6h6"></path></svg>
+                        </button>
+                    </div>
+                    <textarea id="primaryOutput" readonly spellcheck="false"></textarea>
+                    <div class="strength-meter">
+                        <div id="strengthFill"></div>
+                    </div>
+                    <div class="stats-grid">
+                        <div><span id="strengthLabel">Strong</span><small>Strength</small></div>
+                        <div><span id="entropyText">0 bits</span><small>Entropy</small></div>
+                        <div><span id="crackText">-</span><small>Offline Guessing</small></div>
+                    </div>
+                </div>
+
+                <div class="result-toolbar">
+                    <h2>Generated List</h2>
+                    <div>
+                        <button class="button" id="copyAllBtn">Copy All</button>
+                        <button class="button" id="clearBtn">Clear</button>
+                    </div>
+                </div>
+                <div class="results-list" id="resultsList"></div>
+            </section>
+
+            <aside class="panel audit-panel">
+                <section>
+                    <h2>Checklist</h2>
+                    <div class="audit-list" id="auditList"></div>
+                </section>
+
+                <section>
+                    <h2>Readable Policy</h2>
+                    <div class="policy-box" id="policyBox"></div>
+                </section>
+
+                <section>
+                    <h2>Notes</h2>
+                    <p class="note">Generated values stay in this browser page. Nothing is uploaded or saved by the app.</p>
+                    <p class="note">Use a password manager for storage. Generate a fresh value for every account.</p>
+                </section>
+            </aside>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

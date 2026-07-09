@@ -616,3 +616,17 @@ body {
     align-items: center;
     gap: 16px;
 }
+
+select,
+select option,
+.custom-select option {
+    color-scheme: dark;
+    background-color: #111827;
+    color: var(--text-primary);
+}
+
+select option:checked,
+.custom-select option:checked {
+    background-color: var(--primary);
+    color: #fff;
+}

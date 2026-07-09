@@ -81,6 +81,25 @@ Interactive infinite-canvas flowchart board and mind mapper.
 *   **Physics Solver**: Auto-arrange nodes using Verlet Spring physics solvers.
 *   **Downloads**: Export diagrams as transparent background PNG images or load/save flowchart JSON configurations.
 
+### 13. [ImageLab](imageconverter/index.html)
+Offline image converter and mini editing workshop.
+*   **Local Imports**: Drop or select browser-supported images without uploading anything.
+*   **Canvas Editing**: Photoshop-style viewport with wheel scrolling, Ctrl-wheel zooming, Space-drag panning, visual crop, visual resize, rotate, flip, and flatten background tools.
+*   **Brush Tools**: Paint brush, eraser, targeted background eraser, targeted healing brush, and magic wand selection. Brushes support size, hardness, circle/square shape, Alt color/source picking, and `[` / `]` size shortcuts.
+*   **Exports**: Download edited images as PNG, JPEG, or WebP with adjustable quality.
+
+### 14. [IconForge](icongenerator/index.html)
+Offline favicon and app icon generator.
+*   **Source Image**: Upload or drop one local image, then adjust fit, padding, corner radius, and background.
+*   **Icon Outputs**: Generate favicon PNG sizes, Apple touch icon, Android app icons, and a multi-size `favicon.ico`.
+*   **Web Assets**: Export `site.webmanifest` and ready-to-paste favicon HTML snippets.
+
+### 15. [PasswordSmith](passwordgenerator/index.html)
+Offline password, passphrase, and PIN generator.
+*   **Generation Modes**: Create random passwords, readable passphrases, or numeric PINs using browser cryptographic randomness.
+*   **Options**: Configure length, batch count, character sets, custom symbols, exclusions, ambiguity filtering, required sets, passphrase separators, and PIN sequence rules.
+*   **Review & Export**: View entropy/strength estimates, copy individual or batch results, and export TXT or CSV files.
+
 ---
 
 ## 🚀 Getting Started

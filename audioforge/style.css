@@ -305,6 +305,24 @@ body {
     box-sizing: border-box;
 }
 
+.selection-overlay::before,
+.selection-overlay::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    background: rgba(6, 182, 212, 0.28);
+}
+
+.selection-overlay::before {
+    left: -7px;
+}
+
+.selection-overlay::after {
+    right: -7px;
+}
+
 /* Playback head cursor line */
 .play-cursor {
     position: absolute;

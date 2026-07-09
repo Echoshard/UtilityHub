@@ -752,3 +752,15 @@ body {
         gap: 0;
     }
 }
+
+select,
+select option {
+    color-scheme: dark;
+    background-color: #111827;
+    color: #fff;
+}
+
+select option:checked {
+    background-color: #06b6d4;
+    color: #021016;
+}

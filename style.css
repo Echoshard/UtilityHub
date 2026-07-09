@@ -22,6 +22,9 @@
     --recipe-glow: linear-gradient(135deg, #f97316, #f59e0b);
     --composer-glow: linear-gradient(135deg, #ec4899, #8b5cf6);
     --mindmap-glow: linear-gradient(135deg, #6366f1, #14b8a6);
+    --imageconverter-glow: linear-gradient(135deg, #14b8a6, #f59e0b);
+    --icongenerator-glow: linear-gradient(135deg, #f59e0b, #ec4899);
+    --passwordgenerator-glow: linear-gradient(135deg, #22c55e, #06b6d4);
     
     --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-display: 'Outfit', var(--font-ui);
@@ -151,6 +154,9 @@ body {
 .recipe-card:hover .card-glow { background: var(--recipe-glow); }
 .composer-card:hover .card-glow { background: var(--composer-glow); }
 .mindmap-card:hover .card-glow { background: var(--mindmap-glow); }
+.imageconverter-card:hover .card-glow { background: var(--imageconverter-glow); }
+.icongenerator-card:hover .card-glow { background: var(--icongenerator-glow); }
+.passwordgenerator-card:hover .card-glow { background: var(--passwordgenerator-glow); }
 
 /* Card Icon Containers */
 .card-icon-container {
@@ -250,6 +256,24 @@ body {
     border-color: rgba(99, 102, 241, 0.3);
 }
 .mindmap-card:hover .card-icon { stroke: #6366f1; }
+
+.imageconverter-card:hover .card-icon-container {
+    background: rgba(20, 184, 166, 0.1);
+    border-color: rgba(20, 184, 166, 0.3);
+}
+.imageconverter-card:hover .card-icon { stroke: #14b8a6; }
+
+.icongenerator-card:hover .card-icon-container {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+.icongenerator-card:hover .card-icon { stroke: #f59e0b; }
+
+.passwordgenerator-card:hover .card-icon-container {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+.passwordgenerator-card:hover .card-icon { stroke: #22c55e; }
 
 /* Disabled Cards Styling */
 .app-card.disabled {
@@ -373,6 +397,27 @@ body {
     color: #ffffff;
     border-color: #a855f7;
     box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+}
+
+.imageconverter-card:hover .card-badge {
+    background: #14b8a6;
+    color: #03110f;
+    border-color: #14b8a6;
+    box-shadow: 0 4px 14px rgba(20, 184, 166, 0.4);
+}
+
+.icongenerator-card:hover .card-badge {
+    background: #f59e0b;
+    color: #160c01;
+    border-color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+
+.passwordgenerator-card:hover .card-badge {
+    background: #22c55e;
+    color: #03110a;
+    border-color: #22c55e;
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
 }
 
 /* Footer Section */

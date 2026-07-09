@@ -656,3 +656,15 @@ select:focus {
 .app-footer a:hover {
   color: var(--accent-color);
 }
+
+select,
+select option {
+  color-scheme: dark;
+  background-color: #111827;
+  color: var(--text-primary);
+}
+
+select option:checked {
+  background-color: var(--primary);
+  color: #fff;
+}

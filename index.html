@@ -21,7 +21,10 @@
             calcsheet: true,
             diceroller: true,
             chiptune: true,
-            mindmap: true
+            mindmap: true,
+            imageconverter: true,
+            icongenerator: true,
+            passwordgenerator: true
         };
     </script>
 </head>
@@ -175,7 +178,70 @@
                 <div class="card-badge">Launch Studio</div>
             </a>
 
-            <!-- App 8: AudioForge -->
+            <!-- App 8: ImageLab -->
+            <a href="imageconverter/index.html" class="app-card imageconverter-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <path d="m21 15-5-5L5 21"></path>
+                        <path d="M17 3v5"></path>
+                        <path d="M14.5 5.5h5"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">ImageLab</h2>
+                    <p class="card-description">Offline mini image workshop. Open local images, resize, crop, rotate,
+                        flip, tune color and sharpness, flatten backgrounds, and export PNG, JPEG, or WebP.</p>
+                </div>
+                <div class="card-badge">Launch ImageLab</div>
+            </a>
+
+            <!-- App 9: AudioForge -->
+            <a href="icongenerator/index.html" class="app-card icongenerator-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                        <path d="M8 3v18"></path>
+                        <path d="M16 3v18"></path>
+                        <path d="M3 8h18"></path>
+                        <path d="M3 16h18"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">IconForge</h2>
+                    <p class="card-description">Favicon and app icon generator. Upload one image, shape it, preview
+                        sizes, and export favicon.ico, PNG icons, web manifest, and HTML tags.</p>
+                </div>
+                <div class="card-badge">Launch IconForge</div>
+            </a>
+
+            <!-- App 10: AudioForge -->
+            <a href="passwordgenerator/index.html" class="app-card passwordgenerator-card">
+                <div class="card-glow"></div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        <path d="M12 15v2"></path>
+                        <path d="M8 16h.01"></path>
+                        <path d="M16 16h.01"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">PasswordSmith</h2>
+                    <p class="card-description">Offline password, passphrase, and PIN generator with length, character
+                        sets, exclusions, ambiguity filtering, batch output, strength estimates, and exports.</p>
+                </div>
+                <div class="card-badge">Launch Generator</div>
+            </a>
+
+            <!-- App 11: AudioForge -->
             <a href="audioforge/index.html" class="app-card audioforge-card">
                 <div class="card-glow"></div>
                 <div class="card-icon-container">
@@ -294,7 +360,10 @@
             'calcsheet': 'calcsheet',
             'diceroller': 'diceroller',
             'chiptune': 'chiptune',
-            'mindmap': 'mindmap'
+            'mindmap': 'mindmap',
+            'imageconverter': 'imageconverter',
+            'icongenerator': 'icongenerator',
+            'passwordgenerator': 'passwordgenerator'
         };
 
         // Apply configuration and disable selected apps

@@ -86,6 +86,12 @@ body {
     color: #fff;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 /* Workspace */
 .studio-workspace {
     flex: 1;
@@ -471,4 +477,16 @@ input[type="text"]:focus {
     font-size: 0.65rem;
     font-weight: 700;
     color: var(--text-muted);
+}
+
+select,
+select option {
+    color-scheme: dark;
+    background-color: #0b0f19;
+    color: #fff;
+}
+
+select option:checked {
+    background-color: var(--accent);
+    color: #fff;
 }

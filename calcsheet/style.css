@@ -388,3 +388,15 @@ body {
 #chartCanvas {
     max-width: 100%;
 }
+
+select,
+select option {
+    color-scheme: dark;
+    background-color: #111827;
+    color: #f8fafc;
+}
+
+select option:checked {
+    background-color: #6366f1;
+    color: #fff;
+}
