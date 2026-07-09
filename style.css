@@ -66,11 +66,11 @@ body {
 
 .hub-container {
     width: 90%;
-    max-width: 1200px;
-    margin: 40px auto;
+    max-width: 1240px;
+    margin: 32px auto;
     display: flex;
     flex-direction: column;
-    gap: 48px;
+    gap: 34px;
     z-index: 1;
     position: relative;
 }
@@ -101,22 +101,25 @@ body {
 
 /* Grid Layout */
 .hub-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
 }
 
 /* App Cards Styling */
 .app-card {
+    flex: 0 1 calc((100% - 60px) / 4);
+    min-width: 260px;
     text-decoration: none;
     color: inherit;
     background-color: var(--bg-glass);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 36px;
+    border-radius: 16px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(20px);
@@ -160,9 +163,9 @@ body {
 
 /* Card Icon Containers */
 .card-icon-container {
-    width: 60px;
-    height: 60px;
-    border-radius: 14px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,8 +175,8 @@ body {
 }
 
 .card-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     stroke: var(--text-primary);
     transition: var(--transition);
 }
@@ -298,29 +301,29 @@ body {
 .card-content {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     flex-grow: 1;
 }
 
 .card-title {
     font-family: var(--font-display);
-    font-size: 1.6rem;
+    font-size: 1.35rem;
     font-weight: 700;
     letter-spacing: -0.01em;
 }
 
 .card-description {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     color: var(--text-muted);
-    line-height: 1.6;
+    line-height: 1.45;
 }
 
 /* Badges showing action */
 .card-badge {
     align-self: flex-start;
-    padding: 8px 16px;
-    border-radius: 30px;
-    font-size: 0.8rem;
+    padding: 7px 12px;
+    border-radius: 18px;
+    font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -439,6 +442,8 @@ body {
         gap: 32px;
     }
     .app-card {
-        padding: 28px;
+        flex-basis: 100%;
+        min-width: 0;
+        padding: 22px;
     }
 }

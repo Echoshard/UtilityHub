@@ -547,9 +547,7 @@ function writeSubBlocks(bytes, data) {
 function encodeLzw(indices, minCodeSize) {
     const clearCode = 1 << minCodeSize;
     const endCode = clearCode + 1;
-    let nextCode = endCode + 1;
-    let codeSize = minCodeSize + 1;
-    const maxCode = 4095;
+    const codeSize = minCodeSize + 1;
     const output = [];
     let bitBuffer = 0;
     let bitCount = 0;
@@ -564,44 +562,11 @@ function encodeLzw(indices, minCodeSize) {
         }
     }
 
-    function resetDictionary() {
-        const dict = new Map();
-        for (let i = 0; i < clearCode; i++) {
-            dict.set(String(i), i);
-        }
-        nextCode = endCode + 1;
-        codeSize = minCodeSize + 1;
-        return dict;
+    // Frequent clear codes keep the GIF stream simple and broadly decodable.
+    for (const index of indices) {
+        writeCode(clearCode);
+        writeCode(index);
     }
-
-    let dict = resetDictionary();
-    writeCode(clearCode);
-
-    let phrase = String(indices[0]);
-    for (let i = 1; i < indices.length; i++) {
-        const current = indices[i];
-        const combined = `${phrase},${current}`;
-
-        if (dict.has(combined)) {
-            phrase = combined;
-        } else {
-            writeCode(dict.get(phrase));
-
-            if (nextCode <= maxCode) {
-                dict.set(combined, nextCode++);
-                if (nextCode === (1 << codeSize) && codeSize < 12) {
-                    codeSize++;
-                }
-            } else {
-                writeCode(clearCode);
-                dict = resetDictionary();
-            }
-
-            phrase = String(current);
-        }
-    }
-
-    writeCode(dict.get(phrase));
     writeCode(endCode);
 
     if (bitCount > 0) {
