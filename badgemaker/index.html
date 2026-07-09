@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Badge Maker - Create Animated Badges</title>
+    <meta name="description" content="Design custom badges with shapes, gradients, text ribbons, and dynamic effects (appearing, fire, sparkles). Download as PNG or animated GIF.">
+    <!-- Google Fonts: Outfit (headings) and Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- gifenc library for local, transparent GIF compilation -->
+    <script src="gifenc.js"></script>
+</head>
+
+<body>
+    <!-- Premium background ambient glow -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="app-container">
+        <!-- Top Navigation / Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <a href="../index.html" class="btn-back" id="backBtn" title="Back to Hub">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Back to Hub</span>
+                </a>
+                <div class="header-text">
+                    <h1 class="app-title">Badge Forge</h1>
+                    <p class="app-subtitle">Create premium animated badges, medals, and avatars</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="presets-quick">
+                    <span class="label-text text-muted">Presets:</span>
+                    <button class="preset-pill-btn active" data-preset="fire-champion">✨ Champion</button>
+                    <button class="preset-pill-btn" data-preset="vip-gold">👑 Gold VIP</button>
+                    <button class="preset-pill-btn" data-preset="cyber-neon">⚡ Cyberpunk</button>
+                    <button class="preset-pill-btn" data-preset="heart-sparkle">💖 Sparkle Heart</button>
+                    <button class="preset-pill-btn" data-preset="toxic-shield">🛡️ Biohazard</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Panel: Controls -->
+            <section class="panel panel-controls" aria-label="Badge configuration options">
+                <!-- Group 1: Backing Shape & Style -->
+                <div class="control-group">
+                    <h2 class="group-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                        Backing Geometry
+                    </h2>
+                    <div class="control-grid">
+                        <div class="control-item">
+                            <label for="shapeSelect" class="control-label">Shape</label>
+                            <select id="shapeSelect" class="form-select">
+                                <option value="circle">Circle</option>
+                                <option value="square">Square</option>
+                                <option value="rounded-rect" selected>Rounded Square</option>
+                                <option value="shield">Shield</option>
+                                <option value="hexagon">Hexagon</option>
+                                <option value="octagon">Octagon</option>
+                                <option value="star-5">5-Point Star</option>
+                                <option value="star-8">8-Point Star</option>
+                                <option value="heart">Heart</option>
+                                <option value="diamond">Diamond</option>
+                            </select>
+                        </div>
+                        <div class="control-item" id="cornerRadiusItem">
+                            <label for="cornerRadiusSlider" class="control-label">Corner Radius: <span class="val-display" id="cornerRadiusVal">24%</span></label>
+                            <input type="range" id="cornerRadiusSlider" min="0" max="50" value="25" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="borderStyleSelect" class="control-label">Border Style</label>
+                            <select id="borderStyleSelect" class="form-select">
+                                <option value="solid" selected>Solid</option>
+                                <option value="double">Double Ring</option>
+                                <option value="dashed">Dashed</option>
+                                <option value="neon">Neon Glow</option>
+                                <option value="none">No Border</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="borderWidthSlider" class="control-label">Border Width: <span class="val-display" id="borderWidthVal">8px</span></label>
+                            <input type="range" id="borderWidthSlider" min="1" max="24" value="8" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="borderColorPicker" class="control-label">Border Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="borderColorPicker" value="#ffffff" class="form-color">
+                                <input type="text" id="borderColorHex" value="#ffffff" class="form-input text-hex">
+                            </div>
+                        </div>
+                        <div class="control-item">
+                            <label class="control-label">Options</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label" for="glossToggle">
+                                    <input type="checkbox" id="glossToggle" checked>
+                                    <span class="custom-checkbox"></span>
+                                    Glass Gloss Shine
+                                </label>
+                                <label class="checkbox-label" for="shadowToggle" style="margin-top: 8px;">
+                                    <input type="checkbox" id="shadowToggle" checked>
+                                    <span class="custom-checkbox"></span>
+                                    Drop Shadow
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 2: Color and Gradients -->
+                <div class="control-group">
+                    <h2 class="group-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="6.34" y1="17.66" x2="4.93" y2="19.07"></line><line x1="19.07" y1="4.93" x2="17.66" y2="6.34"></line></svg>
+                        Color &amp; Paint
+                    </h2>
+                    <div class="control-grid">
+                        <div class="control-item">
+                            <label for="fillTypeSelect" class="control-label">Fill Type</label>
+                            <select id="fillTypeSelect" class="form-select">
+                                <option value="solid">Solid Color</option>
+                                <option value="linear" selected>Linear Gradient</option>
+                                <option value="radial">Radial Gradient</option>
+                                <option value="animated">Animated Gradient</option>
+                            </select>
+                        </div>
+                        <div class="control-item" id="gradientAngleItem">
+                            <label for="gradientAngleSlider" class="control-label">Gradient Angle: <span class="val-display" id="gradientAngleVal">45°</span></label>
+                            <input type="range" id="gradientAngleSlider" min="0" max="360" value="45" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="fillColor1Picker" class="control-label" id="fillColor1Label">Primary Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="fillColor1Picker" value="#ea580c" class="form-color">
+                                <input type="text" id="fillColor1Hex" value="#ea580c" class="form-input text-hex">
+                            </div>
+                        </div>
+                        <div class="control-item" id="fillColor2Item">
+                            <label for="fillColor2Picker" class="control-label">Secondary Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="fillColor2Picker" value="#f43f5e" class="form-color">
+                                <input type="text" id="fillColor2Hex" value="#f43f5e" class="form-input text-hex">
+                            </div>
+                        </div>
+                        <div class="control-item full-width">
+                            <label class="control-label">Gradient Presets</label>
+                            <div class="gradient-palette-grid">
+                                <div class="palette-swatch" data-colors="#ea580c,#f43f5e" style="background: linear-gradient(45deg, #ea580c, #f43f5e);" title="Sunset Fire"></div>
+                                <div class="palette-swatch" data-colors="#7c3aed,#db2777" style="background: linear-gradient(45deg, #7c3aed, #db2777);" title="Cyber Purple"></div>
+                                <div class="palette-swatch" data-colors="#1e3a8a,#3b82f6" style="background: linear-gradient(45deg, #1e3a8a, #3b82f6);" title="Deep Ocean"></div>
+                                <div class="palette-swatch" data-colors="#059669,#10b981" style="background: linear-gradient(45deg, #059669, #10b981);" title="Emerald Forest"></div>
+                                <div class="palette-swatch" data-colors="#eab308,#d97706" style="background: linear-gradient(45deg, #eab308, #d97706);" title="VIP Gold"></div>
+                                <div class="palette-swatch" data-colors="#1f2937,#111827" style="background: linear-gradient(45deg, #1f2937, #111827);" title="Carbon Black"></div>
+                                <div class="palette-swatch" data-colors="#f43f5e,#ec4899" style="background: linear-gradient(45deg, #f43f5e, #ec4899);" title="Hot Pink"></div>
+                                <div class="palette-swatch" data-colors="#06b6d4,#3b82f6" style="background: linear-gradient(45deg, #06b6d4, #3b82f6);" title="Electric Cyan"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 3: Emoji Character -->
+                <div class="control-group">
+                    <h2 class="group-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                        Emoji / Symbol
+                    </h2>
+                    <div class="control-grid">
+                        <div class="control-item">
+                            <label for="emojiInput" class="control-label">Emoji Character</label>
+                            <div class="emoji-input-wrapper">
+                                <input type="text" id="emojiInput" value="🔥" class="form-input emoji-main-input" maxlength="2">
+                                <button type="button" id="emojiPickerToggleBtn" class="btn-picker-toggle" title="Open Emoji Palette">😀</button>
+                            </div>
+                        </div>
+                        <div class="control-item">
+                            <label for="emojiSizeSlider" class="control-label">Emoji Scale: <span class="val-display" id="emojiSizeVal">100%</span></label>
+                            <input type="range" id="emojiSizeSlider" min="20" max="200" value="100" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="emojiOffsetXSlider" class="control-label">Offset X: <span class="val-display" id="emojiOffsetXVal">0px</span></label>
+                            <input type="range" id="emojiOffsetXSlider" min="-100" max="100" value="0" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="emojiOffsetYSlider" class="control-label">Offset Y: <span class="val-display" id="emojiOffsetYVal">0px</span></label>
+                            <input type="range" id="emojiOffsetYSlider" min="-100" max="100" value="0" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="emojiRotationSlider" class="control-label">Rotation: <span class="val-display" id="emojiRotationVal">0°</span></label>
+                            <input type="range" id="emojiRotationSlider" min="-180" max="180" value="0" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="emojiGlowColorPicker" class="control-label">Glow / Shadow Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="emojiGlowColorPicker" value="#000000" class="form-color">
+                                <input type="text" id="emojiGlowColorHex" value="#000000" class="form-input text-hex">
+                            </div>
+                        </div>
+                        <div class="control-item">
+                            <label for="emojiGlowBlurSlider" class="control-label">Glow Blur: <span class="val-display" id="emojiGlowBlurVal">4px</span></label>
+                            <input type="range" id="emojiGlowBlurSlider" min="0" max="50" value="8" class="form-range">
+                        </div>
+
+                        <!-- Categorized Emoji Grid (Hidden by default, toggled via JavaScript) -->
+                        <div class="emoji-picker-container full-width" id="emojiPickerContainer" style="display: none;">
+                            <div class="emoji-picker-tabs">
+                                <button class="picker-tab-btn active" data-tab="smileys">😀</button>
+                                <button class="picker-tab-btn" data-tab="badges">🏆</button>
+                                <button class="picker-tab-btn" data-tab="powers">⚡</button>
+                                <button class="picker-tab-btn" data-tab="animals">👾</button>
+                                <button class="picker-tab-btn" data-tab="hearts">❤️</button>
+                            </div>
+                            <div class="emoji-picker-grid" id="emojiPickerGrid">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 4: Text Ribbon / Banner -->
+                <div class="control-group">
+                    <h2 class="group-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                        Ribbon &amp; Typography
+                    </h2>
+                    <div class="control-grid">
+                        <div class="control-item full-width">
+                            <label for="bannerTextInput" class="control-label">Label Text</label>
+                            <input type="text" id="bannerTextInput" value="CHAMPION" class="form-input" placeholder="e.g. WINNER, LEVEL 99, VIP" maxlength="20">
+                        </div>
+                        <div class="control-item">
+                            <label for="bannerLayoutSelect" class="control-label">Banner Style</label>
+                            <select id="bannerLayoutSelect" class="form-select">
+                                <option value="none">None (No Text)</option>
+                                <option value="ribbon-bottom" selected>3D Ribbon Bottom</option>
+                                <option value="arc-top">Curve Arc Top</option>
+                                <option value="arc-bottom">Curve Arc Bottom</option>
+                                <option value="flat-center">Flat Center Overlay</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="bannerFontSelect" class="control-label">Font Family</label>
+                            <select id="bannerFontSelect" class="form-select">
+                                <option value="Outfit" selected>Outfit (Modern)</option>
+                                <option value="Impact">Impact (Heavy)</option>
+                                <option value="Inter">Inter (Clean)</option>
+                                <option value="Courier New">Retro Code</option>
+                                <option value="Georgia">Classic Serif</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="bannerColorPicker" class="control-label">Banner / Ribbon Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="bannerColorPicker" value="#dc2626" class="form-color">
+                                <input type="text" id="bannerColorHex" value="#dc2626" class="form-input text-hex">
+                            </div>
+                        </div>
+                        <div class="control-item">
+                            <label for="bannerTextColorPicker" class="control-label">Text Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="bannerTextColorPicker" value="#ffffff" class="form-color">
+                                <input type="text" id="bannerTextColorHex" value="#ffffff" class="form-input text-hex">
+                            </div>
+                        </div>
+                        <div class="control-item">
+                            <label for="bannerTextSizeSlider" class="control-label">Text Size: <span class="val-display" id="bannerTextSizeVal">28px</span></label>
+                            <input type="range" id="bannerTextSizeSlider" min="12" max="48" value="28" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="bannerOutlineColorPicker" class="control-label">Outline Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="bannerOutlineColorPicker" value="#000000" class="form-color">
+                                <input type="text" id="bannerOutlineColorHex" value="#000000" class="form-input text-hex">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 5: Animation FX -->
+                <div class="control-group">
+                    <h2 class="group-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"></path><rect width="14" height="12" x="2" y="6" rx="2" ry="2"></rect></svg>
+                        Motion &amp; Visual FX
+                    </h2>
+                    <div class="control-grid">
+                        <div class="control-item">
+                            <label for="appearEffectSelect" class="control-label">Appear Intro Effect</label>
+                            <select id="appearEffectSelect" class="form-select">
+                                <option value="none">None (Always Static)</option>
+                                <option value="pop" selected>Elastic Pop-In</option>
+                                <option value="spin">Spin-In Scale</option>
+                                <option value="drift">Slide Drift-Up</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="overlayEffectSelect" class="control-label">Active FX Overlay</label>
+                            <select id="overlayEffectSelect" class="form-select">
+                                <option value="shine" selected>Glint Shine ✨</option>
+                                <option value="sparkles">Magic Sparkles ✨</option>
+                                <option value="pulse">Neon Pulse ⚡</option>
+                                <option value="none">No Overlay Effect</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="fxIntensitySlider" class="control-label">FX Intensity: <span class="val-display" id="fxIntensityVal">100%</span></label>
+                            <input type="range" id="fxIntensitySlider" min="20" max="200" value="100" class="form-range">
+                        </div>
+                        <div class="control-item">
+                            <label for="animationSpeedSlider" class="control-label">Speed Multiplier: <span class="val-display" id="animationSpeedVal">1.0x</span></label>
+                            <input type="range" id="animationSpeedSlider" min="5" max="25" value="10" class="form-range">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 6: Export Configuration -->
+                <div class="control-group">
+                    <h2 class="group-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Render &amp; Export
+                    </h2>
+                    <div class="control-grid">
+                        <div class="control-item">
+                            <label class="control-label">Canvas Background</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label" for="transparentExportToggle">
+                                    <input type="checkbox" id="transparentExportToggle" checked>
+                                    <span class="custom-checkbox"></span>
+                                    Alpha Transparency
+                                </label>
+                            </div>
+                        </div>
+                        <div class="control-item">
+                            <label for="gifCaptureTypeSelect" class="control-label">GIF Capture Mode</label>
+                            <select id="gifCaptureTypeSelect" class="form-select">
+                                <option value="loop" selected>Looping Effect (1.5s)</option>
+                                <option value="reveal">Full Intro Reveal (2.5s)</option>
+                            </select>
+                        </div>
+                        <div class="control-item full-width export-actions">
+                            <button id="downloadPngBtn" class="btn btn-primary btn-export">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                Save Static PNG
+                            </button>
+                            <button id="downloadGifBtn" class="btn btn-primary btn-export">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                Compile &amp; Save GIF
+                            </button>
+                            <button id="downloadWebmBtn" class="btn btn-accent btn-export" style="background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                                Record Video (MP4 / WebM)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Panel: Canvas Preview & Controls -->
+            <section class="panel panel-preview" aria-label="Badge live preview and control panel">
+                <div class="preview-card">
+                    <div class="preview-viewport" id="canvasViewport">
+                        <!-- Canvas element. Resolution is 512x512, scaled down responsive via CSS -->
+                        <canvas id="badgeCanvas" width="512" height="512"></canvas>
+                    </div>
+
+                    <!-- Canvas Playback Controls -->
+                    <div class="preview-controls">
+                        <button class="btn-control" id="playPauseBtn" title="Play/Pause Animation">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="none" id="playPauseIcon">
+                                <polygon points="6 19 19 12 6 5 6 19"></polygon>
+                            </svg>
+                        </button>
+                        <button class="btn-control" id="restartBtn" title="Replay Reveal Animation">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                            </svg>
+                        </button>
+                        <button class="btn-control" id="toggleGridBtn" title="Toggle Checkerboard Grid Background">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <path d="M9 3v18M15 3v18M3 9h18M3 15h18"></path>
+                            </svg>
+                        </button>
+                        <div class="control-divider"></div>
+                        <span class="preview-fps" id="fpsCounter">FPS: 60</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>💡 Designer Tips</h3>
+                    <ul>
+                        <li>Use **Neon Glow** border with dark gradient fills for a cyberpunk aesthetic.</li>
+                        <li>Toggle **Alpha Transparency** to export clean badges that fit perfectly on websites or avatars.</li>
+                        <li>The **3D Ribbon** wraps automatically around the bottom contour of your badge backing. Use space characters for padding.</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Processing Modal/Overlay for GIF Compiles -->
+    <div class="modal-overlay" id="loadingModal">
+        <div class="modal-card">
+            <div class="loader-ring">
+                <div class="loader-inner"></div>
+            </div>
+            <h3 class="modal-title">Forging Your Animated GIF</h3>
+            <p class="modal-status" id="loadingStatusText">Rendering frames...</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+            </div>
+            <p class="text-muted" style="font-size: 12px; margin-top: 10px;">Please do not close this tab. Processing is running locally on your browser.</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
