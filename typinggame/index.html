@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Row Blaster — Space Academy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-glow"></div>
+    <div class="arcade-container">
+        
+        <!-- Cabinet Header -->
+        <header class="arcade-header">
+            <a href="../index.html" class="btn-back" id="btn-quit-to-hub">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Hub Home
+            </a>
+            <div class="arcade-logo">
+                <span class="logo-accent">🌌</span> HOME ROW BLASTER
+            </div>
+            <div class="header-controls">
+                <button class="header-btn" id="sfx-toggle-btn">🔊 SFX: On</button>
+                <button class="header-btn" id="music-toggle-btn">🎵 Music: On</button>
+            </div>
+        </header>
+
+        <!-- View Screen wrapper -->
+        <div class="arcade-screen" id="arcade-screen">
+            
+            <!-- VIEW 1: Main Menu -->
+            <div class="view active" id="menu-view">
+                <div class="menu-title-glow">
+                    <h1 class="game-title">HOME ROW BLASTER</h1>
+                    <p class="game-subtitle">RETRO SCI-FI TYPING ACADEMY</p>
+                </div>
+                <div class="menu-options">
+                    <button class="menu-btn primary-pulse" id="btn-start-lessons">
+                        <span class="btn-glow"></span>
+                        START ACADEMY
+                    </button>
+                    <button class="menu-btn" id="btn-free-play">FREE PLAY</button>
+                    <button class="menu-btn" id="btn-typing-test">SPEED TEST</button>
+                    <button class="menu-btn" id="btn-settings">SETTINGS</button>
+                </div>
+                <div class="menu-footer">
+                    <p>SYSTEM READY // OFFLINE MODE // NO DATA SHARING</p>
+                </div>
+            </div>
+
+            <!-- VIEW 2: Categories selection -->
+            <div class="view" id="category-view">
+                <h2 class="view-title">CHOOSE LESSON CATEGORY</h2>
+                <div class="category-grid" id="category-list">
+                    <!-- Dynamic categories injected here -->
+                </div>
+                <button class="btn-cancel" id="btn-cat-back">BACK TO MENU</button>
+            </div>
+
+            <!-- VIEW 3: Specific Lesson Selection -->
+            <div class="view" id="lesson-view">
+                <h2 class="view-title" id="lesson-category-title">CATEGORY DRILLS</h2>
+                <div class="lesson-list-container" id="lesson-list">
+                    <!-- Dynamic lessons injected here -->
+                </div>
+                <button class="btn-cancel" id="btn-lesson-back">BACK TO CATEGORIES</button>
+            </div>
+
+            <!-- VIEW 4: Activity Selection -->
+            <div class="view" id="activity-view">
+                <h2 class="view-title">CHOOSE ACTIVITY MISSION</h2>
+                <div class="lesson-summary-card">
+                    <h3 id="selected-lesson-title">Lesson Title</h3>
+                    <p id="selected-lesson-keys">Focus: A, S, D, F</p>
+                    <div id="freeplay-pack-select-container" class="hidden" style="margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <label for="freeplay-pack-select" style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">SELECT PACK:</label>
+                        <select id="freeplay-pack-select" style="background:#020617; border:1px solid var(--border-color); color:#fff; padding:6px 12px; border-radius:6px; font-family:var(--font-ui); outline:none; cursor:pointer; font-size:0.85rem; font-weight:600;">
+                            <option value="beginner">Beginner Keys</option>
+                            <option value="intermediate" selected>Intermediate Words</option>
+                            <option value="advanced">Advanced Terminology</option>
+                            <option value="programmer">Programmer Code</option>
+                            <option value="numpad">Numeric Keypad</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="activity-grid">
+                    <button class="activity-card" data-activity="drill">
+                        <div class="act-icon">🎯</div>
+                        <h3>Home Row Academy</h3>
+                        <p>Guided step-by-step key training drill with finger highlight.</p>
+                    </button>
+                    <button class="activity-card" data-activity="blaster">
+                        <div class="act-icon">🚀</div>
+                        <h3>Astro Type Blaster</h3>
+                        <p>ZType-style shooter. Fire lasers by typing words before they collide.</p>
+                    </button>
+                    <button class="activity-card" data-activity="sorter">
+                        <div class="act-icon">📦</div>
+                        <h3>Cargo Sorter</h3>
+                        <p>Accuracy challenge. Type perfect crates. Mistakes jam the conveyor belt.</p>
+                    </button>
+                    <button class="activity-card" data-activity="rhythm">
+                        <div class="act-icon">🎹</div>
+                        <h3>Rhythm Keys</h3>
+                        <p>Consistency trainer. Press letters precisely as they cross the sync line.</p>
+                    </button>
+                </div>
+                <button class="btn-cancel" id="btn-activity-back">BACK TO LESSONS</button>
+            </div>
+
+            <!-- VIEW 5: Training Drill View -->
+            <div class="view" id="drill-view">
+                <div class="game-header">
+                    <div class="game-meta">
+                        <span id="drill-title">Mission: F & J Placement</span>
+                    </div>
+                    <div class="game-stats">
+                        <div class="stat-box">WPM: <span id="drill-wpm">0</span></div>
+                        <div class="stat-box">Accuracy: <span id="drill-accuracy">100%</span></div>
+                        <div class="stat-box">Errors: <span id="drill-errors">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="drill-content-box">
+                    <div class="text-to-type">
+                        <div class="typewriter-guide"></div>
+                        <div class="drill-scroll-wrapper" id="drill-target-text">
+                            <!-- Dynamic letters injected here -->
+                        </div>
+                    </div>
+                    <div class="drill-input-feedback" id="drill-feedback-char">Press active key...</div>
+                </div>
+
+                <div class="keyboard-guide-container">
+                    <div class="finger-legend">
+                        <span class="finger-indicator left-pinky">Left Pinky</span>
+                        <span class="finger-indicator left-ring">Left Ring</span>
+                        <span class="finger-indicator left-middle">Left Middle</span>
+                        <span class="finger-indicator left-index">Left Index</span>
+                        <span class="finger-indicator thumbs">Thumbs (Space)</span>
+                        <span class="finger-indicator right-index">Right Index</span>
+                        <span class="finger-indicator right-middle">Right Middle</span>
+                        <span class="finger-indicator right-ring">Right Ring</span>
+                        <span class="finger-indicator right-pinky">Right Pinky</span>
+                    </div>
+                    <div id="svg-keyboard-container">
+                        <!-- SVG Keyboard injected by app.js or directly here -->
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="btn-game-control" id="btn-drill-restart">RESTART</button>
+                    <button class="btn-game-control danger" id="btn-drill-quit">QUIT MISSION</button>
+                </div>
+            </div>
+
+            <!-- VIEW 6: Astro Type Blaster -->
+            <div class="view" id="blaster-view">
+                <div class="game-header">
+                    <div class="game-stats">
+                        <div class="stat-box">Score: <span id="blaster-score">00000</span></div>
+                        <div class="stat-box">Multiplier: <span id="blaster-combo">1x</span></div>
+                        <div class="stat-box">Health: <span id="blaster-health">100%</span></div>
+                        <div class="stat-box">WPM: <span id="blaster-wpm">0</span></div>
+                        <div class="stat-box">Accuracy: <span id="blaster-accuracy">100%</span></div>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="blaster-canvas"></canvas>
+                </div>
+
+                <div class="blaster-input-bar">
+                    <div class="blaster-active-word">Target: <span id="blaster-target-word">-</span></div>
+                    <div class="blaster-typed-preview">Typed: <span id="blaster-typed-val"></span></div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="btn-game-control" id="btn-blaster-pause">PAUSE</button>
+                    <button class="btn-game-control" id="btn-blaster-restart">RESTART</button>
+                    <button class="btn-game-control danger" id="btn-blaster-quit">QUIT</button>
+                </div>
+            </div>
+
+            <!-- VIEW 7: Cargo Sorter -->
+            <div class="view" id="cargo-view">
+                <div class="game-header">
+                    <div class="game-stats">
+                        <div class="stat-box">Score: <span id="cargo-score">0</span></div>
+                        <div class="stat-box">Sorted: <span id="cargo-count">0</span></div>
+                        <div class="stat-box">Belt Jam: <span id="cargo-jam-status">OK</span></div>
+                        <div class="stat-box">Accuracy: <span id="cargo-accuracy">100%</span></div>
+                    </div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="cargo-canvas"></canvas>
+                    <div id="cargo-jam-alert" class="conveyor-overlay hidden">
+                        <div class="alert-content">
+                            <h3>🚨 CONVEYOR JAMMED 🚨</h3>
+                            <p>Correct typo to resume line sorting!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cargo-input-bar" style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                    <div class="cargo-active-text">Active Crate Text: <span id="cargo-crate-target">-</span></div>
+                    <div class="cargo-typed-preview" style="font-size:0.95rem; font-weight:700; color:var(--neon-green); font-family:var(--font-mono);">Typed: <span id="cargo-typed-val" style="border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 2px; min-width: 60px; display: inline-block; text-align: center;"></span></div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="btn-game-control" id="btn-cargo-restart">RESTART</button>
+                    <button class="btn-game-control danger" id="btn-cargo-quit">QUIT</button>
+                </div>
+            </div>
+
+            <!-- VIEW 8: Rhythm Keys -->
+            <div class="view" id="rhythm-view">
+                <div class="game-header">
+                    <div class="game-stats">
+                        <div class="stat-box">Score: <span id="rhythm-score">0</span></div>
+                        <div class="stat-box">Multiplier: <span id="rhythm-combo">1x</span></div>
+                        <div class="stat-box">Accuracy: <span id="rhythm-accuracy">100%</span></div>
+                        <div class="stat-box">Timing: <span id="rhythm-timing-status">READY</span></div>
+                    </div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="rhythm-canvas"></canvas>
+                </div>
+
+                <div class="game-controls">
+                    <button class="btn-game-control" id="btn-rhythm-restart">RESTART</button>
+                    <button class="btn-game-control danger" id="btn-rhythm-quit">QUIT</button>
+                </div>
+            </div>
+
+            <!-- VIEW 9: Typing Test -->
+            <div class="view" id="test-view">
+                <h2 class="view-title">SPEED TYPING TEST</h2>
+                <div class="test-config-panel">
+                    <div class="config-section">
+                        <label>Content Type:</label>
+                        <select id="test-type-select">
+                            <option value="basic">Basic Words</option>
+                            <option value="beginner">Beginner Paragraph</option>
+                            <option value="advanced">Advanced Paragraph</option>
+                            <option value="programmer">Programmer (General Code)</option>
+                            <option value="python">Python Code</option>
+                            <option value="csharp">C# Code</option>
+                            <option value="sql">SQL Query</option>
+                            <option value="markdown">Markdown Document</option>
+                            <option value="numeric">Numeric Keypad</option>
+                            <option value="custom">Custom Text</option>
+                        </select>
+                    </div>
+                    <div class="config-section">
+                        <label>Duration:</label>
+                        <select id="test-time-select">
+                            <option value="15">15 Seconds</option>
+                            <option value="30">30 Seconds</option>
+                            <option value="60" selected>60 Seconds</option>
+                            <option value="120">2 Minutes</option>
+                            <option value="300">5 Minutes</option>
+                            <option value="600">10 Minutes</option>
+                            <option value="900">15 Minutes</option>
+                            <option value="1200">20 Minutes</option>
+                        </select>
+                    </div>
+                    <div class="config-section hidden" id="custom-text-section">
+                        <label>Paste Custom Text:</label>
+                        <textarea id="custom-text-input" placeholder="Paste custom practice text here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="game-header">
+                    <div class="game-stats">
+                        <div class="stat-box">Time Left: <span id="test-time-left">60s</span></div>
+                        <div class="stat-box">Live WPM: <span id="test-live-wpm">0</span></div>
+                        <div class="stat-box">Accuracy: <span id="test-live-accuracy">100%</span></div>
+                        <div class="stat-box">Errors: <span id="test-live-errors">0</span></div>
+                    </div>
+                </div>
+
+                <div class="test-typing-box" id="test-target-box">
+                    <!-- Typing paragraphs injected here -->
+                </div>
+
+                <div class="game-controls">
+                    <button class="btn-game-control primary" id="btn-start-test">START TEST</button>
+                    <button class="btn-game-control" id="btn-test-reset">RESET</button>
+                    <button class="btn-game-control danger" id="btn-test-quit">QUIT</button>
+                </div>
+            </div>
+
+            <!-- VIEW 10: Results View -->
+            <div class="view" id="results-view">
+                <div class="results-header">
+                    <h2 class="view-title success-glow" id="results-headline">MISSION COMPLETE</h2>
+                    <p class="results-sub" id="results-activity-name">Home Row Academy</p>
+                </div>
+                <div class="results-layout">
+                    <div class="results-stats">
+                        <div class="r-stat">
+                            <span class="label">Corrected WPM</span>
+                            <span class="val accent-cyan" id="r-wpm">45</span>
+                        </div>
+                        <div class="r-stat">
+                            <span class="label">Accuracy</span>
+                            <span class="val accent-green" id="r-accuracy">98%</span>
+                        </div>
+                        <div class="r-stat">
+                            <span class="label">Raw WPM</span>
+                            <span class="val" id="r-raw-wpm">48</span>
+                        </div>
+                        <div class="r-stat">
+                            <span class="label">Total Errors</span>
+                            <span class="val accent-red" id="r-errors">3</span>
+                        </div>
+                        <div class="r-stat">
+                            <span class="label">Final Score</span>
+                            <span class="val accent-orange" id="r-score">10,250</span>
+                        </div>
+                        <div class="r-stat">
+                            <span class="label">Performance Grade</span>
+                            <span class="val accent-yellow" id="r-grade">A</span>
+                        </div>
+                    </div>
+                    
+                    <div class="results-panel">
+                        <div class="missed-keys-box">
+                            <h4>Problem Key Highlights:</h4>
+                            <div class="missed-keys-list" id="r-missed-keys">
+                                <span>None!</span>
+                            </div>
+                        </div>
+                        <div class="achievements-box">
+                            <h4>Earned Badges:</h4>
+                            <div class="achievements-list" id="r-achievements">
+                                <!-- Achievements injected -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button class="menu-btn primary-pulse" id="btn-results-retry">RETRY MISSION</button>
+                    <button class="menu-btn" id="btn-results-category">CHOOSE ANOTHER MISSION</button>
+                    <button class="menu-btn" id="btn-results-menu">MAIN MENU</button>
+                </div>
+            </div>
+
+            <!-- VIEW 11: Settings View -->
+            <div class="view" id="settings-view">
+                <h2 class="view-title">SYSTEM SETTINGS</h2>
+                <div class="settings-panel">
+                    <div class="setting-item">
+                        <span class="setting-label">Sound Effects Volume</span>
+                        <div class="volume-slider-group">
+                            <input type="range" id="sfx-volume" min="0" max="100" value="50">
+                            <span class="volume-val" id="sfx-val">50%</span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Background Synth Music</span>
+                        <div class="volume-slider-group">
+                            <input type="range" id="music-volume" min="0" max="100" value="30">
+                            <span class="volume-val" id="music-val">30%</span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Device Local Saving</span>
+                        <div class="toggle-group">
+                            <label class="switch">
+                                <input type="checkbox" id="local-save-toggle" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <span class="toggle-status" id="save-status">Enabled (Device LocalStorage)</span>
+                        </div>
+                    </div>
+                    <div class="setting-item danger-zone">
+                        <span class="setting-label text-danger">Reset Cabinet Data</span>
+                        <button class="btn-cancel danger" id="btn-clear-local">CLEAR CACHED HIGH SCORES</button>
+                    </div>
+                </div>
+                <button class="btn-cancel" id="btn-settings-back">BACK TO MENU</button>
+            </div>
+
+        </div> <!-- /arcade-screen -->
+        
+        <div class="cabinet-decorations">
+            <span class="decor-light"></span>
+            <span class="decor-brand">COSMIC CADET 3000</span>
+            <span class="decor-light"></span>
+        </div>
+    </div> <!-- /arcade-container -->
+
+    <script src="app.js"></script>
+</body>
+</html>
