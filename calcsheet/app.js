@@ -176,6 +176,24 @@ for (let r = 0; r < ROWS; r++) {
         input.addEventListener('focus', () => selectCell(cellId));
         input.addEventListener('change', (e) => handleCellChange(cellId, e.target.value));
         
+        input.addEventListener('input', (e) => {
+            if (cellId === activeCell) {
+                data[cellId] = e.target.value;
+                formulaInput.value = e.target.value;
+                updateFormulaHighlights(e.target.value);
+            }
+        });
+
+        input.addEventListener('blur', () => {
+            // Delay slightly to check if focus shifted or if mousedown prevented it
+            setTimeout(() => {
+                const active = document.activeElement;
+                if (!active || !active.classList.contains('cell-input') || active.id !== `cell-${activeCell}`) {
+                    updateFormulaHighlights('');
+                }
+            }, 150);
+        });
+        
         // Arrow navigation & Enter saving
         input.addEventListener('keydown', (e) => {
             const coord = parseCellCoord(cellId);
@@ -244,6 +262,7 @@ for (let r = 0; r < ROWS; r++) {
                     
                     const newPos = start + cellId.length;
                     activeInput.setSelectionRange(newPos, newPos);
+                    updateFormulaHighlights(activeInput.value);
                     return;
                 }
             }
@@ -448,6 +467,9 @@ function selectCell(cellId) {
     // Set formula input value to raw data (formula or text)
     formulaInput.value = data[cellId] || '';
     
+    // Highlight cells referenced in this formula
+    updateFormulaHighlights(data[cellId] || '');
+    
     // Remove focused border styling from others, add to parent
     document.querySelectorAll('.cell-input').forEach(input => {
         input.parentElement.classList.remove('active-parent');
@@ -457,21 +479,49 @@ function selectCell(cellId) {
 }
 
 function handleCellChange(cellId, value) {
-    if (data[cellId] === value) return;
+    if (data[cellId] === value) {
+        updateFormulaHighlights('');
+        return;
+    }
     pushUndoSnapshot();
     data[cellId] = value;
     recalculateSheet();
+    updateFormulaHighlights('');
 }
 
 // Recalculate cell equations on change
 formulaInput.addEventListener('change', (e) => {
-    if (data[activeCell] === e.target.value) return;
+    if (data[activeCell] === e.target.value) {
+        updateFormulaHighlights('');
+        return;
+    }
     pushUndoSnapshot();
     data[activeCell] = e.target.value;
     const input = document.getElementById(`cell-${activeCell}`);
     if (input) input.value = e.target.value;
 
     recalculateSheet();
+    updateFormulaHighlights('');
+});
+
+// Sync typing in formula bar in real-time
+formulaInput.addEventListener('input', (e) => {
+    const activeInput = document.getElementById(`cell-${activeCell}`);
+    if (activeInput) {
+        activeInput.value = e.target.value;
+        data[activeCell] = e.target.value;
+    }
+    updateFormulaHighlights(e.target.value);
+});
+
+formulaInput.addEventListener('blur', () => {
+    // Clear highlights when formula bar loses focus, unless cell-input is active
+    setTimeout(() => {
+        const active = document.activeElement;
+        if (!active || !active.classList.contains('cell-input') || active.id !== `cell-${activeCell}`) {
+            updateFormulaHighlights('');
+        }
+    }, 150);
 });
 
 // ==========================================
@@ -535,6 +585,59 @@ function getValuesFromRange(rangeStr) {
         }
     }
     return values;
+}
+
+// ==========================================
+// FORMULA CELL HIGHLIGHT ENGINE
+// ==========================================
+function updateFormulaHighlights(formulaText) {
+    // Clear all previous formula reference highlights
+    document.querySelectorAll('.spreadsheet-table td.formula-reference').forEach(td => {
+        td.classList.remove('formula-reference');
+    });
+
+    if (!formulaText || !formulaText.startsWith('=')) {
+        return;
+    }
+
+    const rangeRegex = /\b([A-P][1-9][0-9]?):([A-P][1-9][0-9]?)\b/gi;
+    let tempText = formulaText;
+    let match;
+    const cellsToHighlight = new Set();
+
+    // 1. Match ranges (e.g. A1:B5)
+    while ((match = rangeRegex.exec(formulaText)) !== null) {
+        const rangeStr = match[0];
+        const range = parseRange(rangeStr);
+        if (range) {
+            for (let r = range.startRow; r <= range.endRow; r++) {
+                for (let c = range.startCol; c <= range.endCol; c++) {
+                    const cellId = String.fromCharCode(65 + c) + (r + 1);
+                    cellsToHighlight.add(cellId);
+                }
+            }
+        }
+        // Replace range in tempText to avoid matching corners as individual cells
+        tempText = tempText.replace(rangeStr, ' '.repeat(rangeStr.length));
+    }
+
+    // 2. Match individual cells (e.g. C2)
+    const cellRegex = /\b([A-P][1-9][0-9]?)\b/gi;
+    while ((match = cellRegex.exec(tempText)) !== null) {
+        const cellId = match[0].toUpperCase();
+        const coord = parseCellCoord(cellId);
+        if (coord && coord.col < COLS && coord.row < ROWS) {
+            cellsToHighlight.add(cellId);
+        }
+    }
+
+    // 3. Highlight nodes
+    cellsToHighlight.forEach(cellId => {
+        const input = document.getElementById(`cell-${cellId}`);
+        if (input) {
+            input.parentElement.classList.add('formula-reference');
+        }
+    });
 }
 
 // Global recalculator loop
