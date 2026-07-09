@@ -33,6 +33,10 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     <span>Import Folder</span>
                 </button>
+                <button class="button secondary" id="pasteTreeBtn">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                    <span>Paste ASCII Tree</span>
+                </button>
                 <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
             </div>
         </header>
@@ -102,6 +106,24 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Modal for pasting ASCII tree -->
+    <div class="modal-overlay" id="pasteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Import ASCII Tree</h2>
+                <button class="modal-close" id="modalCloseBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Paste an ASCII directory tree diagram below to convert it back to editable text:</p>
+                <textarea id="modalPasteInput" placeholder="./&#10;└── my-project/&#10;    ├── src/&#10;    │   └── index.html&#10;    └── README.md" spellcheck="false"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="button secondary" id="modalCancelBtn">Cancel</button>
+                <button class="button primary" id="modalConvertBtn">Convert &amp; Import</button>
+            </div>
+        </div>
     </div>
 
     <!-- Toast notification for copy operations -->

@@ -127,6 +127,7 @@ An interactive directory structure visualizer.
 *   **ASCII Trees**: Instantly converts indented text lists into professional tree diagrams. Toggle between "Fancy" (┌ ├ └) and "Classic" (ASCII) drawing characters.
 *   **Folders Only & Exclusions**: Check "Folders Only (Ignore Files)" to filter files out. Automatic exclusions of large folders like `.git` and `node_modules` prevent lag during imports.
 *   **Import Folder**: Select a local directory structure to instantly map it to an indented layout.
+*   **Reverse Parser**: Paste an existing ASCII tree diagram from clipboard (or custom input prompt) to automatically convert it back into the editable indentation structure.
 *   **Save & Share**: Clipboard copy, file download, and URL state encoding to share customized trees with others.
 
 ---

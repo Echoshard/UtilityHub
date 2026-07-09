@@ -15,7 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const templateSelect = document.getElementById('templateSelect');
     const importBtn = document.getElementById('importBtn');
+    const pasteTreeBtn = document.getElementById('pasteTreeBtn');
     const folderInput = document.getElementById('folderInput');
+
+    const pasteModal = document.getElementById('pasteModal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalCancelBtn = document.getElementById('modalCancelBtn');
+    const modalConvertBtn = document.getElementById('modalConvertBtn');
+    const modalPasteInput = document.getElementById('modalPasteInput');
     
     const copyBtn = document.getElementById('copyBtn');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -333,6 +340,99 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLineNumbers();
         generateTree();
     });
+
+    // Reverse Parser: Open Paste ASCII Tree Modal and handle conversion
+    pasteTreeBtn.addEventListener('click', () => {
+        modalPasteInput.value = '';
+        pasteModal.classList.add('show');
+        modalPasteInput.focus();
+    });
+
+    const closeModal = () => {
+        pasteModal.classList.remove('show');
+    };
+
+    modalCloseBtn.addEventListener('click', closeModal);
+    modalCancelBtn.addEventListener('click', closeModal);
+
+    // Close modal when clicking outside of it
+    pasteModal.addEventListener('click', (e) => {
+        if (e.target === pasteModal) {
+            closeModal();
+        }
+    });
+
+    modalConvertBtn.addEventListener('click', () => {
+        const text = modalPasteInput.value;
+        if (!text || text.trim() === '') {
+            showToast('Please paste an ASCII tree first!');
+            return;
+        }
+
+        const converted = convertAsciiToIndent(text);
+        if (converted) {
+            treeInput.value = converted;
+            updateLineNumbers();
+            generateTree();
+            closeModal();
+            showToast('ASCII tree imported successfully!');
+        } else {
+            showToast('Content does not look like a valid ASCII tree.');
+        }
+    });
+
+    function convertAsciiToIndent(asciiText) {
+        const lines = asciiText.split('\n');
+        const parsedLines = [];
+        
+        // Regex matches prefix drawing characters (spaces, line branches, pipes, backticks)
+        const prefixRegex = /^([ │├└─|\\+\-`]*)(.*)$/;
+        let treeLinesCount = 0;
+        
+        for (let line of lines) {
+            const match = line.match(prefixRegex);
+            if (!match) continue;
+            
+            const prefix = match[1];
+            let name = match[2].trim();
+            
+            if (!name) continue;
+            
+            // Clean virtual root signs
+            if (name === '.' || name === './') {
+                continue;
+            }
+            
+            // Clean trailing slash
+            if (name.endsWith('/')) {
+                name = name.slice(0, -1);
+            }
+            
+            // Count lines containing tree graphic characters
+            if (prefix.includes('├') || prefix.includes('└') || prefix.includes('│') || prefix.includes('--') || prefix.includes('`')) {
+                treeLinesCount++;
+            }
+            
+            const level = Math.floor(prefix.length / 4);
+            parsedLines.push({ name, level });
+        }
+        
+        // Validation: make sure it looks like a tree structure
+        if (treeLinesCount === 0 && parsedLines.length > 2) {
+            return null;
+        }
+        
+        if (parsedLines.length === 0) return null;
+        
+        // Normalize indentation levels relative to the root node
+        const minLevel = Math.min(...parsedLines.map(l => l.level));
+        const normalized = parsedLines.map(l => {
+            const level = Math.max(0, l.level - minLevel);
+            return '  '.repeat(level) + l.name;
+        });
+        
+        return normalized.join('\n');
+    }
 
     // Export Options: Copy
     copyBtn.addEventListener('click', () => {
