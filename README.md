@@ -117,6 +117,18 @@ Offline password, passphrase, and PIN generator.
 *   **Options**: Configure length, batch count, character sets, custom symbols, exclusions, ambiguity filtering, required sets, passphrase separators, and PIN sequence rules.
 *   **Review & Export**: View entropy/strength estimates, copy individual or batch results, and export TXT or CSV files.
 
+### 19. [Typing Academy](typinggame/index.html)
+A retro speed-typing training suite and word blaster.
+*   **Arcade Mode**: Blaster mode where typing words fires lasers at descending meteor words.
+*   **Stats Tracker**: Live words-per-minute (WPM), accuracy, error rates, and custom training text selections.
+
+### 20. [Tree Generator](tree-online/index.html)
+An interactive directory structure visualizer.
+*   **ASCII Trees**: Instantly converts indented text lists into professional tree diagrams. Toggle between "Fancy" (┌ ├ └) and "Classic" (ASCII) drawing characters.
+*   **Folders Only & Exclusions**: Check "Folders Only (Ignore Files)" to filter files out. Automatic exclusions of large folders like `.git` and `node_modules` prevent lag during imports.
+*   **Import Folder**: Select a local directory structure to instantly map it to an indented layout.
+*   **Save & Share**: Clipboard copy, file download, and URL state encoding to share customized trees with others.
+
 ---
 
 ## 🚀 Getting Started

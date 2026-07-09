@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Generator - UtilityHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a class="hub-link" href="../index.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>Tree Generator</h1>
+                    <p>Convert indented text lists or uploaded folders into ASCII directory trees</p>
+                </div>
+            </div>
+            <div class="top-actions">
+                <div class="template-selector">
+                    <label for="templateSelect">Templates:</label>
+                    <select id="templateSelect">
+                        <option value="web">Web Project</option>
+                        <option value="python">Python Package</option>
+                        <option value="rust">Rust Crate</option>
+                        <option value="minimal">Minimal</option>
+                    </select>
+                </div>
+                <button class="button secondary" id="importBtn">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>Import Folder</span>
+                </button>
+                <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+            </div>
+        </header>
+
+        <main class="workspace">
+            <!-- Left Panel: Input & Options -->
+            <section class="panel editor-panel">
+                <div class="panel-header">
+                    <h2>Input Structure</h2>
+                    <div class="input-info"><span id="lineCount">0</span> lines</div>
+                </div>
+                
+                <div class="editor-container">
+                    <div class="line-numbers" id="lineNumbers"></div>
+                    <textarea id="treeInput" placeholder="my-project&#10;  src&#10;    index.html&#10;    style.css&#10;  README.md" spellcheck="false"></textarea>
+                </div>
+
+                <div class="options-container">
+                    <h3>Options</h3>
+                    <div class="options-grid">
+                        <label class="toggle-control">
+                            <input type="checkbox" id="optFancy" checked>
+                            <span class="control-label">Fancy Graphics (┌ ├ └)</span>
+                        </label>
+                        <label class="toggle-control">
+                            <input type="checkbox" id="optTrailing" checked>
+                            <span class="control-label">Trailing / on Folders</span>
+                        </label>
+                        <label class="toggle-control">
+                            <input type="checkbox" id="optFullPath">
+                            <span class="control-label">Relative Full Paths</span>
+                        </label>
+                        <label class="toggle-control">
+                            <input type="checkbox" id="optRootDot" checked>
+                            <span class="control-label">Include Root Dot (.)</span>
+                        </label>
+                        <label class="toggle-control">
+                            <input type="checkbox" id="optFoldersOnly">
+                            <span class="control-label">Folders Only (Ignore Files)</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Output ASCII tree -->
+            <section class="panel output-panel">
+                <div class="panel-header">
+                    <h2>ASCII Tree Preview</h2>
+                    <div class="output-actions">
+                        <button class="button primary" id="copyBtn">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy</span>
+                        </button>
+                        <button class="button secondary" id="downloadBtn">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            <span>Download</span>
+                        </button>
+                        <button class="button secondary" id="shareBtn" title="Copy shareable link">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            <span>Share</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="preview-container">
+                    <pre id="treeOutput" class="ansi-tree"></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast notification for copy operations -->
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script src="app.js"></script>
+</body>
+</html>

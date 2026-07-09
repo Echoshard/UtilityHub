@@ -28,6 +28,7 @@
     --rsvpreader-glow: linear-gradient(135deg, #6366f1, #f43f5e);
     --datastudio-glow: linear-gradient(135deg, #06b6d4, #7dd3fc);
     --sfxforge-glow: linear-gradient(135deg, #f59e0b, #f43f5e);
+    --tree-online-glow: linear-gradient(135deg, #a855f7, #06b6d4);
 
     --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-display: 'Outfit', var(--font-ui);
@@ -191,6 +192,7 @@ body {
 .rsvpreader-card:hover .card-glow { background: var(--rsvpreader-glow); }
 .datastudio-card:hover .card-glow { background: var(--datastudio-glow); }
 .sfxforge-card:hover .card-glow { background: var(--sfxforge-glow); }
+.tree-online-card:hover .card-glow { background: var(--tree-online-glow); }
 
 /* Card Icon Containers */
 .card-icon-container {
@@ -326,6 +328,12 @@ body {
     border-color: rgba(245, 158, 11, 0.3);
 }
 .sfxforge-card:hover .card-icon { stroke: #f59e0b; }
+
+.tree-online-card:hover .card-icon-container {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.3);
+}
+.tree-online-card:hover .card-icon { stroke: #a855f7; }
 
 /* Disabled Cards Styling */
 .app-card.disabled {
@@ -509,6 +517,13 @@ body {
     color: #1a0f00;
     border-color: #f59e0b;
     box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+
+.tree-online-card:hover .card-badge {
+    background: #a855f7;
+    color: #ffffff;
+    border-color: #a855f7;
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
 }
 
 /* Footer Section */
