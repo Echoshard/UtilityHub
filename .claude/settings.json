@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check \"calcsheet/app.js\")",
+      "Bash(node --check \"pomodoro/app.js\")",
+      "Bash(node --check \"rsvpreader/app.js\")",
+      "Bash(node --check \"datastudio/app.js\")",
+      "Bash(node /tmp/ds_test.js)",
+      "Bash(node --check \"sfxforge/app.js\")"
+    ]
+  }
+}

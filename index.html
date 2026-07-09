@@ -24,7 +24,11 @@
             mindmap: true,
             imageconverter: true,
             icongenerator: true,
-            passwordgenerator: true
+            passwordgenerator: true,
+            pomodoro: true,
+            rsvpreader: true,
+            datastudio: true,
+            sfxforge: true
         };
     </script>
 </head>
@@ -37,295 +41,389 @@
             <p class="hub-subtitle">A collection of utilities. </p>
         </header>
 
-        <main class="hub-grid">
-            <!-- App 1: QR Pulse -->
-            <a href="QRCode/index.html" class="app-card qr-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                        <line x1="7" y1="7" x2="7.01" y2="7"></line>
-                        <line x1="17" y1="7" x2="17.01" y2="7"></line>
-                        <line x1="17" y1="17" x2="17.01" y2="17"></line>
-                        <line x1="7" y1="17" x2="7.01" y2="17"></line>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">QR Pulse</h2>
-                    <p class="card-description">Custom QR codes with colors, logos, and downloads.</p>
-                </div>
-                <div class="card-badge">Launch QR Maker</div>
-            </a>
+        <main class="hub-main">
+            <section class="app-category">
+                <h3 class="category-title">Productivity &amp; Text</h3>
+                <div class="hub-grid">
+                    <!-- MarkDowner -->
+                    <a href="MarkdownViewer/index.html" class="app-card md-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">MarkDowner</h2>
+                            <p class="card-description">Markdown editor with live preview, stats, and PDF export.</p>
+                        </div>
+                        <div class="card-badge">Launch Editor</div>
+                    </a>
 
-            <!-- App 2: MarkDowner -->
-            <a href="MarkdownViewer/index.html" class="app-card md-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">MarkDowner</h2>
-                    <p class="card-description">Markdown editor with live preview, stats, and PDF export.</p>
-                </div>
-                <div class="card-badge">Launch Editor</div>
-            </a>
+                    <!-- ReadAloud -->
+                    <a href="TTS/index.html" class="app-card tts-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">ReadAloud</h2>
+                            <p class="card-description">Text-to-speech with voices, speed, pitch, and highlighting.</p>
+                        </div>
+                        <div class="card-badge">Launch Reader</div>
+                    </a>
 
-            <!-- App 3: Recipes Cabinet -->
-            <a href="Recpies/index.html" class="app-card recipe-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        <path d="M8 6h6M8 10h6"></path>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">Recipes Cabinet</h2>
-                    <p class="card-description">Offline recipe editor with search and cookbook PDF export.</p>
-                </div>
-                <div class="card-badge">Launch Cabinet</div>
-            </a>
+                    <!-- RSVP Reader -->
+                    <a href="rsvpreader/index.html" class="app-card rsvpreader-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">RSVP Reader</h2>
+                            <p class="card-description">Speed-reading flash reader with live WPM and word chunking.</p>
+                        </div>
+                        <div class="card-badge">Launch Reader</div>
+                    </a>
 
-            <!-- App 4: ReadAloud -->
-            <a href="TTS/index.html" class="app-card tts-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">ReadAloud</h2>
-                    <p class="card-description">Text-to-speech with voices, speed, pitch, and highlighting.</p>
-                </div>
-                <div class="card-badge">Launch Reader</div>
-            </a>
+                    <!-- CalcSheet -->
+                    <a href="calcsheet/index.html" class="app-card calcsheet-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="3" x2="9" y2="21"></line>
+                                <line x1="15" y1="3" x2="15" y2="21"></line>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="3" y1="15" x2="21" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">CalcSheet</h2>
+                            <p class="card-description">Spreadsheet formulas, filtering, and chart plots.</p>
+                        </div>
+                        <div class="card-badge">Launch Calc</div>
+                    </a>
 
-            <!-- App 5: Media Slideshow -->
-            <a href="mediaslideshow/index.html" class="app-card slideshow-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">Media Slideshow</h2>
-                    <p class="card-description">Photo and video slideshow with music and transitions.</p>
-                </div>
-                <div class="card-badge">Launch Slideshow</div>
-            </a>
+                    <!-- MindMapper -->
+                    <a href="mindmap/index.html" class="app-card mindmap-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                                <path d="M10 6.5h4c1.1 0 2 .9 2 2V14"></path>
+                                <path d="M6.5 10v4"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">MindMapper</h2>
+                            <p class="card-description">Diagram whiteboard with nodes, links, and auto-layout.</p>
+                        </div>
+                        <div class="card-badge">Launch Mapper</div>
+                    </a>
 
-            <!-- App 6: Block Attack Arcade -->
-            <a href="blockgame/index.html" class="app-card blockgame-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">Block Attack Arcade</h2>
-                    <p class="card-description">Retro block games with arcade modes and sound FX.</p>
-                </div>
-                <div class="card-badge">Launch Arcade</div>
-            </a>
+                    <!-- Pomodoro Timer -->
+                    <a href="pomodoro/index.html" class="app-card pomodoro-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="13" r="8"></circle>
+                                <path d="M12 9v4l3 2"></path>
+                                <path d="M9 2h6"></path>
+                                <path d="M18.5 4.5 17 6"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">Pomodoro Timer</h2>
+                            <p class="card-description">Focus timer with 25/15/5/60 presets and a live countdown ring.</p>
+                        </div>
+                        <div class="card-badge">Launch Timer</div>
+                    </a>
 
-            <!-- App 7: Pixel Art Studio -->
-            <a href="pixelart/index.html" class="app-card pixelart-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M12 20h9"></path>
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                    </svg>
+                    <!-- Data Studio -->
+                    <a href="datastudio/index.html" class="app-card datastudio-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M4 6a8 3 0 0 0 16 0A8 3 0 0 0 4 6z"></path>
+                                <path d="M4 6v6a8 3 0 0 0 16 0V6"></path>
+                                <path d="M4 12v6a8 3 0 0 0 16 0v-6"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">Data Studio</h2>
+                            <p class="card-description">JSON/YAML/XML/TOON viewer with a collapsible tree and converter.</p>
+                        </div>
+                        <div class="card-badge">Launch Studio</div>
+                    </a>
                 </div>
-                <div class="card-content">
-                    <h2 class="card-title">Pixel Art Studio</h2>
-                    <p class="card-description">Pixel art, animation frames, sprite sheets, and GIF export.</p>
-                </div>
-                <div class="card-badge">Launch Studio</div>
-            </a>
+            </section>
 
-            <!-- App 8: ImageLab -->
-            <a href="imageconverter/index.html" class="app-card imageconverter-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <path d="m21 15-5-5L5 21"></path>
-                        <path d="M17 3v5"></path>
-                        <path d="M14.5 5.5h5"></path>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">ImageLab</h2>
-                    <p class="card-description">Offline image editor with crop, paint, filters, and export.</p>
-                </div>
-                <div class="card-badge">Launch ImageLab</div>
-            </a>
+            <section class="app-category">
+                <h3 class="category-title">Creative Studio</h3>
+                <div class="hub-grid">
+                    <!-- Pixel Art Studio -->
+                    <a href="pixelart/index.html" class="app-card pixelart-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">Pixel Art Studio</h2>
+                            <p class="card-description">Pixel art, animation frames, sprite sheets, and GIF export.</p>
+                        </div>
+                        <div class="card-badge">Launch Studio</div>
+                    </a>
 
-            <!-- App 9: AudioForge -->
-            <a href="icongenerator/index.html" class="app-card icongenerator-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="4"></rect>
-                        <path d="M8 3v18"></path>
-                        <path d="M16 3v18"></path>
-                        <path d="M3 8h18"></path>
-                        <path d="M3 16h18"></path>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">IconForge</h2>
-                    <p class="card-description">Generate favicons, app icons, manifests, and HTML tags.</p>
-                </div>
-                <div class="card-badge">Launch IconForge</div>
-            </a>
+                    <!-- ImageLab -->
+                    <a href="imageconverter/index.html" class="app-card imageconverter-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <path d="m21 15-5-5L5 21"></path>
+                                <path d="M17 3v5"></path>
+                                <path d="M14.5 5.5h5"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">ImageLab</h2>
+                            <p class="card-description">Offline image editor with crop, paint, filters, and export.</p>
+                        </div>
+                        <div class="card-badge">Launch ImageLab</div>
+                    </a>
 
-            <!-- App 10: AudioForge -->
-            <a href="passwordgenerator/index.html" class="app-card passwordgenerator-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        <path d="M12 15v2"></path>
-                        <path d="M8 16h.01"></path>
-                        <path d="M16 16h.01"></path>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">PasswordSmith</h2>
-                    <p class="card-description">Offline passwords, passphrases, PINs, strength, and exports.</p>
-                </div>
-                <div class="card-badge">Launch Generator</div>
-            </a>
+                    <!-- Chiptune Composer -->
+                    <a href="chiptune/index.html" class="app-card composer-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M9 18V5l12-2v13"></path>
+                                <circle cx="6" cy="18" r="3"></circle>
+                                <circle cx="18" cy="16" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">Chiptune Composer</h2>
+                            <p class="card-description">8-bit loop sequencer with WAV export.</p>
+                        </div>
+                        <div class="card-badge">Launch Composer</div>
+                    </a>
 
-            <!-- App 11: AudioForge -->
-            <a href="audioforge/index.html" class="app-card audioforge-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                    </svg>
+                    <!-- SFX Forge -->
+                    <a href="sfxforge/index.html" class="app-card sfxforge-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M3 10v4"></path>
+                                <path d="M7 7v10"></path>
+                                <path d="M11 4v16"></path>
+                                <path d="M15 7v10"></path>
+                                <path d="M19 10v4"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">SFX Forge</h2>
+                            <p class="card-description">Procedural retro sound effect generator with presets and WAV export.</p>
+                        </div>
+                        <div class="card-badge">Launch Forge</div>
+                    </a>
                 </div>
-                <div class="card-content">
-                    <h2 class="card-title">AudioForge</h2>
-                    <p class="card-description">Edit waveforms, add fades, and export WAV clips.</p>
-                </div>
-                <div class="card-badge">Launch Forge</div>
-            </a>
+            </section>
 
-            <!-- App 9: CalcSheet -->
-            <a href="calcsheet/index.html" class="app-card calcsheet-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="9" y1="3" x2="9" y2="21"></line>
-                        <line x1="15" y1="3" x2="15" y2="21"></line>
-                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                        <line x1="3" y1="15" x2="21" y2="15"></line>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">CalcSheet</h2>
-                    <p class="card-description">Spreadsheet formulas, filtering, and chart plots.</p>
-                </div>
-                <div class="card-badge">Launch Calc</div>
-            </a>
+            <section class="app-category">
+                <h3 class="category-title">Games &amp; Fun</h3>
+                <div class="hub-grid">
+                    <!-- Block Attack Arcade -->
+                    <a href="blockgame/index.html" class="app-card blockgame-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">Block Attack Arcade</h2>
+                            <p class="card-description">Retro block games with arcade modes and sound FX.</p>
+                        </div>
+                        <div class="card-badge">Launch Arcade</div>
+                    </a>
 
-            <!-- App 10: 3D Dice Roller -->
-            <a href="diceroller/index.html" class="app-card diceroller-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1"></circle>
-                        <circle cx="15.5" cy="8.5" r="1"></circle>
-                        <circle cx="8.5" cy="15.5" r="1"></circle>
-                        <circle cx="15.5" cy="15.5" r="1"></circle>
-                        <circle cx="12" cy="12" r="1.5"></circle>
-                    </svg>
+                    <!-- 3D Dice Roller -->
+                    <a href="diceroller/index.html" class="app-card diceroller-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1"></circle>
+                                <circle cx="15.5" cy="8.5" r="1"></circle>
+                                <circle cx="8.5" cy="15.5" r="1"></circle>
+                                <circle cx="15.5" cy="15.5" r="1"></circle>
+                                <circle cx="12" cy="12" r="1.5"></circle>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">3D Dice Roller</h2>
+                            <p class="card-description">3D dice tray for RPG and board game rolls.</p>
+                        </div>
+                        <div class="card-badge">Launch Roller</div>
+                    </a>
                 </div>
-                <div class="card-content">
-                    <h2 class="card-title">3D Dice Roller</h2>
-                    <p class="card-description">3D dice tray for RPG and board game rolls.</p>
-                </div>
-                <div class="card-badge">Launch Roller</div>
-            </a>
+            </section>
 
-            <!-- App 11: Chiptune Composer -->
-            <a href="chiptune/index.html" class="app-card composer-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M9 18V5l12-2v13"></path>
-                        <circle cx="6" cy="18" r="3"></circle>
-                        <circle cx="18" cy="16" r="3"></circle>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h2 class="card-title">Chiptune Composer</h2>
-                    <p class="card-description">8-bit loop sequencer with WAV export.</p>
-                </div>
-                <div class="card-badge">Launch Composer</div>
-            </a>
+            <section class="app-category">
+                <h3 class="category-title">Utilities</h3>
+                <div class="hub-grid">
+                    <!-- QR Pulse -->
+                    <a href="QRCode/index.html" class="app-card qr-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                <line x1="17" y1="7" x2="17.01" y2="7"></line>
+                                <line x1="17" y1="17" x2="17.01" y2="17"></line>
+                                <line x1="7" y1="17" x2="7.01" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">QR Pulse</h2>
+                            <p class="card-description">Custom QR codes with colors, logos, and downloads.</p>
+                        </div>
+                        <div class="card-badge">Launch QR Maker</div>
+                    </a>
 
-            <!-- App 12: MindMapper -->
-            <a href="mindmap/index.html" class="app-card mindmap-card">
-                <div class="card-glow"></div>
-                <div class="card-icon-container">
-                    <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                        <path d="M10 6.5h4c1.1 0 2 .9 2 2V14"></path>
-                        <path d="M6.5 10v4"></path>
-                    </svg>
+                    <!-- PasswordSmith -->
+                    <a href="passwordgenerator/index.html" class="app-card passwordgenerator-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                <path d="M12 15v2"></path>
+                                <path d="M8 16h.01"></path>
+                                <path d="M16 16h.01"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">PasswordSmith</h2>
+                            <p class="card-description">Offline passwords, passphrases, PINs, strength, and exports.</p>
+                        </div>
+                        <div class="card-badge">Launch Generator</div>
+                    </a>
+
+                    <!-- Recipes Cabinet -->
+                    <a href="Recpies/index.html" class="app-card recipe-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                <path d="M8 6h6M8 10h6"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">Recipes Cabinet</h2>
+                            <p class="card-description">Offline recipe editor with search and cookbook PDF export.</p>
+                        </div>
+                        <div class="card-badge">Launch Cabinet</div>
+                    </a>
+
+                    <!-- IconForge -->
+                    <a href="icongenerator/index.html" class="app-card icongenerator-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                                <path d="M8 3v18"></path>
+                                <path d="M16 3v18"></path>
+                                <path d="M3 8h18"></path>
+                                <path d="M3 16h18"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">IconForge</h2>
+                            <p class="card-description">Generate favicons, app icons, manifests, and HTML tags.</p>
+                        </div>
+                        <div class="card-badge">Launch IconForge</div>
+                    </a>
+
+                    <!-- AudioForge -->
+                    <a href="audioforge/index.html" class="app-card audioforge-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">AudioForge</h2>
+                            <p class="card-description">Edit waveforms, add fades, and export WAV clips.</p>
+                        </div>
+                        <div class="card-badge">Launch Forge</div>
+                    </a>
+
+                    <!-- Media Slideshow -->
+                    <a href="mediaslideshow/index.html" class="app-card slideshow-card">
+                        <div class="card-glow"></div>
+                        <div class="card-icon-container">
+                            <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <h2 class="card-title">Media Slideshow</h2>
+                            <p class="card-description">Photo and video slideshow with music and transitions.</p>
+                        </div>
+                        <div class="card-badge">Launch Slideshow</div>
+                    </a>
                 </div>
-                <div class="card-content">
-                    <h2 class="card-title">MindMapper</h2>
-                    <p class="card-description">Diagram whiteboard with nodes, links, and auto-layout.</p>
-                </div>
-                <div class="card-badge">Launch Mapper</div>
-            </a>
+            </section>
         </main>
 
         <footer class="hub-footer">
@@ -349,7 +447,11 @@
             'mindmap': 'mindmap',
             'imageconverter': 'imageconverter',
             'icongenerator': 'icongenerator',
-            'passwordgenerator': 'passwordgenerator'
+            'passwordgenerator': 'passwordgenerator',
+            'pomodoro': 'pomodoro',
+            'rsvpreader': 'rsvpreader',
+            'datastudio': 'datastudio',
+            'sfxforge': 'sfxforge'
         };
 
         // Apply configuration and disable selected apps

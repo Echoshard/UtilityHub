@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a class="hub-link" href="../index.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>Pomodoro Timer</h1>
+                    <p>Focus intervals with quick presets and a live countdown</p>
+                </div>
+            </div>
+            <div class="top-actions">
+                <span class="session-pill">Sessions Completed <strong id="sessionCount">0</strong></span>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside class="panel settings-panel">
+                <section>
+                    <h2>Presets</h2>
+                    <div class="preset-grid">
+                        <button class="preset-btn active" data-minutes="25" data-label="Focus">
+                            <span class="preset-time">25</span>
+                            <span class="preset-name">Focus</span>
+                        </button>
+                        <button class="preset-btn" data-minutes="5" data-label="Short Break">
+                            <span class="preset-time">5</span>
+                            <span class="preset-name">Short Break</span>
+                        </button>
+                        <button class="preset-btn" data-minutes="15" data-label="Long Break">
+                            <span class="preset-time">15</span>
+                            <span class="preset-name">Long Break</span>
+                        </button>
+                        <button class="preset-btn" data-minutes="60" data-label="Deep Work">
+                            <span class="preset-time">60</span>
+                            <span class="preset-name">Deep Work</span>
+                        </button>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Custom Length</h2>
+                    <label class="slider-row">Minutes <span id="customValue">25</span></label>
+                    <input id="customRange" type="range" min="1" max="120" value="25">
+                </section>
+
+                <section>
+                    <h2>Options</h2>
+                    <label class="check-row"><input id="autoStartCheck" type="checkbox"> Auto-start next preset in cycle</label>
+                    <label class="check-row"><input id="soundCheck" type="checkbox" checked> Play sound on completion</label>
+                    <label class="check-row"><input id="tickCheck" type="checkbox"> Tick sound each second (last 10s)</label>
+                </section>
+
+                <section>
+                    <h2>Notes</h2>
+                    <p class="note">Cycle: Focus &rarr; Short Break, repeating. Every 4th break becomes a Long Break automatically when auto-start is on.</p>
+                </section>
+            </aside>
+
+            <section class="timer-stage">
+                <div class="mode-label" id="modeLabel">Focus</div>
+                <div class="ring-wrap">
+                    <svg class="ring" viewBox="0 0 260 260">
+                        <circle class="ring-track" cx="130" cy="130" r="118"></circle>
+                        <circle class="ring-progress" id="ringProgress" cx="130" cy="130" r="118"></circle>
+                    </svg>
+                    <div class="ring-center">
+                        <span class="time-display" id="timeDisplay">25:00</span>
+                        <span class="time-sub" id="timeSub">Ready</span>
+                    </div>
+                </div>
+
+                <div class="transport">
+                    <button class="icon-btn" id="resetBtn" title="Reset">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 3v6h6"></path></svg>
+                    </button>
+                    <button class="button primary big" id="startPauseBtn">Start</button>
+                    <button class="icon-btn" id="skipBtn" title="Skip to next">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16l12-8z"></path><path d="M19 5v14"></path></svg>
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

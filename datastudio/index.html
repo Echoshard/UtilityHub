@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Studio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a class="hub-link" href="../index.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>Data Studio</h1>
+                    <p>JSON / YAML / XML / TOON viewer and converter</p>
+                </div>
+            </div>
+            <div class="top-actions">
+                <span class="stat-pill" id="errorPill" style="display:none;"></span>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside class="panel input-panel">
+                <section>
+                    <h2>Input Format</h2>
+                    <div class="mode-grid four">
+                        <button class="mode-btn active" data-format="json">JSON</button>
+                        <button class="mode-btn" data-format="yaml">YAML</button>
+                        <button class="mode-btn" data-format="xml">XML</button>
+                        <button class="mode-btn" data-format="toon">TOON</button>
+                    </div>
+                </section>
+
+                <section class="grow">
+                    <h2>Source</h2>
+                    <textarea id="inputText" spellcheck="false" placeholder="Paste JSON, YAML, XML, or TOON here..."></textarea>
+                </section>
+
+                <section>
+                    <div class="button-row">
+                        <button class="button primary" id="parseBtn">Parse</button>
+                        <button class="button" id="sampleBtn">Load Sample</button>
+                        <button class="button" id="clearBtn">Clear</button>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="tree-stage">
+                <div class="tree-toolbar">
+                    <h2>Tree Explorer</h2>
+                    <div class="button-row">
+                        <button class="button" id="expandAllBtn">Expand All</button>
+                        <button class="button" id="collapseAllBtn">Collapse All</button>
+                    </div>
+                </div>
+                <div class="tree-container" id="treeContainer">
+                    <p class="placeholder-text">Parse some data to explore it here.</p>
+                </div>
+            </section>
+
+            <aside class="panel output-panel">
+                <section>
+                    <h2>Output Format</h2>
+                    <div class="mode-grid four">
+                        <button class="mode-btn active" data-outformat="json">JSON</button>
+                        <button class="mode-btn" data-outformat="yaml">YAML</button>
+                        <button class="mode-btn" data-outformat="xml">XML</button>
+                        <button class="mode-btn" data-outformat="toon">TOON</button>
+                    </div>
+                </section>
+
+                <section class="grow">
+                    <h2>Converted</h2>
+                    <pre class="code-view" id="outputCode"><code id="outputCodeInner">Converted output appears here...</code></pre>
+                </section>
+
+                <section>
+                    <div class="button-row">
+                        <button class="button primary" id="copyOutputBtn">Copy</button>
+                        <button class="button" id="downloadOutputBtn">Download</button>
+                    </div>
+                </section>
+
+                <section>
+                    <p class="note">TOON is a compact, indentation-based notation that tables uniform arrays of objects to save space. YAML/TOON/XML support covers common structures; deeply irregular documents may not round-trip perfectly.</p>
+                </section>
+            </aside>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

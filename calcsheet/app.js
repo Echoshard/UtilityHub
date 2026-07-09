@@ -11,6 +11,41 @@ let activeCell = "A1";
 // Track spilled cells from queries to clear them on re-evaluation
 let querySpills = {}; // querySpills["C5"] = ["C6", "C7", "D5", "D6"...]
 
+// ==========================================
+// UNDO HISTORY
+// ==========================================
+let undoStack = [];
+const UNDO_LIMIT = 100;
+
+function pushUndoSnapshot() {
+    undoStack.push(JSON.stringify(data));
+    if (undoStack.length > UNDO_LIMIT) undoStack.shift();
+}
+
+function undo() {
+    if (undoStack.length === 0) return;
+    data = JSON.parse(undoStack.pop());
+    recalculateSheet();
+
+    // recalculateSheet skips the focused input to avoid disrupting in-progress typing;
+    // refresh it explicitly here since undo just changed its value.
+    const activeInput = document.getElementById(`cell-${activeCell}`);
+    if (activeInput) {
+        activeInput.value = computedValues[activeCell] !== undefined ? computedValues[activeCell] : (data[activeCell] || '');
+    }
+    formulaInput.value = data[activeCell] || '';
+}
+
+document.addEventListener('keydown', (e) => {
+    const isCtrl = e.ctrlKey || e.metaKey;
+    if (isCtrl && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undo();
+    }
+});
+
+document.getElementById('undoBtn').addEventListener('click', undo);
+
 const headerRow = document.getElementById('headerRow');
 const sheetBody = document.getElementById('sheetBody');
 const activeCellLabel = document.getElementById('activeCellLabel');
@@ -238,15 +273,26 @@ document.addEventListener('mouseup', () => {
     isSelecting = false;
 });
 
-// Copy-Paste Clipboard Handlers
-document.addEventListener('copy', (e) => {
-    if (!selectionStart || !selectionEnd) return;
-    
-    const minCol = Math.min(selectionStart.col, selectionEnd.col);
-    const maxCol = Math.max(selectionStart.col, selectionEnd.col);
-    const minRow = Math.min(selectionStart.row, selectionEnd.row);
-    const maxRow = Math.max(selectionStart.row, selectionEnd.row);
-    
+// ==========================================
+// CLIPBOARD (COPY / CUT / PASTE) FOR BOX SELECTIONS
+// ==========================================
+let clipboardBuffer = null; // Fallback store used when the OS clipboard API is unavailable/blocked
+
+function getSelectionBounds() {
+    if (!selectionStart || !selectionEnd) return null;
+    return {
+        minCol: Math.min(selectionStart.col, selectionEnd.col),
+        maxCol: Math.max(selectionStart.col, selectionEnd.col),
+        minRow: Math.min(selectionStart.row, selectionEnd.row),
+        maxRow: Math.max(selectionStart.row, selectionEnd.row)
+    };
+}
+
+function buildSelectionText() {
+    const bounds = getSelectionBounds();
+    if (!bounds) return '';
+    const { minCol, maxCol, minRow, maxRow } = bounds;
+
     const rowsText = [];
     for (let r = minRow; r <= maxRow; r++) {
         const colsText = [];
@@ -256,31 +302,39 @@ document.addEventListener('copy', (e) => {
         }
         rowsText.push(colsText.join('\t'));
     }
-    
-    e.clipboardData.setData('text/plain', rowsText.join('\n'));
-    e.preventDefault();
-});
+    return rowsText.join('\n');
+}
 
-document.addEventListener('paste', (e) => {
-    const activeInput = document.getElementById(`cell-${activeCell}`);
-    if (!activeInput || document.activeElement !== activeInput) return;
-    
-    if (activeInput.value.startsWith('=')) return;
-    
+function clearSelectionRange() {
+    const bounds = getSelectionBounds();
+    if (!bounds) return;
+    const { minCol, maxCol, minRow, maxRow } = bounds;
+
+    pushUndoSnapshot();
+    for (let r = minRow; r <= maxRow; r++) {
+        for (let c = minCol; c <= maxCol; c++) {
+            const cellId = String.fromCharCode(65 + c) + (r + 1);
+            data[cellId] = '';
+            const input = document.getElementById(`cell-${cellId}`);
+            if (input) input.value = '';
+        }
+    }
+    recalculateSheet();
+}
+
+function pasteTextAtActiveCell(text) {
     const activeCoord = parseCellCoord(activeCell);
     if (!activeCoord) return;
-    
-    const text = e.clipboardData.getData('text/plain');
-    if (!text) return;
-    
+
+    pushUndoSnapshot();
     const rows = text.split(/\r?\n/);
     rows.forEach((rowStr, rOffset) => {
-        if (rowStr.trim() === '' && rOffset === rows.length - 1) return;
+        if (rowStr === '' && rOffset === rows.length - 1) return;
         const cols = rowStr.split('\t');
         cols.forEach((val, cOffset) => {
             const targetCol = activeCoord.col + cOffset;
             const targetRow = activeCoord.row + rOffset;
-            
+
             if (targetCol < COLS && targetRow < ROWS) {
                 const targetId = String.fromCharCode(65 + targetCol) + (targetRow + 1);
                 data[targetId] = val;
@@ -289,38 +343,92 @@ document.addEventListener('paste', (e) => {
             }
         });
     });
-    
+
     recalculateSheet();
+}
+
+// Fires only when the browser recognizes a real text selection (e.g. a partial
+// highlight inside a single focused cell). Box-dragging across separate <input>
+// cells never creates one, so it does NOT cover box selections - see the
+// keydown handler below for that.
+document.addEventListener('copy', (e) => {
+    const bounds = getSelectionBounds();
+    if (!bounds) return;
+
+    const isMultiCell = bounds.minCol !== bounds.maxCol || bounds.minRow !== bounds.maxRow;
+    const active = document.activeElement;
+    if (!isMultiCell && active && active.classList && active.classList.contains('cell-input') &&
+        active.selectionStart !== active.selectionEnd) {
+        return; // Let the browser copy just the highlighted substring
+    }
+
+    const text = buildSelectionText();
+    clipboardBuffer = text;
+    e.clipboardData.setData('text/plain', text);
     e.preventDefault();
+});
+
+document.addEventListener('paste', (e) => {
+    const activeInput = document.getElementById(`cell-${activeCell}`);
+    if (!activeInput || document.activeElement !== activeInput) return;
+    if (activeInput.value.startsWith('=')) return;
+
+    let text = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
+    if (!text && clipboardBuffer) text = clipboardBuffer;
+    if (!text) return;
+
+    pasteTextAtActiveCell(text);
+    e.preventDefault();
+});
+
+// Explicit Ctrl/Cmd+C and +X handling for box (multi-cell) selections, since
+// dragging across separate <input> cells doesn't produce a real browser text
+// selection and the native 'copy' event above never fires for it.
+document.addEventListener('keydown', (e) => {
+    const isCtrl = e.ctrlKey || e.metaKey;
+    if (!isCtrl) return;
+
+    const key = e.key.toLowerCase();
+    if (key !== 'c' && key !== 'x') return;
+
+    const bounds = getSelectionBounds();
+    if (!bounds) return;
+
+    const isMultiCell = bounds.minCol !== bounds.maxCol || bounds.minRow !== bounds.maxRow;
+    const active = document.activeElement;
+    if (!isMultiCell && active && active.classList && active.classList.contains('cell-input') &&
+        active.selectionStart !== active.selectionEnd) {
+        return; // Let the browser cut/copy just the highlighted substring
+    }
+
+    e.preventDefault();
+    const text = buildSelectionText();
+    clipboardBuffer = text;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {});
+    }
+
+    if (key === 'x') {
+        clearSelectionRange();
+    }
 });
 
 // Range Delete/Backspace Keyboard Handlers
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selectionStart && selectionEnd) {
-            const minCol = Math.min(selectionStart.col, selectionEnd.col);
-            const maxCol = Math.max(selectionStart.col, selectionEnd.col);
-            const minRow = Math.min(selectionStart.row, selectionEnd.row);
-            const maxRow = Math.max(selectionStart.row, selectionEnd.row);
-            
-            const isMultiCell = (minCol !== maxCol || minRow !== maxRow);
-            
+        const bounds = getSelectionBounds();
+        if (bounds) {
+            const isMultiCell = (bounds.minCol !== bounds.maxCol || bounds.minRow !== bounds.maxRow);
+
             if (isMultiCell) {
                 e.preventDefault();
-                for (let r = minRow; r <= maxRow; r++) {
-                    for (let c = minCol; c <= maxCol; c++) {
-                        const cellId = String.fromCharCode(65 + c) + (r + 1);
-                        data[cellId] = '';
-                        const input = document.getElementById(`cell-${cellId}`);
-                        if (input) input.value = '';
-                    }
-                }
-                recalculateSheet();
+                clearSelectionRange();
             } else if (e.key === 'Delete' && document.activeElement && document.activeElement.classList.contains('cell-input')) {
                 // Single-cell Delete clears the active focused input
                 e.preventDefault();
                 const cellId = document.activeElement.dataset.id;
                 if (cellId) {
+                    pushUndoSnapshot();
                     data[cellId] = '';
                     document.activeElement.value = '';
                     recalculateSheet();
@@ -349,16 +457,20 @@ function selectCell(cellId) {
 }
 
 function handleCellChange(cellId, value) {
+    if (data[cellId] === value) return;
+    pushUndoSnapshot();
     data[cellId] = value;
     recalculateSheet();
 }
 
 // Recalculate cell equations on change
 formulaInput.addEventListener('change', (e) => {
+    if (data[activeCell] === e.target.value) return;
+    pushUndoSnapshot();
     data[activeCell] = e.target.value;
     const input = document.getElementById(`cell-${activeCell}`);
     if (input) input.value = e.target.value;
-    
+
     recalculateSheet();
 });
 
@@ -854,7 +966,8 @@ csvLoader.addEventListener('change', (e) => {
     reader.onload = (evt) => {
         const text = evt.target.result;
         const rows = text.split('\n');
-        
+
+        pushUndoSnapshot();
         data = {};
         for (let r = 0; r < Math.min(rows.length, ROWS); r++) {
             const cols = rows[r].split(',');
@@ -889,6 +1002,7 @@ exportCsvBtn.addEventListener('click', () => {
 
 clearSheetBtn.addEventListener('click', () => {
     if (confirm("Clear all data and formulas on this spreadsheet?")) {
+        pushUndoSnapshot();
         data = {};
         recalculateSheet();
     }
@@ -914,8 +1028,9 @@ if (closeHelpBtn) {
 const loadExampleBtn = document.getElementById('loadExampleBtn');
 if (loadExampleBtn) {
     loadExampleBtn.addEventListener('click', () => {
+        pushUndoSnapshot();
         data = {};
-        
+
         // Headers (A1:C1)
         data["A1"] = "Name";
         data["B1"] = "Age";

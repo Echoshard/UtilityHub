@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSVP Reader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a class="hub-link" href="../index.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>RSVP Reader</h1>
+                    <p>Rapid serial visual presentation speed reader</p>
+                </div>
+            </div>
+            <div class="top-actions">
+                <span class="stat-pill"><strong id="wpmPill">300</strong> WPM</span>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside class="panel settings-panel">
+                <section>
+                    <h2>Text</h2>
+                    <textarea id="textInput" placeholder="Paste or type text here, then press Load..." spellcheck="false"></textarea>
+                    <div class="button-row">
+                        <button class="button primary" id="loadBtn">Load Text</button>
+                        <button class="button" id="pasteBtn">Paste</button>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Chunk Size</h2>
+                    <div class="mode-grid">
+                        <button class="mode-btn active" data-chunk="1">1 Word</button>
+                        <button class="mode-btn" data-chunk="2">2 Words</button>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Speed</h2>
+                    <label class="slider-row">Words Per Minute <span id="speedValue">300</span></label>
+                    <input id="speedRange" type="range" min="60" max="900" step="10" value="300">
+                    <label class="check-row"><input id="punctuationPauseCheck" type="checkbox" checked> Pause longer on punctuation</label>
+                </section>
+
+                <section>
+                    <h2>Stats</h2>
+                    <div class="stats-grid">
+                        <div><span id="totalWordsText">0</span><small>Total Words</small></div>
+                        <div><span id="estTimeText">0:00</span><small>Est. Time</small></div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Notes</h2>
+                    <p class="note">Select text anywhere, copy it, then click Paste (or Ctrl+V into the box) and Load. Speed can be adjusted live while reading.</p>
+                </section>
+            </aside>
+
+            <section class="reader-stage">
+                <div class="reader-frame">
+                    <div class="guide-line"></div>
+                    <div class="word-display" id="wordDisplay">Load text to begin</div>
+                </div>
+
+                <div class="progress-row">
+                    <span class="progress-label" id="progressLabel">0 / 0</span>
+                    <input id="progressRange" type="range" min="0" max="0" value="0">
+                    <span class="progress-time" id="progressTime">0:00 / 0:00</span>
+                </div>
+
+                <div class="transport">
+                    <button class="icon-btn" id="backBtn" title="Back one chunk">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 19V5"></path><path d="m4 12 7-7v14z"></path></svg>
+                    </button>
+                    <button class="icon-btn" id="restartBtn" title="Restart">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 3v6h6"></path></svg>
+                    </button>
+                    <button class="button primary big" id="playPauseBtn">Play</button>
+                    <button class="icon-btn" id="forwardBtn" title="Forward one chunk">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5v14"></path><path d="m20 12-7 7V5z"></path></svg>
+                    </button>
+                </div>
+                <p class="hint">Space = Play/Pause &nbsp;&middot;&nbsp; &larr; / &rarr; = Step &nbsp;&middot;&nbsp; &uarr; / &darr; = Speed</p>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

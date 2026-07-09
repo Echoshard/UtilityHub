@@ -1,0 +1,354 @@
+:root {
+    --bg: #070812;
+    --panel: #10131f;
+    --panel-2: #151a28;
+    --border: rgba(255,255,255,0.09);
+    --border-strong: rgba(255,255,255,0.18);
+    --text: #f8fafc;
+    --muted: #9aa6b8;
+    --accent: #ef4444;
+    --accent-2: #f59e0b;
+    --focus-color: #ef4444;
+    --break-color: #10b981;
+    --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+}
+
+button, input { font: inherit; }
+button { border: 0; cursor: pointer; }
+svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.app-shell {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    height: 68px;
+    padding: 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    background: #0d101b;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 1.22rem;
+}
+
+.brand p {
+    margin: 3px 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+.hub-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.035);
+    padding: 8px 11px;
+    border-radius: 7px;
+}
+
+.hub-link:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+}
+
+.session-pill {
+    font-size: 0.82rem;
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 20px;
+}
+
+.session-pill strong {
+    color: var(--text);
+    margin-left: 6px;
+}
+
+.workspace {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+}
+
+.panel {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.panel section + section {
+    margin-top: 24px;
+}
+
+.panel h2 {
+    margin: 0 0 12px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.preset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.preset-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 8px;
+    border-radius: 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.preset-btn:hover {
+    border-color: var(--border-strong);
+}
+
+.preset-btn.active {
+    background: rgba(239, 68, 68, 0.14);
+    border-color: var(--accent);
+}
+
+.preset-time {
+    font-family: var(--font);
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.preset-name {
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+.preset-btn.active .preset-name {
+    color: var(--text);
+}
+
+.slider-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.slider-row span {
+    color: var(--text);
+    font-weight: 700;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+}
+
+.check-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.check-row input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+}
+
+.note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.timer-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    padding: 20px;
+}
+
+.mode-label {
+    font-family: var(--font);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    transition: color 0.4s ease;
+}
+
+.ring-wrap {
+    position: relative;
+    width: 260px;
+    height: 260px;
+}
+
+.ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.ring-track {
+    fill: none;
+    stroke: rgba(255,255,255,0.07);
+    stroke-width: 12;
+}
+
+.ring-progress {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 741.24;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.25s linear, stroke 0.4s ease;
+}
+
+.ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.time-display {
+    font-family: var(--font);
+    font-size: 3.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.time-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.transport {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.icon-btn {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.icon-btn:hover {
+    border-color: var(--border-strong);
+    background: rgba(255,255,255,0.1);
+}
+
+.button.primary.big {
+    min-width: 160px;
+    height: 58px;
+    border-radius: 30px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #fff;
+}
+
+.button.primary.big:hover {
+    background: #f87171;
+}
+
+.button.primary.big.is-running {
+    background: var(--panel-2);
+    border-color: var(--border-strong);
+    color: var(--text);
+}
+
+.button.primary.big.is-running:hover {
+    background: var(--panel-2);
+    border-color: var(--accent);
+}
+
+@media (max-width: 760px) {
+    .workspace {
+        grid-template-columns: 1fr;
+        grid-auto-rows: min-content;
+        overflow-y: auto;
+    }
+    .panel {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+    .app-shell, body {
+        height: auto;
+        overflow: visible;
+    }
+    .timer-stage {
+        padding: 40px 20px;
+    }
+}

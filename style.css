@@ -25,7 +25,11 @@
     --imageconverter-glow: linear-gradient(135deg, #14b8a6, #f59e0b);
     --icongenerator-glow: linear-gradient(135deg, #f59e0b, #ec4899);
     --passwordgenerator-glow: linear-gradient(135deg, #22c55e, #06b6d4);
-    
+    --pomodoro-glow: linear-gradient(135deg, #ef4444, #f59e0b);
+    --rsvpreader-glow: linear-gradient(135deg, #6366f1, #f43f5e);
+    --datastudio-glow: linear-gradient(135deg, #06b6d4, #7dd3fc);
+    --sfxforge-glow: linear-gradient(135deg, #f59e0b, #f43f5e);
+
     --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-display: 'Outfit', var(--font-ui);
     
@@ -99,6 +103,31 @@ body {
     font-weight: 300;
 }
 
+/* Category Sections */
+.hub-main {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+.app-category {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.category-title {
+    margin: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--font-display);
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--text-muted);
+}
+
 /* Grid Layout */
 .hub-grid {
     display: flex;
@@ -160,6 +189,10 @@ body {
 .imageconverter-card:hover .card-glow { background: var(--imageconverter-glow); }
 .icongenerator-card:hover .card-glow { background: var(--icongenerator-glow); }
 .passwordgenerator-card:hover .card-glow { background: var(--passwordgenerator-glow); }
+.pomodoro-card:hover .card-glow { background: var(--pomodoro-glow); }
+.rsvpreader-card:hover .card-glow { background: var(--rsvpreader-glow); }
+.datastudio-card:hover .card-glow { background: var(--datastudio-glow); }
+.sfxforge-card:hover .card-glow { background: var(--sfxforge-glow); }
 
 /* Card Icon Containers */
 .card-icon-container {
@@ -277,6 +310,30 @@ body {
     border-color: rgba(34, 197, 94, 0.3);
 }
 .passwordgenerator-card:hover .card-icon { stroke: #22c55e; }
+
+.pomodoro-card:hover .card-icon-container {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+.pomodoro-card:hover .card-icon { stroke: #ef4444; }
+
+.rsvpreader-card:hover .card-icon-container {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+.rsvpreader-card:hover .card-icon { stroke: #6366f1; }
+
+.datastudio-card:hover .card-icon-container {
+    background: rgba(6, 182, 212, 0.1);
+    border-color: rgba(6, 182, 212, 0.3);
+}
+.datastudio-card:hover .card-icon { stroke: #06b6d4; }
+
+.sfxforge-card:hover .card-icon-container {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+.sfxforge-card:hover .card-icon { stroke: #f59e0b; }
 
 /* Disabled Cards Styling */
 .app-card.disabled {
@@ -421,6 +478,34 @@ body {
     color: #03110a;
     border-color: #22c55e;
     box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
+}
+
+.pomodoro-card:hover .card-badge {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+}
+
+.rsvpreader-card:hover .card-badge {
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #6366f1;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.datastudio-card:hover .card-badge {
+    background: #06b6d4;
+    color: #04212a;
+    border-color: #06b6d4;
+    box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);
+}
+
+.sfxforge-card:hover .card-badge {
+    background: #f59e0b;
+    color: #1a0f00;
+    border-color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
 }
 
 /* Footer Section */

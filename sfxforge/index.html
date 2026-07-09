@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFX Forge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a class="hub-link" href="../index.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>SFX Forge</h1>
+                    <p>Procedural retro sound effect generator</p>
+                </div>
+            </div>
+            <div class="top-actions">
+                <button class="button" id="randomizeBtn">Randomize</button>
+                <button class="button" id="mutateBtn">Mutate</button>
+                <button class="button primary" id="playBtn">▶ Play</button>
+                <button class="button" id="exportBtn">Export WAV</button>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside class="panel preset-panel">
+                <section>
+                    <h2>Presets</h2>
+                    <div class="preset-grid">
+                        <button class="preset-btn" data-preset="pickup">Pickup / Coin</button>
+                        <button class="preset-btn" data-preset="laser">Laser / Shoot</button>
+                        <button class="preset-btn" data-preset="explosion">Explosion</button>
+                        <button class="preset-btn" data-preset="powerup">Powerup</button>
+                        <button class="preset-btn" data-preset="hit">Hit / Hurt</button>
+                        <button class="preset-btn" data-preset="jump">Jump</button>
+                        <button class="preset-btn" data-preset="blip">Blip / Select</button>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Waveform</h2>
+                    <div class="wave-grid">
+                        <button class="wave-btn active" data-wave="square">Square</button>
+                        <button class="wave-btn" data-wave="saw">Saw</button>
+                        <button class="wave-btn" data-wave="sine">Sine</button>
+                        <button class="wave-btn" data-wave="triangle">Triangle</button>
+                        <button class="wave-btn" data-wave="noise">Noise</button>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Preview</h2>
+                    <canvas id="waveCanvas" width="260" height="100"></canvas>
+                </section>
+
+                <section>
+                    <p class="note">Adjust the knobs, then Play. Randomize scrambles everything; Mutate nudges the current sound; presets bias randomization toward a classic archetype.</p>
+                </section>
+            </aside>
+
+            <section class="params-stage" id="paramsStage"></section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
