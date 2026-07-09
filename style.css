@@ -19,7 +19,6 @@
     --audioforge-glow: linear-gradient(135deg, #f59e0b, #e11d48);
     --calcsheet-glow: linear-gradient(135deg, #10b981, #059669);
     --diceroller-glow: linear-gradient(135deg, #a855f7, #6366f1);
-    --recipe-glow: linear-gradient(135deg, #f97316, #f59e0b);
     --composer-glow: linear-gradient(135deg, #ec4899, #8b5cf6);
     --mindmap-glow: linear-gradient(135deg, #6366f1, #14b8a6);
     --imageconverter-glow: linear-gradient(135deg, #14b8a6, #f59e0b);
@@ -183,7 +182,6 @@ body {
 .audioforge-card:hover .card-glow { background: var(--audioforge-glow); }
 .calcsheet-card:hover .card-glow { background: var(--calcsheet-glow); }
 .diceroller-card:hover .card-glow { background: var(--diceroller-glow); }
-.recipe-card:hover .card-glow { background: var(--recipe-glow); }
 .composer-card:hover .card-glow { background: var(--composer-glow); }
 .mindmap-card:hover .card-glow { background: var(--mindmap-glow); }
 .imageconverter-card:hover .card-glow { background: var(--imageconverter-glow); }
@@ -274,12 +272,6 @@ body {
     border-color: rgba(168, 85, 247, 0.3);
 }
 .diceroller-card:hover .card-icon { stroke: #a855f7; }
-
-.recipe-card:hover .card-icon-container {
-    background: rgba(249, 115, 22, 0.1);
-    border-color: rgba(249, 115, 22, 0.3);
-}
-.recipe-card:hover .card-icon { stroke: #f97316; }
 
 .composer-card:hover .card-icon-container {
     background: rgba(236, 72, 153, 0.1);
