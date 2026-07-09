@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Block Attack Arcade</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="arcade-container">
         <!-- Arcade Header -->
         <header class="arcade-header">
             <a href="../index.html" class="btn-back">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
                 <span>Hub</span>
             </a>
             <h1>Arcade Cabinet</h1>
@@ -22,7 +28,7 @@
 
         <!-- Main Arcade Screen -->
         <main class="arcade-screen" id="arcade-screen">
-            
+
             <!-- MENU VIEW -->
             <div id="menu-view" class="view active">
                 <div class="cabinet-marquee">
@@ -81,9 +87,10 @@
                             <!-- Cursor overlay -->
                             <div class="cursor" id="attack-cursor"></div>
                             <!-- Particles overlay -->
-                            <canvas class="particles-canvas" id="attack-particles-canvas" width="288" height="576"></canvas>
+                            <canvas class="particles-canvas" id="attack-particles-canvas" width="288"
+                                height="576"></canvas>
                         </div>
-                        
+
                         <!-- Overlay views -->
                         <div class="overlay gameover-overlay" id="attack-gameover-overlay">
                             <h2>GAME OVER</h2>
@@ -100,13 +107,23 @@
                     <div class="stats-panel right-panel">
                         <div class="action-buttons">
                             <button class="arcade-action-btn" id="attack-pause-btn" title="Pause">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="4" width="4" height="16"></rect>
+                                    <rect x="14" y="4" width="4" height="16"></rect>
+                                </svg>
                             </button>
                             <button class="arcade-action-btn" id="attack-reset-btn" title="Reset">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                                </svg>
                             </button>
                             <button class="arcade-action-btn" id="attack-home-btn" title="Quit to Menu">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -119,7 +136,7 @@
                     <!-- Left Side Stats & Hold -->
                     <div class="stats-panel left-panel">
                         <h2>TETRIS</h2>
-                        
+
                         <!-- Hold Piece -->
                         <div class="preview-box">
                             <span class="label">HOLD</span>
@@ -150,7 +167,7 @@
                         <div class="grid-container" id="tetris-grid-container" style="width: 300px; height: 600px;">
                             <div class="tetris-grid" id="tetris-grid"></div>
                         </div>
-                        
+
                         <!-- Overlay views -->
                         <div class="overlay gameover-overlay" id="tetris-gameover-overlay">
                             <h2>GAME OVER</h2>
@@ -178,7 +195,8 @@
 
                         <div class="control-box">
                             <span class="label">GAME MODE</span>
-                            <select id="tetris-mode-select" style="width: 100%; margin-top: 4px; background: #111827; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px; border-radius: 4px; font-weight: 600; font-family: var(--font-ui); font-size: 0.85rem; cursor: pointer;">
+                            <select id="tetris-mode-select"
+                                style="width: 100%; margin-top: 4px; background: #111827; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px; border-radius: 4px; font-weight: 600; font-family: var(--font-ui); font-size: 0.85rem; cursor: pointer;">
                                 <option value="sprint" selected>50-Line Sprint</option>
                                 <option value="endless">Endless Mode</option>
                             </select>
@@ -192,19 +210,29 @@
 
                         <div class="action-buttons">
                             <button class="arcade-action-btn" id="tetris-pause-btn" title="Pause">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="4" width="4" height="16"></rect>
+                                    <rect x="14" y="4" width="4" height="16"></rect>
+                                </svg>
                             </button>
                             <button class="arcade-action-btn" id="tetris-reset-btn" title="Reset">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                                </svg>
                             </button>
                             <button class="arcade-action-btn" id="tetris-home-btn" title="Quit to Menu">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Mobile Controls overlay -->
             <div class="mobile-controls-overlay" id="mobile-controls">
                 <div class="dpad">
@@ -219,13 +247,14 @@
                 </div>
             </div>
         </main>
-        
+
         <!-- Cabinet Details -->
         <footer class="cabinet-footer">
-            <p>CLASSIC ARCADE SYSTEM | PURE OFFLINE JAVASCRIPT</p>
+            <p>CLASSIC ARCADE</p>
         </footer>
     </div>
-    
+
     <script src="app.js"></script>
 </body>
+
 </html>

@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Row Blaster — Space Academy</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="background-glow"></div>
     <div class="arcade-container">
-        
+
         <!-- Cabinet Header -->
         <header class="arcade-header">
             <a href="../index.html" class="btn-back" id="btn-quit-to-hub">
@@ -30,12 +32,12 @@
 
         <!-- View Screen wrapper -->
         <div class="arcade-screen" id="arcade-screen">
-            
+
             <!-- VIEW 1: Main Menu -->
             <div class="view active" id="menu-view">
                 <div class="menu-title-glow">
                     <h1 class="game-title">HOME ROW BLASTER</h1>
-                    <p class="game-subtitle">RETRO SCI-FI TYPING ACADEMY</p>
+                    <p class="game-subtitle">TYPING ACADEMY</p>
                 </div>
                 <div class="menu-options">
                     <button class="menu-btn primary-pulse" id="btn-start-lessons">
@@ -47,7 +49,7 @@
                     <button class="menu-btn" id="btn-settings">SETTINGS</button>
                 </div>
                 <div class="menu-footer">
-                    <p>SYSTEM READY // OFFLINE MODE // NO DATA SHARING</p>
+                    <p>SYSTEM READY</p>
                 </div>
             </div>
 
@@ -75,9 +77,12 @@
                 <div class="lesson-summary-card">
                     <h3 id="selected-lesson-title">Lesson Title</h3>
                     <p id="selected-lesson-keys">Focus: A, S, D, F</p>
-                    <div id="freeplay-pack-select-container" class="hidden" style="margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <label for="freeplay-pack-select" style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">SELECT PACK:</label>
-                        <select id="freeplay-pack-select" style="background:#020617; border:1px solid var(--border-color); color:#fff; padding:6px 12px; border-radius:6px; font-family:var(--font-ui); outline:none; cursor:pointer; font-size:0.85rem; font-weight:600;">
+                    <div id="freeplay-pack-select-container" class="hidden"
+                        style="margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <label for="freeplay-pack-select"
+                            style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">SELECT PACK:</label>
+                        <select id="freeplay-pack-select"
+                            style="background:#020617; border:1px solid var(--border-color); color:#fff; padding:6px 12px; border-radius:6px; font-family:var(--font-ui); outline:none; cursor:pointer; font-size:0.85rem; font-weight:600;">
                             <option value="beginner">Beginner Keys</option>
                             <option value="intermediate" selected>Intermediate Words</option>
                             <option value="advanced">Advanced Terminology</option>
@@ -123,7 +128,7 @@
                         <div class="stat-box">Errors: <span id="drill-errors">0</span></div>
                     </div>
                 </div>
-                
+
                 <div class="drill-content-box">
                     <div class="text-to-type">
                         <div class="typewriter-guide"></div>
@@ -168,7 +173,7 @@
                         <div class="stat-box">Accuracy: <span id="blaster-accuracy">100%</span></div>
                     </div>
                 </div>
-                
+
                 <div class="canvas-wrapper">
                     <canvas id="blaster-canvas"></canvas>
                 </div>
@@ -206,9 +211,14 @@
                     </div>
                 </div>
 
-                <div class="cargo-input-bar" style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                <div class="cargo-input-bar"
+                    style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
                     <div class="cargo-active-text">Active Crate Text: <span id="cargo-crate-target">-</span></div>
-                    <div class="cargo-typed-preview" style="font-size:0.95rem; font-weight:700; color:var(--neon-green); font-family:var(--font-mono);">Typed: <span id="cargo-typed-val" style="border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 2px; min-width: 60px; display: inline-block; text-align: center;"></span></div>
+                    <div class="cargo-typed-preview"
+                        style="font-size:0.95rem; font-weight:700; color:var(--neon-green); font-family:var(--font-mono);">
+                        Typed: <span id="cargo-typed-val"
+                            style="border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 2px; min-width: 60px; display: inline-block; text-align: center;"></span>
+                    </div>
                 </div>
 
                 <div class="game-controls">
@@ -275,7 +285,7 @@
                         <textarea id="custom-text-input" placeholder="Paste custom practice text here..."></textarea>
                     </div>
                 </div>
-                
+
                 <div class="game-header">
                     <div class="game-stats">
                         <div class="stat-box">Time Left: <span id="test-time-left">60s</span></div>
@@ -329,7 +339,7 @@
                             <span class="val accent-yellow" id="r-grade">A</span>
                         </div>
                     </div>
-                    
+
                     <div class="results-panel">
                         <div class="missed-keys-box">
                             <h4>Problem Key Highlights:</h4>
@@ -389,7 +399,7 @@
             </div>
 
         </div> <!-- /arcade-screen -->
-        
+
         <div class="cabinet-decorations">
             <span class="decor-light"></span>
             <span class="decor-brand">COSMIC CADET 3000</span>
@@ -399,4 +409,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
