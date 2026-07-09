@@ -1170,13 +1170,13 @@ function blasterTick() {
         blasterCtx.fillRect(starX, starY, 2, 2);
     }
 
-    // Spawn asteroids (More asteroids on screen moving slower)
-    if (now - lastAsteroidSpawn > Math.max(500, 1400 - blasterScore / 10)) {
+    // Spawn asteroids (Balanced difficulty curve: slow spawns, soft ramp-up)
+    if (now - lastAsteroidSpawn > Math.max(1000, 2500 - blasterScore / 15)) {
         const randWord = currentBlasterWordpack[Math.floor(Math.random() * currentBlasterWordpack.length)];
         const rx = 50 + Math.random() * (blasterCanvas.width - 100);
         blasterAsteroids.push(new Asteroid(randWord, rx, 0, 0.2 + Math.random() * 0.35));
         lastAsteroidSpawn = now;
-        asteroidSpeedFactor = 1.0 + (blasterScore / 12000) * 0.15;
+        asteroidSpeedFactor = 1.0 + (blasterScore / 25000) * 0.1;
     }
 
     // Render Laser Blasters
@@ -1809,7 +1809,7 @@ class RhythmNote {
         ctx.font = 'bold 15px "JetBrains Mono", monospace';
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
-        ctx.fillText(this.char.toUpperCase(), this.x, this.y + 5);
+        ctx.fillText(this.char, this.x, this.y + 5);
     }
 }
 
@@ -1887,9 +1887,12 @@ function rhythmTick() {
     rhythmCtx.fillStyle = 'rgba(6, 182, 212, 0.08)';
     rhythmCtx.fillRect(0, TARGET_LINE_Y - 15, rhythmCanvas.width, 30);
 
-    // Spawn falling notes on tracks
+    // Spawn falling notes on tracks (randomly lower or upper case)
     if (now - lastNoteSpawn > 1000) {
-        const char = currentRhythmPack[Math.floor(Math.random() * currentRhythmPack.length)];
+        let char = currentRhythmPack[Math.floor(Math.random() * currentRhythmPack.length)];
+        if (Math.random() > 0.5) {
+            char = char.toUpperCase();
+        }
         const trackCount = Math.floor(rhythmCanvas.width / 80);
         const randTrack = Math.floor(Math.random() * Math.max(1, trackCount - 1)) + 1;
         const rx = randTrack * 80;
