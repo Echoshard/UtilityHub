@@ -306,12 +306,13 @@ if (musicToggleBtn) {
 // ==========================================
 // ARCADE HUB CONFIG & VIEWS
 // ==========================================
-let currentMode = 'MENU'; // 'MENU' | 'BLOCK_ATTACK' | 'TETRIS'
+let currentMode = 'MENU'; // 'MENU' | 'BLOCK_ATTACK' | 'TETRIS' | 'PUYO_PUYO' | 'FRAMEFALL'
 
 const viewMenu = document.getElementById('menu-view');
 const viewAttack = document.getElementById('attack-view');
 const viewTetris = document.getElementById('tetris-view');
 const viewPuyo = document.getElementById('puyo-view');
+const viewFramefall = document.getElementById('framefall-view');
 const mobileControls = document.getElementById('mobile-controls');
 const headerGamesBtn = document.getElementById('header-games-btn');
 
@@ -339,6 +340,9 @@ function resizeGameLayouts() {
         } else if (currentMode === 'PUYO_PUYO') {
             designWidth = 785;
             designHeight = 530;
+        } else if (currentMode === 'FRAMEFALL') {
+            designWidth = 870;
+            designHeight = 610;
         } else {
             layouts.forEach(layout => {
                 layout.style.transform = '';
@@ -349,8 +353,8 @@ function resizeGameLayouts() {
         const isMobile = window.innerWidth <= 768;
         let availHeight = screenHeight;
         if (isMobile) {
-            designWidth = currentMode === 'TETRIS' ? 320 : (currentMode === 'PUYO_PUYO' ? 260 : 308);
-            designHeight = currentMode === 'TETRIS' ? 690 : (currentMode === 'PUYO_PUYO' ? 590 : 660);
+            designWidth = currentMode === 'TETRIS' ? 320 : (currentMode === 'PUYO_PUYO' ? 260 : (currentMode === 'FRAMEFALL' ? 400 : 308));
+            designHeight = currentMode === 'TETRIS' ? 690 : (currentMode === 'PUYO_PUYO' ? 590 : (currentMode === 'FRAMEFALL' ? 690 : 660));
             availHeight = Math.max(200, screenHeight - 180);
         }
         
@@ -373,12 +377,14 @@ function switchView(mode) {
     stopAttackGame();
     stopTetrisGame();
     stopPuyoGame();
+    stopFramefallGame();
     stopChiptune();
 
     viewMenu.classList.remove('active');
     viewAttack.classList.remove('active');
     viewTetris.classList.remove('active');
     viewPuyo.classList.remove('active');
+    viewFramefall.classList.remove('active');
     mobileControls.style.display = 'none';
     
     // Hide/show games back button in header
@@ -407,6 +413,11 @@ function switchView(mode) {
         if (window.innerWidth <= 768) mobileControls.style.display = 'flex';
         startPuyoGame();
         playChiptuneTrack('PUYO_PUYO');
+    } else if (mode === 'FRAMEFALL') {
+        viewFramefall.classList.add('active');
+        if (window.innerWidth <= 768) mobileControls.style.display = 'flex';
+        startFramefallGame();
+        playChiptuneTrack('BLOCK_ATTACK');
     }
     
     setTimeout(resizeGameLayouts, 0);
@@ -416,9 +427,11 @@ document.getElementById('btn-mode-attack').addEventListener('click', () => switc
 document.getElementById('btn-mode-tetris').addEventListener('click', () => switchView('TETRIS'));
 const btnModePuyo = document.getElementById('btn-mode-puyo');
 if (btnModePuyo) btnModePuyo.addEventListener('click', () => switchView('PUYO_PUYO'));
+document.getElementById('btn-mode-framefall').addEventListener('click', () => switchView('FRAMEFALL'));
 
 document.getElementById('attack-home-btn').addEventListener('click', () => switchView('MENU'));
 document.getElementById('tetris-home-btn').addEventListener('click', () => switchView('MENU'));
+document.getElementById('framefall-home-btn').addEventListener('click', () => switchView('MENU'));
 if (headerGamesBtn) {
     headerGamesBtn.addEventListener('click', () => switchView('MENU'));
 }
@@ -1906,6 +1919,7 @@ function handleActionUp() {
 }
 
 function handleActionDown() {
+    if (currentMode === 'FRAMEFALL') { setFramefallFast(true); return; }
     if (currentMode === 'TETRIS' && tetrisStatus === 'PLAYING') {
         if (tryMove(0, 1)) {
             playSound('move');
@@ -1924,6 +1938,7 @@ function handleActionDown() {
 }
 
 function handleActionLeft() {
+    if (currentMode === 'FRAMEFALL') { moveFramefallPlayer(-1); return; }
     if (currentMode === 'TETRIS' && tetrisStatus === 'PLAYING') {
         if (tryMove(-1, 0)) playSound('move');
     } else if (currentMode === 'BLOCK_ATTACK' && attackStatus === 'PLAYING') {
@@ -1938,6 +1953,7 @@ function handleActionLeft() {
 }
 
 function handleActionRight() {
+    if (currentMode === 'FRAMEFALL') { moveFramefallPlayer(1); return; }
     if (currentMode === 'TETRIS' && tetrisStatus === 'PLAYING') {
         if (tryMove(1, 0)) playSound('move');
     } else if (currentMode === 'BLOCK_ATTACK' && attackStatus === 'PLAYING') {
@@ -1962,6 +1978,7 @@ function handleActionZ() {
 }
 
 function handleActionX(isDown) {
+    if (currentMode === 'FRAMEFALL') { if (isDown) fireFramefallProjectile(); return; }
     if (currentMode === 'TETRIS' && tetrisStatus === 'PLAYING') {
         if (isDown) hardDrop();
     } else if (currentMode === 'BLOCK_ATTACK' && attackStatus === 'PLAYING') {
@@ -1990,6 +2007,7 @@ document.addEventListener('keydown', (e) => {
         if (currentMode === 'BLOCK_ATTACK') pauseAttackGame();
         if (currentMode === 'TETRIS') pauseTetrisGame();
         if (currentMode === 'PUYO_PUYO') pausePuyoGame();
+        if (currentMode === 'FRAMEFALL') pauseFramefallGame();
         return;
     }
     
@@ -2043,6 +2061,16 @@ document.addEventListener('keydown', (e) => {
                     handleActionZ();
                     break;
             }
+        } else if (currentMode === 'FRAMEFALL') {
+            if (framefallStatus === 'GAMEOVER') {
+                if ([' ', 'x', 'X', 'Enter'].includes(e.key)) startFramefallGame();
+                return;
+            }
+            if (framefallStatus !== 'PLAYING') return;
+            if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') handleActionLeft();
+            else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') handleActionRight();
+            else if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') setFramefallFast(true);
+            else if (e.key === ' ' || e.key.toLowerCase() === 'x') handleActionX(true);
         } else if (currentMode === 'PUYO_PUYO') {
             if (puyoStatus === 'GAMEOVER') {
                 if ([' ', 'z', 'Z', 'x', 'X', 'Enter'].includes(e.key)) startPuyoGame();
@@ -2095,6 +2123,16 @@ document.addEventListener('keydown', (e) => {
             else if (e.key === customKeys['rot-ccw']) rotateCurrentCounterClockwise();
             else if (e.key === customKeys['hard']) handleActionX(true);
             else if (e.key === customKeys['hold']) handleActionZ();
+        } else if (currentMode === 'FRAMEFALL') {
+            if (framefallStatus === 'GAMEOVER') {
+                if ([customKeys['hard'], 'Enter'].includes(e.key)) startFramefallGame();
+                return;
+            }
+            if (framefallStatus !== 'PLAYING') return;
+            if (e.key === customKeys['left']) handleActionLeft();
+            else if (e.key === customKeys['right']) handleActionRight();
+            else if (e.key === customKeys['soft']) setFramefallFast(true);
+            else if (e.key === customKeys['hard']) handleActionX(true);
         } else if (currentMode === 'PUYO_PUYO') {
             if (puyoStatus === 'GAMEOVER') {
                 if ([customKeys['hard'], customKeys['hold'], 'Enter'].includes(e.key)) startPuyoGame();
@@ -2113,6 +2151,9 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
+    if (currentMode === 'FRAMEFALL' && (e.key === 'ArrowDown' || e.key.toLowerCase() === 's' || e.key === customKeys['soft'])) {
+        setFramefallFast(false);
+    }
     if (controlScheme === 'classic') {
         if (currentMode === 'BLOCK_ATTACK' && e.key.toLowerCase() === 'x') {
             handleActionX(false);
@@ -2139,10 +2180,21 @@ const mobileZ = document.getElementById('m-btn-z');
 const mobileX = document.getElementById('m-btn-x');
 
 mobileUp.addEventListener('click', handleActionUp);
-mobileDown.addEventListener('click', handleActionDown);
+mobileDown.addEventListener('click', () => {
+    if (currentMode !== 'FRAMEFALL') handleActionDown();
+});
 mobileLeft.addEventListener('click', handleActionLeft);
 mobileRight.addEventListener('click', handleActionRight);
 mobileZ.addEventListener('click', handleActionZ);
+
+mobileDown.addEventListener('touchstart', (e) => {
+    if (currentMode === 'FRAMEFALL') { e.preventDefault(); setFramefallFast(true); }
+});
+mobileDown.addEventListener('mousedown', () => {
+    if (currentMode === 'FRAMEFALL') setFramefallFast(true);
+});
+mobileDown.addEventListener('touchend', () => setFramefallFast(false));
+mobileDown.addEventListener('mouseup', () => setFramefallFast(false));
 
 // X button acts as a trigger key (need touchstart/touchend for smooth drag push in block attack)
 mobileX.addEventListener('touchstart', (e) => { e.preventDefault(); handleActionX(true); });
@@ -2163,6 +2215,7 @@ if (mobilePause) {
         if (currentMode === 'BLOCK_ATTACK') pauseAttackGame();
         if (currentMode === 'TETRIS') pauseTetrisGame();
         if (currentMode === 'PUYO_PUYO') pausePuyoGame();
+        if (currentMode === 'FRAMEFALL') pauseFramefallGame();
     });
 }
 if (mobileReset) {
@@ -2170,6 +2223,7 @@ if (mobileReset) {
         if (currentMode === 'BLOCK_ATTACK') startAttackGame();
         if (currentMode === 'TETRIS') startTetrisGame();
         if (currentMode === 'PUYO_PUYO') startPuyoGame();
+        if (currentMode === 'FRAMEFALL') startFramefallGame();
     });
 }
 

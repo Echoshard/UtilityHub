@@ -204,7 +204,7 @@ body {
 
 .mode-select-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, minmax(200px, 1fr));
     gap: 20px;
     width: 100%;
     max-width: 800px;
@@ -253,6 +253,8 @@ body {
     box-shadow: 0 10px 20px rgba(234, 179, 8, 0.15);
 }
 .btn-puyo:hover::after { background: var(--neon-yellow); }
+.btn-framefall:hover { border-color: var(--neon-green); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(34, 197, 94, 0.15); }
+.btn-framefall:hover::after { background: var(--neon-green); }
 
 .mode-title {
     font-family: var(--font-display);
@@ -263,6 +265,7 @@ body {
 .btn-attack .mode-title { color: #22d3ee; }
 .btn-tetris .mode-title { color: #c084fc; }
 .btn-puyo .mode-title { color: #facc15; }
+.btn-framefall .mode-title { color: #4ade80; }
 
 .mode-desc {
     font-size: 0.85rem;
@@ -282,6 +285,7 @@ body {
 .btn-attack:hover .btn-badge { background: var(--neon-blue); color: #fff; border-color: var(--neon-blue); }
 .btn-tetris:hover .btn-badge { background: var(--neon-purple); color: #fff; border-color: var(--neon-purple); }
 .btn-puyo:hover .btn-badge { background: var(--neon-yellow); color: #020617; border-color: var(--neon-yellow); }
+.btn-framefall:hover .btn-badge { background: var(--neon-green); color: #020617; border-color: var(--neon-green); }
 
 /* ----- Game Layout ----- */
 .game-layout {
@@ -465,6 +469,11 @@ body {
     width: 100%;
     height: 100%;
 }
+
+/* Framefall Canvas */
+.framefall-container { width: 384px; height: 576px; border-color: #166534; box-shadow: 0 0 24px rgba(34, 197, 94, 0.18); }
+#framefall-canvas { display: block; width: 384px; height: 576px; }
+.framefall-mission { color: var(--text-muted); font-size: 0.78rem; line-height: 1.5; }
 
 /* Spans inside grids representing block cells */
 .cell {

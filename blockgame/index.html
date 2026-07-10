@@ -62,6 +62,11 @@
                         <p class="mode-desc">Match 4+ Puyos of the same color. Chain reactions trigger massive scores!</p>
                         <span class="btn-badge">PLAY</span>
                     </button>
+                    <button class="mode-btn btn-framefall" id="btn-mode-framefall">
+                        <div class="mode-title">Framefall</div>
+                        <p class="mode-desc">Fire blocks upward to complete and clear descending rectangular frames.</p>
+                        <span class="btn-badge">PLAY</span>
+                    </button>
                 </div>
             </div>
 
@@ -401,6 +406,52 @@
                 </div>
             </div>
 
+            <!-- FRAMEFALL GAME VIEW -->
+            <div id="framefall-view" class="view">
+                <div class="game-layout">
+                    <div class="stats-panel left-panel">
+                        <h2>FRAMEFALL</h2>
+                        <div class="stat-box"><span class="label">SCORE</span><span class="value" id="framefall-score">0</span></div>
+                        <div class="stat-box"><span class="label">HIGH SCORE</span><span class="value" id="framefall-high-score">0</span></div>
+                        <div class="stat-box"><span class="label">SPEED</span><span class="value" id="framefall-speed">90</span></div>
+                        <div class="instructions">
+                            <p><strong>LEFT / RIGHT</strong> to Move</p>
+                            <p><strong>SPACE / X</strong> to Fire</p>
+                            <p><strong>DOWN</strong> to Speed Field</p>
+                            <p><strong>ESC / P</strong> to Pause</p>
+                        </div>
+                    </div>
+                    <div class="board-wrapper">
+                        <div class="mobile-hud">
+                            <div class="hud-item"><span class="hud-label">SCORE</span><span class="hud-value" id="framefall-score-mobile">0</span></div>
+                            <div class="hud-item"><span class="hud-label">BEST</span><span class="hud-value" id="framefall-high-score-mobile">0</span></div>
+                        </div>
+                        <div class="grid-container framefall-container">
+                            <canvas id="framefall-canvas" width="384" height="576" aria-label="Framefall game board"></canvas>
+                        </div>
+                        <div class="overlay gameover-overlay" id="framefall-gameover-overlay">
+                            <h2>GAME OVER</h2>
+                            <p>Final Score: <span id="framefall-final-score">0</span></p>
+                            <button class="btn-retry" id="framefall-retry-btn">Try Again</button>
+                        </div>
+                        <div class="overlay pause-overlay" id="framefall-pause-overlay">
+                            <h2>PAUSED</h2><p>Press Esc or P to Resume</p>
+                        </div>
+                    </div>
+                    <div class="stats-panel right-panel">
+                        <div class="stat-box">
+                            <span class="label">MISSION</span>
+                            <span class="framefall-mission">Complete any rectangular border. Every block inside it clears too.</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="arcade-action-btn" id="framefall-pause-btn" title="Pause">Pause</button>
+                            <button class="arcade-action-btn" id="framefall-reset-btn" title="Reset">Restart</button>
+                            <button class="arcade-action-btn" id="framefall-home-btn" title="Quit to Menu">Games</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Mobile Controls overlay -->
             <div class="mobile-controls-overlay" id="mobile-controls">
                 <div class="dpad">
@@ -483,6 +534,7 @@
         </div>
     </div>
 
+    <script src="quarth.js"></script>
     <script src="app.js"></script>
 </body>
 
