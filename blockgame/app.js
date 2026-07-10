@@ -1,4 +1,131 @@
 // ==========================================
+// COOKIE PERSISTENCE & CUSTOM CONTROLS SYSTEM
+// ==========================================
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/;SameSite=Strict";
+}
+
+function getCookie(name) {
+    const cname = name + "=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const ca = decodedCookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(cname) == 0) {
+            return c.substring(cname.length, c.length);
+        }
+    }
+    return "";
+}
+
+// Control settings state
+let controlScheme = 'classic'; // 'classic' | 'custom'
+let customKeys = {
+    'left': 'ArrowLeft',
+    'right': 'ArrowRight',
+    'hard': ' ',
+    'soft': 'ArrowDown',
+    'rot-cw': 'ArrowUp',
+    'rot-ccw': 'z',
+    'hold': 'c'
+};
+
+// Load settings from cookie
+function loadControlSettings() {
+    const savedScheme = getCookie('arcade_control_scheme');
+    if (savedScheme) {
+        controlScheme = savedScheme;
+    }
+    
+    const savedKeys = getCookie('arcade_custom_keys');
+    if (savedKeys) {
+        try {
+            customKeys = JSON.parse(savedKeys);
+        } catch (e) {
+            console.error("Failed to parse custom keys cookie", e);
+        }
+    }
+    updateGameInstructions();
+}
+loadControlSettings();
+
+function updateGameInstructions() {
+    const attackInst = document.getElementById('attack-instructions');
+    const tetrisInst = document.getElementById('tetris-instructions');
+    const puyoInst = document.getElementById('puyo-instructions');
+    
+    if (controlScheme === 'classic') {
+        if (attackInst) {
+            attackInst.innerHTML = `
+                <p><strong>ARROWS</strong> to Move</p>
+                <p><strong>Z / SPACE</strong> to Swap</p>
+                <p><strong>X</strong> to Push Stack</p>
+            `;
+        }
+        if (tetrisInst) {
+            tetrisInst.innerHTML = `
+                <p><strong>LEFT/RIGHT</strong> to Move</p>
+                <p><strong>UP ARROW</strong> to Rotate CW</p>
+                <p><strong>DOWN ARROW</strong> to Soft Drop</p>
+                <p><strong>Z</strong> to Hold</p>
+                <p><strong>X / SPACE</strong> to Hard Drop</p>
+            `;
+        }
+        if (puyoInst) {
+            puyoInst.innerHTML = `
+                <p><strong>LEFT/RIGHT</strong> to Move</p>
+                <p><strong>UP ARROW</strong> to Rotate CW</p>
+                <p><strong>DOWN ARROW</strong> to Soft Drop</p>
+                <p><strong>Z</strong> to Rotate CCW</p>
+                <p><strong>X / SPACE</strong> to Hard Drop</p>
+            `;
+        }
+    } else {
+        const kLeft = formatKeyName(customKeys['left']).toUpperCase();
+        const kRight = formatKeyName(customKeys['right']).toUpperCase();
+        const kSoft = formatKeyName(customKeys['soft']).toUpperCase();
+        const kRotCW = formatKeyName(customKeys['rot-cw']).toUpperCase();
+        const kRotCCW = formatKeyName(customKeys['rot-ccw']).toUpperCase();
+        const kHard = formatKeyName(customKeys['hard']).toUpperCase();
+        const kHold = formatKeyName(customKeys['hold']).toUpperCase();
+
+        if (attackInst) {
+            attackInst.innerHTML = `
+                <p><strong>${kLeft}/${kRight}</strong> to Move Left/Right</p>
+                <p><strong>${kRotCW}/${kSoft}</strong> to Move Up/Down</p>
+                <p><strong>${kHold}</strong> to Swap</p>
+                <p><strong>${kHard}</strong> to Push Stack</p>
+            `;
+        }
+        if (tetrisInst) {
+            tetrisInst.innerHTML = `
+                <p><strong>${kLeft}/${kRight}</strong> to Move</p>
+                <p><strong>${kRotCW}</strong> to Rotate CW</p>
+                <p><strong>${kRotCCW}</strong> to Rotate CCW</p>
+                <p><strong>${kSoft}</strong> to Soft Drop</p>
+                <p><strong>${kHold}</strong> to Hold</p>
+                <p><strong>${kHard}</strong> to Hard Drop</p>
+            `;
+        }
+        if (puyoInst) {
+            puyoInst.innerHTML = `
+                <p><strong>${kLeft}/${kRight}</strong> to Move</p>
+                <p><strong>${kRotCW}</strong> to Rotate CW</p>
+                <p><strong>${kRotCCW}</strong> to Rotate CCW</p>
+                <p><strong>${kSoft}</strong> to Soft Drop</p>
+                <p><strong>${kHard}</strong> to Hard Drop</p>
+            `;
+        }
+    }
+}
+
+// ==========================================
 // AUDIO SYSTEM (CORS-safe HTML5 Audio & Chiptune Synth)
 // ==========================================
 const sounds = {
@@ -186,6 +313,7 @@ const viewAttack = document.getElementById('attack-view');
 const viewTetris = document.getElementById('tetris-view');
 const viewPuyo = document.getElementById('puyo-view');
 const mobileControls = document.getElementById('mobile-controls');
+const headerGamesBtn = document.getElementById('header-games-btn');
 
 // ==========================================
 // DYNAMIC LAYOUT RESIZING
@@ -199,17 +327,17 @@ function resizeGameLayouts() {
         const screenWidth = screen.clientWidth;
         const screenHeight = screen.clientHeight;
         
-        let designWidth = 730;
+        let designWidth = 790;
         let designHeight = 620;
         
         if (currentMode === 'BLOCK_ATTACK') {
-            designWidth = 720;
+            designWidth = 780;
             designHeight = 590;
         } else if (currentMode === 'TETRIS') {
-            designWidth = 730;
+            designWidth = 790;
             designHeight = 620;
         } else if (currentMode === 'PUYO_PUYO') {
-            designWidth = 725;
+            designWidth = 785;
             designHeight = 530;
         } else {
             layouts.forEach(layout => {
@@ -252,6 +380,15 @@ function switchView(mode) {
     viewTetris.classList.remove('active');
     viewPuyo.classList.remove('active');
     mobileControls.style.display = 'none';
+    
+    // Hide/show games back button in header
+    if (headerGamesBtn) {
+        if (mode === 'MENU') {
+            headerGamesBtn.style.display = 'none';
+        } else {
+            headerGamesBtn.style.display = 'inline-flex';
+        }
+    }
 
     if (mode === 'MENU') {
         viewMenu.classList.add('active');
@@ -282,6 +419,9 @@ if (btnModePuyo) btnModePuyo.addEventListener('click', () => switchView('PUYO_PU
 
 document.getElementById('attack-home-btn').addEventListener('click', () => switchView('MENU'));
 document.getElementById('tetris-home-btn').addEventListener('click', () => switchView('MENU'));
+if (headerGamesBtn) {
+    headerGamesBtn.addEventListener('click', () => switchView('MENU'));
+}
 
 // Handle window resize to toggle mobile controls display and scale games
 window.addEventListener('resize', () => {
@@ -926,6 +1066,25 @@ function tryMove(dx, dy) {
 
 function rotateCurrent() {
     const rotatedShape = rotateShape(tetrisCurrent.shape);
+    const kickOffsets = [0, -1, 1, -2, 2];
+
+    for (const offset of kickOffsets) {
+        const rotated = {
+            ...tetrisCurrent,
+            shape: rotatedShape,
+            x: tetrisCurrent.x + offset
+        };
+        if (isValidPosition(tetrisBoard, rotated)) {
+            tetrisCurrent = rotated;
+            playSound('flip');
+            renderTetris();
+            return;
+        }
+    }
+}
+
+function rotateCurrentCounterClockwise() {
+    const rotatedShape = rotateShape(rotateShape(rotateShape(tetrisCurrent.shape)));
     const kickOffsets = [0, -1, 1, -2, 2];
 
     for (const offset of kickOffsets) {
@@ -1814,7 +1973,16 @@ function handleActionX(isDown) {
 
 // Global Keyboard Handler
 document.addEventListener('keydown', (e) => {
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'x', 'X', 'z', 'Z', 'p', 'P'].includes(e.key)) {
+    // List of keys to prevent default behavior (scrolling, etc.)
+    const preventKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'x', 'X', 'z', 'Z', 'p', 'P'];
+    if (controlScheme === 'custom') {
+        Object.values(customKeys).forEach(k => {
+            if (!preventKeys.includes(k)) preventKeys.push(k);
+        });
+    }
+    
+    // Only prevent default if we're not binding a key inside the modal
+    if (preventKeys.includes(e.key) && !document.querySelector('.key-bind-input.listening')) {
         e.preventDefault(); // prevent scroll
     }
 
@@ -1824,82 +1992,141 @@ document.addEventListener('keydown', (e) => {
         if (currentMode === 'PUYO_PUYO') pausePuyoGame();
         return;
     }
+    
+    // Skip normal game input if mapping keys
+    if (document.querySelector('.key-bind-input.listening')) {
+        return;
+    }
 
-    if (currentMode === 'BLOCK_ATTACK') {
-        if (attackStatus === 'GAMEOVER') {
-            if ([' ', 'z', 'Z', 'x', 'X', 'Enter'].includes(e.key)) startAttackGame();
-            return;
-        }
-        if (attackStatus !== 'PLAYING') return;
+    if (controlScheme === 'classic') {
+        if (currentMode === 'BLOCK_ATTACK') {
+            if (attackStatus === 'GAMEOVER') {
+                if ([' ', 'z', 'Z', 'x', 'X', 'Enter'].includes(e.key)) startAttackGame();
+                return;
+            }
+            if (attackStatus !== 'PLAYING') return;
 
-        switch (e.key) {
-            case 'ArrowUp': handleActionUp(); break;
-            case 'ArrowDown': handleActionDown(); break;
-            case 'ArrowLeft': handleActionLeft(); break;
-            case 'ArrowRight': handleActionRight(); break;
-            case ' ':
-            case 'z':
-            case 'Z':
-                handleActionZ();
-                break;
-            case 'x':
-            case 'X':
-                handleActionX(true);
-                break;
-        }
-    } else if (currentMode === 'TETRIS') {
-        if (tetrisStatus === 'GAMEOVER') {
-            if ([' ', 'z', 'Z', 'x', 'X', 'Enter'].includes(e.key)) startTetrisGame();
-            return;
-        }
-        if (tetrisStatus !== 'PLAYING') return;
+            switch (e.key) {
+                case 'ArrowUp': handleActionUp(); break;
+                case 'ArrowDown': handleActionDown(); break;
+                case 'ArrowLeft': handleActionLeft(); break;
+                case 'ArrowRight': handleActionRight(); break;
+                case ' ':
+                case 'z':
+                case 'Z':
+                    handleActionZ();
+                    break;
+                case 'x':
+                case 'X':
+                    handleActionX(true);
+                    break;
+            }
+        } else if (currentMode === 'TETRIS') {
+            if (tetrisStatus === 'GAMEOVER') {
+                if ([' ', 'z', 'Z', 'x', 'X', 'Enter'].includes(e.key)) startTetrisGame();
+                return;
+            }
+            if (tetrisStatus !== 'PLAYING') return;
 
-        switch (e.key) {
-            case 'ArrowUp': handleActionUp(); break;
-            case 'ArrowDown': handleActionDown(); break;
-            case 'ArrowLeft': handleActionLeft(); break;
-            case 'ArrowRight': handleActionRight(); break;
-            case ' ':
-            case 'x':
-            case 'X':
-                handleActionX(true);
-                break;
-            case 'z':
-            case 'Z':
-                handleActionZ();
-                break;
-        }
-    } else if (currentMode === 'PUYO_PUYO') {
-        if (puyoStatus === 'GAMEOVER') {
-            if ([' ', 'z', 'Z', 'x', 'X', 'Enter'].includes(e.key)) startPuyoGame();
-            return;
-        }
-        if (puyoStatus !== 'PLAYING') return;
+            switch (e.key) {
+                case 'ArrowUp': handleActionUp(); break;
+                case 'ArrowDown': handleActionDown(); break;
+                case 'ArrowLeft': handleActionLeft(); break;
+                case 'ArrowRight': handleActionRight(); break;
+                case ' ':
+                case 'x':
+                case 'X':
+                    handleActionX(true);
+                    break;
+                case 'z':
+                case 'Z':
+                    handleActionZ();
+                    break;
+            }
+        } else if (currentMode === 'PUYO_PUYO') {
+            if (puyoStatus === 'GAMEOVER') {
+                if ([' ', 'z', 'Z', 'x', 'X', 'Enter'].includes(e.key)) startPuyoGame();
+                return;
+            }
+            if (puyoStatus !== 'PLAYING') return;
 
-        switch (e.key) {
-            case 'ArrowUp': handleActionUp(); break;
-            case 'ArrowDown': handleActionDown(); break;
-            case 'ArrowLeft': handleActionLeft(); break;
-            case 'ArrowRight': handleActionRight(); break;
-            case ' ':
-            case 'x':
-            case 'X':
-                handleActionX(true);
-                break;
-            case 'z':
-            case 'Z':
-                handleActionZ();
-                break;
+            switch (e.key) {
+                case 'ArrowUp': handleActionUp(); break;
+                case 'ArrowDown': handleActionDown(); break;
+                case 'ArrowLeft': handleActionLeft(); break;
+                case 'ArrowRight': handleActionRight(); break;
+                case ' ':
+                case 'x':
+                case 'X':
+                    handleActionX(true);
+                    break;
+                case 'z':
+                case 'Z':
+                    handleActionZ();
+                    break;
+            }
+        }
+    } else {
+        // Custom Controls Mode
+        if (currentMode === 'BLOCK_ATTACK') {
+            if (attackStatus === 'GAMEOVER') {
+                if ([customKeys['hard'], customKeys['hold'], 'Enter'].includes(e.key)) startAttackGame();
+                return;
+            }
+            if (attackStatus !== 'PLAYING') return;
+
+            if (e.key === customKeys['left']) handleActionLeft();
+            else if (e.key === customKeys['right']) handleActionRight();
+            else if (e.key === customKeys['soft']) handleActionDown();
+            else if (e.key === customKeys['rot-cw']) handleActionUp();
+            else if (e.key === customKeys['hold']) handleActionZ(); // Swap
+            else if (e.key === customKeys['hard']) handleActionX(true); // Push Stack
+        } else if (currentMode === 'TETRIS') {
+            if (tetrisStatus === 'GAMEOVER') {
+                if ([customKeys['hard'], customKeys['hold'], 'Enter'].includes(e.key)) startTetrisGame();
+                return;
+            }
+            if (tetrisStatus !== 'PLAYING') return;
+
+            if (e.key === customKeys['left']) handleActionLeft();
+            else if (e.key === customKeys['right']) handleActionRight();
+            else if (e.key === customKeys['soft']) handleActionDown();
+            else if (e.key === customKeys['rot-cw']) handleActionUp();
+            else if (e.key === customKeys['rot-ccw']) rotateCurrentCounterClockwise();
+            else if (e.key === customKeys['hard']) handleActionX(true);
+            else if (e.key === customKeys['hold']) handleActionZ();
+        } else if (currentMode === 'PUYO_PUYO') {
+            if (puyoStatus === 'GAMEOVER') {
+                if ([customKeys['hard'], customKeys['hold'], 'Enter'].includes(e.key)) startPuyoGame();
+                return;
+            }
+            if (puyoStatus !== 'PLAYING') return;
+
+            if (e.key === customKeys['left']) handleActionLeft();
+            else if (e.key === customKeys['right']) handleActionRight();
+            else if (e.key === customKeys['soft']) handleActionDown();
+            else if (e.key === customKeys['rot-cw']) handleActionUp();
+            else if (e.key === customKeys['rot-ccw']) rotatePuyo(-1);
+            else if (e.key === customKeys['hard']) handleActionX(true);
         }
     }
 });
 
 document.addEventListener('keyup', (e) => {
-    if (currentMode === 'BLOCK_ATTACK' && e.key.toLowerCase() === 'x') {
-        handleActionX(false);
-    }
-    if (currentMode === 'PUYO_PUYO' && e.key.toLowerCase() === 'x') {
-        handleActionX(false);
+    if (controlScheme === 'classic') {
+        if (currentMode === 'BLOCK_ATTACK' && e.key.toLowerCase() === 'x') {
+            handleActionX(false);
+        }
+        if (currentMode === 'PUYO_PUYO' && e.key.toLowerCase() === 'x') {
+            handleActionX(false);
+        }
+    } else {
+        if (currentMode === 'BLOCK_ATTACK' && e.key === customKeys['hard']) {
+            handleActionX(false);
+        }
+        if (currentMode === 'PUYO_PUYO' && e.key === customKeys['hard']) {
+            handleActionX(false);
+        }
     }
 });
 
@@ -1949,5 +2176,151 @@ if (mobileReset) {
 // Initial layout scale call
 resizeGameLayouts();
 
+// Initialize custom controls UI
+initControlsUI();
+
 // Launch
 switchView('MENU');
+
+// ==========================================
+// CONTROLS CONFIGURATION & BINDINGS SETUP
+// ==========================================
+function initControlsUI() {
+    const modal = document.getElementById('controls-modal');
+    const toggleBtn = document.getElementById('controls-toggle-btn');
+    const closeBtn = document.getElementById('btn-close-modal');
+    const resetBtn = document.getElementById('btn-reset-keys');
+    const classicBtn = document.getElementById('scheme-classic-btn');
+    const customBtn = document.getElementById('scheme-custom-btn');
+    const configContainer = document.getElementById('custom-keys-config');
+    
+    if (!modal) return;
+    
+    // Toggle modal visibility
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            updateControlsUI();
+            modal.classList.add('open');
+        });
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('open');
+        });
+    }
+    
+    // Close modal if clicking outside content
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('open');
+        }
+    });
+    
+    // Switch to classic
+    if (classicBtn) {
+        classicBtn.addEventListener('click', () => {
+            controlScheme = 'classic';
+            setCookie('arcade_control_scheme', 'classic', 365);
+            classicBtn.classList.add('active');
+            if (customBtn) customBtn.classList.remove('active');
+            if (configContainer) configContainer.classList.add('disabled');
+            updateGameInstructions();
+        });
+    }
+    
+    // Switch to custom
+    if (customBtn) {
+        customBtn.addEventListener('click', () => {
+            controlScheme = 'custom';
+            setCookie('arcade_control_scheme', 'custom', 365);
+            customBtn.classList.add('active');
+            if (classicBtn) classicBtn.classList.remove('active');
+            if (configContainer) configContainer.classList.remove('disabled');
+            updateGameInstructions();
+        });
+    }
+    
+    // Reset keybinds
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            customKeys = {
+                'left': 'ArrowLeft',
+                'right': 'ArrowRight',
+                'hard': ' ',
+                'soft': 'ArrowDown',
+                'rot-cw': 'ArrowUp',
+                'rot-ccw': 'z',
+                'hold': 'c'
+            };
+            setCookie('arcade_custom_keys', JSON.stringify(customKeys), 365);
+            updateControlsUI();
+            updateGameInstructions();
+        });
+    }
+    
+    // Map button click listeners for each binding row
+    const bindingActions = ['left', 'right', 'hard', 'soft', 'rot-cw', 'rot-ccw', 'hold'];
+    bindingActions.forEach(action => {
+        const btn = document.getElementById('bind-' + action);
+        if (btn) {
+            btn.addEventListener('click', () => {
+                // Clear any other active listening states
+                document.querySelectorAll('.key-bind-input').forEach(b => {
+                    b.classList.remove('listening');
+                    const act = b.id.replace('bind-', '');
+                    b.textContent = formatKeyName(customKeys[act]);
+                });
+                
+                btn.classList.add('listening');
+                btn.textContent = "Press any key...";
+                
+                const captureKey = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const newKey = e.key;
+                    customKeys[action] = newKey;
+                    setCookie('arcade_custom_keys', JSON.stringify(customKeys), 365);
+                    
+                    btn.textContent = formatKeyName(newKey);
+                    btn.classList.remove('listening');
+                    updateGameInstructions();
+                    
+                    window.removeEventListener('keydown', captureKey, true);
+                };
+                
+                window.addEventListener('keydown', captureKey, true);
+            });
+        }
+    });
+}
+
+function formatKeyName(key) {
+    if (key === ' ') return 'Space';
+    return key;
+}
+
+function updateControlsUI() {
+    const classicBtn = document.getElementById('scheme-classic-btn');
+    const customBtn = document.getElementById('scheme-custom-btn');
+    const configContainer = document.getElementById('custom-keys-config');
+    
+    if (controlScheme === 'classic') {
+        if (classicBtn) classicBtn.classList.add('active');
+        if (customBtn) customBtn.classList.remove('active');
+        if (configContainer) configContainer.classList.add('disabled');
+    } else {
+        if (customBtn) customBtn.classList.add('active');
+        if (classicBtn) classicBtn.classList.remove('active');
+        if (configContainer) configContainer.classList.remove('disabled');
+    }
+    
+    const bindingActions = ['left', 'right', 'hard', 'soft', 'rot-cw', 'rot-ccw', 'hold'];
+    bindingActions.forEach(action => {
+        const btn = document.getElementById('bind-' + action);
+        if (btn) {
+            btn.textContent = formatKeyName(customKeys[action]);
+        }
+    });
+}

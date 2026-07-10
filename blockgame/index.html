@@ -12,18 +12,28 @@
     <div class="arcade-container">
         <!-- Arcade Header -->
         <header class="arcade-header">
-            <a href="../index.html" class="btn-back">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                <span>Hub</span>
-            </a>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="../index.html" class="btn-back">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Hub</span>
+                </a>
+                <button class="btn-back" id="header-games-btn" style="display: none; cursor: pointer; font-family: inherit;">
+                    <span>🕹️ Games</span>
+                </button>
+            </div>
             <h1>Arcade Cabinet</h1>
-            <button class="music-toggle-btn" id="music-toggle-btn" title="Toggle Music">
-                <span id="music-icon">🎵 On</span>
-            </button>
+            <div class="header-actions" style="display: flex; gap: 8px;">
+                <button class="controls-toggle-btn" id="controls-toggle-btn" title="Key Bindings">
+                    <span>🎮 Controls</span>
+                </button>
+                <button class="music-toggle-btn" id="music-toggle-btn" title="Toggle Music">
+                    <span id="music-icon">🎵 On</span>
+                </button>
+            </div>
         </header>
 
         <!-- Main Arcade Screen -->
@@ -78,7 +88,7 @@
                             <input type="range" id="attack-speed-slider" min="0.02" max="0.5" step="0.01" value="0.05">
                             <span class="value" id="attack-speed-val">5</span>
                         </div>
-                        <div class="instructions">
+                        <div class="instructions" id="attack-instructions">
                             <p><strong>ARROWS</strong> to Move</p>
                             <p><strong>Z / SPACE</strong> to Swap</p>
                             <p><strong>X</strong> to Push Stack</p>
@@ -174,7 +184,7 @@
                             <span class="label">LINES</span>
                             <span class="value" id="tetris-lines">0</span>
                         </div>
-                        <div class="instructions">
+                        <div class="instructions" id="tetris-instructions">
                             <p><strong>ARROWS</strong> to Move / Rotate</p>
                             <p><strong>Z</strong> to Hold</p>
                             <p><strong>X / SPACE</strong> to Hard Drop</p>
@@ -298,7 +308,7 @@
                             <span class="label">LEVEL</span>
                             <span class="value" id="puyo-level">1</span>
                         </div>
-                        <div class="instructions">
+                        <div class="instructions" id="puyo-instructions">
                             <p><strong>ARROWS</strong> to Move / Soft Drop</p>
                             <p><strong>Z / X</strong> to Rotate CCW / CW</p>
                             <p><strong>SPACE</strong> to Hard Drop</p>
@@ -415,6 +425,62 @@
         <footer class="cabinet-footer">
             <p>CLASSIC ARCADE</p>
         </footer>
+
+        <!-- Controls Settings Modal -->
+        <div class="overlay" id="controls-modal">
+            <div class="modal-content controls-modal-content">
+                <h2>Arcade Key Bindings</h2>
+                
+                <!-- Scheme Toggle -->
+                <div class="scheme-toggle-group">
+                    <span class="toggle-label">Control Scheme:</span>
+                    <div class="toggle-buttons">
+                        <button class="scheme-btn active" id="scheme-classic-btn">Classic Mode</button>
+                        <button class="scheme-btn" id="scheme-custom-btn">Custom Mode</button>
+                    </div>
+                </div>
+
+                <!-- Custom Keys Configuration (Disabled in Classic Mode) -->
+                <div class="custom-keys-config" id="custom-keys-config">
+                    <p class="config-desc">Click any action button to remap the key binding.</p>
+                    <div class="keybind-list">
+                        <div class="keybind-row">
+                            <span class="action-name">Left Shift (Move Left)</span>
+                            <button class="key-bind-input" id="bind-left">ArrowLeft</button>
+                        </div>
+                        <div class="keybind-row">
+                            <span class="action-name">Right Shift (Move Right)</span>
+                            <button class="key-bind-input" id="bind-right">ArrowRight</button>
+                        </div>
+                        <div class="keybind-row">
+                            <span class="action-name">Hard Drop</span>
+                            <button class="key-bind-input" id="bind-hard">Space</button>
+                        </div>
+                        <div class="keybind-row">
+                            <span class="action-name">Soft Drop</span>
+                            <button class="key-bind-input" id="bind-soft">ArrowDown</button>
+                        </div>
+                        <div class="keybind-row">
+                            <span class="action-name">Rotate Clockwise</span>
+                            <button class="key-bind-input" id="bind-rot-cw">ArrowUp</button>
+                        </div>
+                        <div class="keybind-row">
+                            <span class="action-name">Rotate Counterclockwise</span>
+                            <button class="key-bind-input" id="bind-rot-ccw">z</button>
+                        </div>
+                        <div class="keybind-row">
+                            <span class="action-name">Hold / Swap</span>
+                            <button class="key-bind-input" id="bind-hold">c</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-reset-keys" id="btn-reset-keys">Reset Defaults</button>
+                    <button class="btn-close-modal" id="btn-close-modal">Save &amp; Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>

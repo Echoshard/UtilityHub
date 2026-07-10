@@ -298,7 +298,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    width: 180px;
+    width: 210px;
 }
 
 .stats-panel h2 {
@@ -991,4 +991,231 @@ select option {
 select option:checked {
     background-color: #06b6d4;
     color: #021016;
+}
+
+/* ----- Controls Toggle Button ----- */
+.controls-toggle-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.controls-toggle-btn:hover {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+}
+
+/* ----- Controls Modal Content ----- */
+.controls-modal-content {
+    background: rgba(15, 23, 42, 0.95);
+    border: 2px solid var(--neon-blue);
+    border-radius: 20px;
+    padding: 24px;
+    width: 90%;
+    max-width: 440px;
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+.controls-modal-content h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-align: center;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+    margin: 0;
+}
+
+/* Scheme Toggle Button Styling */
+.scheme-toggle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.scheme-toggle-group .toggle-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.scheme-toggle-group .toggle-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.scheme-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.scheme-btn.active {
+    background: var(--neon-blue);
+    color: #020617;
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.4);
+    font-weight: 700;
+}
+
+/* Key Bindings List */
+.custom-keys-config {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: opacity 0.3s ease;
+}
+
+.custom-keys-config.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.config-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 0;
+}
+
+.keybind-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Custom Scrollbar for Bindings List */
+.keybind-list::-webkit-scrollbar {
+    width: 6px;
+}
+.keybind-list::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+}
+.keybind-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+.keybind-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.action-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #cbd5e1;
+}
+
+.key-bind-input {
+    min-width: 100px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid #334155;
+    color: #38bdf8;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.key-bind-input:hover {
+    border-color: var(--neon-blue);
+    background: rgba(6, 182, 212, 0.05);
+}
+
+.key-bind-input.listening {
+    border-color: var(--neon-purple);
+    color: #c084fc;
+    background: rgba(168, 85, 247, 0.1);
+    animation: pulseBorder 0.6s infinite alternate;
+}
+
+@keyframes pulseBorder {
+    from { box-shadow: 0 0 4px rgba(168, 85, 247, 0.2); }
+    to { box-shadow: 0 0 10px rgba(168, 85, 247, 0.6); }
+}
+
+/* Modal Action Buttons */
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.btn-reset-keys {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-reset-keys:hover {
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.btn-close-modal {
+    flex: 1;
+    background: var(--neon-blue);
+    border: none;
+    color: #020617;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-close-modal:hover {
+    background: #22d3ee;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
 }
