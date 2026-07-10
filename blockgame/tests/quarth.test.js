@@ -3,6 +3,8 @@ const {
     createFramefallBoard,
     hasCompletePerimeter,
     findCompletedRectangle,
+    canSpawnFramefallShape,
+    createFramefallSeed,
     FRAMEFALL_SHAPES
 } = require('../quarth.js');
 
@@ -10,6 +12,12 @@ const block = groupId => ({ type: 'block', groupId });
 assert(FRAMEFALL_SHAPES.some(shape => shape.id === 'wide-short-t'));
 assert(FRAMEFALL_SHAPES.some(shape => shape.id === 'medium-t'));
 assert(FRAMEFALL_SHAPES.some(shape => shape.id === 'narrow-long-t'));
+assert(Number.isInteger(createFramefallSeed()) && createFramefallSeed() > 0);
+const openArch = { width: 3, cells: [[0, 0], [1, 0], [2, 0], [0, 1], [2, 1]] };
+let board = createFramefallBoard(8, 6);
+assert(canSpawnFramefallShape(board, openArch, 1));
+board[7][2] = block(9);
+assert.strictEqual(canSpawnFramefallShape(board, openArch, 1), false);
 
 function addBorder(board, left, right, top, bottom, groupId = 1) {
     for (let column = left; column <= right; column++) {
@@ -23,7 +31,7 @@ function addBorder(board, left, right, top, bottom, groupId = 1) {
 }
 
 // Hollow rectangle.
-let board = createFramefallBoard(6, 6);
+board = createFramefallBoard(6, 6);
 addBorder(board, 1, 4, 1, 4);
 assert(hasCompletePerimeter(board, { left: 1, right: 4, top: 1, bottom: 4 }));
 assert.deepStrictEqual(

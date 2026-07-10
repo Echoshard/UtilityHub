@@ -124,13 +124,37 @@ function framefallRandom() {
     return (framefallSeed >>> 0) / 4294967296;
 }
 
+function createFramefallSeed() {
+    if (globalThis.crypto?.getRandomValues) {
+        const values = new Uint32Array(1);
+        globalThis.crypto.getRandomValues(values);
+        return values[0] || 0x4f524745;
+    }
+    return (Date.now() >>> 0) || 0x4f524745;
+}
+
+function canSpawnFramefallShape(board, shape, column) {
+    const lowestRowByColumn = new Map();
+    for (const [x, y] of shape.cells) {
+        const boardColumn = column + x;
+        if (board[y][boardColumn]) return false;
+        lowestRowByColumn.set(boardColumn, Math.max(lowestRowByColumn.get(boardColumn) ?? -1, y));
+    }
+    for (const [boardColumn, lowestRow] of lowestRowByColumn) {
+        for (let row = lowestRow + 1; row < board.length; row++) {
+            if (board[row][boardColumn]) return false;
+        }
+    }
+    return true;
+}
+
 function spawnFramefallShape() {
     const shape = FRAMEFALL_SHAPES[Math.floor(framefallRandom() * FRAMEFALL_SHAPES.length)];
     const start = Math.floor(framefallRandom() * (FRAMEFALL_COLS - shape.width + 1));
     let column = -1;
     for (let offset = 0; offset <= FRAMEFALL_COLS - shape.width; offset++) {
         const candidate = (start + offset) % (FRAMEFALL_COLS - shape.width + 1);
-        if (shape.cells.every(([x, y]) => !framefallBoard[y][candidate + x])) {
+        if (canSpawnFramefallShape(framefallBoard, shape, candidate)) {
             column = candidate;
             break;
         }
@@ -331,13 +355,13 @@ function startFramefallGame() {
     framefallHighScore = loadFramefallHighScore();
     framefallStatus = 'PLAYING';
     framefallFast = false;
-    framefallScrollInterval = 90;
+    framefallSeed = createFramefallSeed();
+    framefallScrollInterval = 80 + Math.floor(framefallRandom() * 21);
     framefallScrollTicks = 0;
     framefallDifficultyTicks = 0;
     framefallSpawnDelay = FRAMEFALL_START_SPAWN_DELAY;
     framefallSpawnCountdown = framefallSpawnDelay;
     framefallGroupId = 0;
-    framefallSeed = 0x4f524745;
     framefallClearingRect = null;
     framefallClearTicks = 0;
     framefallAccumulator = 0;
@@ -405,5 +429,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== 'undefined') {
-    module.exports = { createFramefallBoard, hasCompletePerimeter, findCompletedRectangle, FRAMEFALL_SHAPES };
+    module.exports = { createFramefallBoard, hasCompletePerimeter, findCompletedRectangle, createFramefallSeed, canSpawnFramefallShape, FRAMEFALL_SHAPES };
 }

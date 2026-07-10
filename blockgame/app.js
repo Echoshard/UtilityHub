@@ -59,6 +59,7 @@ function updateGameInstructions() {
     const attackInst = document.getElementById('attack-instructions');
     const tetrisInst = document.getElementById('tetris-instructions');
     const puyoInst = document.getElementById('puyo-instructions');
+    const framefallInst = document.getElementById('framefall-instructions');
     
     if (controlScheme === 'classic') {
         if (attackInst) {
@@ -84,6 +85,14 @@ function updateGameInstructions() {
                 <p><strong>DOWN ARROW</strong> to Soft Drop</p>
                 <p><strong>Z</strong> to Rotate CCW</p>
                 <p><strong>X / SPACE</strong> to Hard Drop</p>
+            `;
+        }
+        if (framefallInst) {
+            framefallInst.innerHTML = `
+                <p><strong>LEFT / RIGHT</strong> to Move</p>
+                <p><strong>SPACE / X</strong> to Fire</p>
+                <p><strong>DOWN</strong> to Speed Field</p>
+                <p><strong>ESC / P</strong> to Pause</p>
             `;
         }
     } else {
@@ -120,6 +129,14 @@ function updateGameInstructions() {
                 <p><strong>${kRotCCW}</strong> to Rotate CCW</p>
                 <p><strong>${kSoft}</strong> to Soft Drop</p>
                 <p><strong>${kHard}</strong> to Hard Drop</p>
+            `;
+        }
+        if (framefallInst) {
+            framefallInst.innerHTML = `
+                <p><strong>${kLeft}/${kRight}</strong> to Move</p>
+                <p><strong>${kHard}</strong> to Fire</p>
+                <p><strong>${kSoft}</strong> to Speed Field</p>
+                <p><strong>ESC / P</strong> to Pause</p>
             `;
         }
     }
