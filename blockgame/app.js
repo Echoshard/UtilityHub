@@ -61,6 +61,14 @@ const ATTACK_DURS = [
     4, 4, 4, 4, 4, 4, 8, 4
 ];
 
+// Puyo Puyo Upbeat Theme
+const PUYO_MELODY = [
+    'A4', 'C5', 'E5', 'A5', 'G5', 'E5', 'C5', 'D5', 'F5', 'A5', 'D6', 'C6', 'A5', 'F5', 'G5', 'rest'
+];
+const PUYO_DURS = [
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4
+];
+
 function initMusicContext() {
     if (!musicCtx) {
         musicCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -77,8 +85,8 @@ function playChiptuneTrack(trackName) {
     initMusicContext();
     if (!musicCtx) return;
     
-    const melody = (trackName === 'TETRIS') ? TETRIS_MELODY : ATTACK_MELODY;
-    const durs = (trackName === 'TETRIS') ? TETRIS_DURS : ATTACK_DURS;
+    const melody = (trackName === 'TETRIS') ? TETRIS_MELODY : ((trackName === 'PUYO_PUYO') ? PUYO_MELODY : ATTACK_MELODY);
+    const durs = (trackName === 'TETRIS') ? TETRIS_DURS : ((trackName === 'PUYO_PUYO') ? PUYO_DURS : ATTACK_DURS);
     
     let index = 0;
     
@@ -86,6 +94,7 @@ function playChiptuneTrack(trackName) {
         if (chiptuneMuted || currentMode !== trackName) return;
         if (currentMode === 'TETRIS' && tetrisStatus !== 'PLAYING') return;
         if (currentMode === 'BLOCK_ATTACK' && attackStatus !== 'PLAYING') return;
+        if (currentMode === 'PUYO_PUYO' && puyoStatus !== 'PLAYING') return;
         
         const note = melody[index];
         const durSteps = durs[index];
@@ -175,7 +184,59 @@ let currentMode = 'MENU'; // 'MENU' | 'BLOCK_ATTACK' | 'TETRIS'
 const viewMenu = document.getElementById('menu-view');
 const viewAttack = document.getElementById('attack-view');
 const viewTetris = document.getElementById('tetris-view');
+const viewPuyo = document.getElementById('puyo-view');
 const mobileControls = document.getElementById('mobile-controls');
+
+// ==========================================
+// DYNAMIC LAYOUT RESIZING
+// ==========================================
+function resizeGameLayouts() {
+    const screens = document.querySelectorAll('.arcade-screen');
+    screens.forEach(screen => {
+        const layouts = screen.querySelectorAll('.view.active .game-layout');
+        if (layouts.length === 0) return;
+        
+        const screenWidth = screen.clientWidth;
+        const screenHeight = screen.clientHeight;
+        
+        let designWidth = 730;
+        let designHeight = 620;
+        
+        if (currentMode === 'BLOCK_ATTACK') {
+            designWidth = 720;
+            designHeight = 590;
+        } else if (currentMode === 'TETRIS') {
+            designWidth = 730;
+            designHeight = 620;
+        } else if (currentMode === 'PUYO_PUYO') {
+            designWidth = 725;
+            designHeight = 530;
+        } else {
+            layouts.forEach(layout => {
+                layout.style.transform = '';
+            });
+            return;
+        }
+
+        const isMobile = window.innerWidth <= 768;
+        let availHeight = screenHeight;
+        if (isMobile) {
+            designWidth = currentMode === 'TETRIS' ? 320 : (currentMode === 'PUYO_PUYO' ? 260 : 308);
+            designHeight = currentMode === 'TETRIS' ? 690 : (currentMode === 'PUYO_PUYO' ? 590 : 660);
+            availHeight = Math.max(200, screenHeight - 180);
+        }
+        
+        let scale = Math.min(screenWidth / designWidth, availHeight / designHeight);
+        if (scale > 1.0) {
+            scale = 1.0;
+        }
+        
+        layouts.forEach(layout => {
+            layout.style.transform = `scale(${scale})`;
+            layout.style.transformOrigin = 'center center';
+        });
+    });
+}
 
 function switchView(mode) {
     currentMode = mode;
@@ -183,11 +244,13 @@ function switchView(mode) {
     // Stop any active loops & music
     stopAttackGame();
     stopTetrisGame();
+    stopPuyoGame();
     stopChiptune();
 
     viewMenu.classList.remove('active');
     viewAttack.classList.remove('active');
     viewTetris.classList.remove('active');
+    viewPuyo.classList.remove('active');
     mobileControls.style.display = 'none';
 
     if (mode === 'MENU') {
@@ -202,22 +265,32 @@ function switchView(mode) {
         if (window.innerWidth <= 768) mobileControls.style.display = 'flex';
         startTetrisGame();
         playChiptuneTrack('TETRIS');
+    } else if (mode === 'PUYO_PUYO') {
+        viewPuyo.classList.add('active');
+        if (window.innerWidth <= 768) mobileControls.style.display = 'flex';
+        startPuyoGame();
+        playChiptuneTrack('PUYO_PUYO');
     }
+    
+    setTimeout(resizeGameLayouts, 0);
 }
 
 document.getElementById('btn-mode-attack').addEventListener('click', () => switchView('BLOCK_ATTACK'));
 document.getElementById('btn-mode-tetris').addEventListener('click', () => switchView('TETRIS'));
+const btnModePuyo = document.getElementById('btn-mode-puyo');
+if (btnModePuyo) btnModePuyo.addEventListener('click', () => switchView('PUYO_PUYO'));
 
 document.getElementById('attack-home-btn').addEventListener('click', () => switchView('MENU'));
 document.getElementById('tetris-home-btn').addEventListener('click', () => switchView('MENU'));
 
-// Handle window resize to toggle mobile controls display
+// Handle window resize to toggle mobile controls display and scale games
 window.addEventListener('resize', () => {
     if (currentMode !== 'MENU' && window.innerWidth <= 768) {
         mobileControls.style.display = 'flex';
     } else {
         mobileControls.style.display = 'none';
     }
+    resizeGameLayouts();
 });
 
 // ==========================================
@@ -582,7 +655,12 @@ function renderAttackGrid() {
     
     // Sync HUD stats
     attackScoreEl.textContent = attackScore;
+    const attackScoreMobileEl = document.getElementById('attack-score-mobile');
+    if (attackScoreMobileEl) attackScoreMobileEl.textContent = attackScore;
+
     attackLevelEl.textContent = attackLevel;
+    const attackLevelMobileEl = document.getElementById('attack-level-mobile');
+    if (attackLevelMobileEl) attackLevelMobileEl.textContent = attackLevel;
 }
 
 function renderAttackParticles() {
@@ -624,6 +702,11 @@ function startAttackGame() {
     attackCursor = { x: 2, y: 6 };
     isPushingStack = false;
 
+    // Reset initial timer text displays
+    attackTimeEl.textContent = "0:00";
+    const attackTimeMobileInitial = document.getElementById('attack-time-mobile');
+    if (attackTimeMobileInitial) attackTimeMobileInitial.textContent = "0:00";
+
     initAttackGrid();
     attackStatus = 'PLAYING';
     playChiptuneTrack('BLOCK_ATTACK');
@@ -635,7 +718,10 @@ function startAttackGame() {
             attackTime++;
             const mins = Math.floor(attackTime / 60);
             const secs = attackTime % 60;
-            attackTimeEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            const formatted = `${mins}:${secs.toString().padStart(2, '0')}`;
+            attackTimeEl.textContent = formatted;
+            const attackTimeMobileEl = document.getElementById('attack-time-mobile');
+            if (attackTimeMobileEl) attackTimeMobileEl.textContent = formatted;
             
             // Level up speed slightly every 30 seconds
             if (attackTime % 30 === 0) {
@@ -1018,12 +1104,25 @@ function renderTetris() {
 
     // Stats
     tetrisScoreEl.textContent = tetrisScore;
+    const tetrisScoreMobileEl = document.getElementById('tetris-score-mobile');
+    if (tetrisScoreMobileEl) tetrisScoreMobileEl.textContent = tetrisScore;
+
     tetrisLevelEl.textContent = tetrisLevel;
+    const tetrisLevelMobileEl = document.getElementById('tetris-level-mobile');
+    if (tetrisLevelMobileEl) tetrisLevelMobileEl.textContent = tetrisLevel;
+
     tetrisLinesEl.textContent = tetrisLines;
+    const tetrisLinesMobileEl = document.getElementById('tetris-lines-mobile');
+    if (tetrisLinesMobileEl) tetrisLinesMobileEl.textContent = tetrisLines;
     
     // Hold / Next previews
     renderPreview(tetrisHold, tetrisHoldEl);
     renderPreview(tetrisNext, tetrisNextEl);
+
+    const tetrisHoldMobileEl = document.getElementById('tetris-hold-grid-mobile');
+    if (tetrisHoldMobileEl) renderPreview(tetrisHold, tetrisHoldMobileEl);
+    const tetrisNextMobileEl = document.getElementById('tetris-next-grid-mobile');
+    if (tetrisNextMobileEl) renderPreview(tetrisNext, tetrisNextMobileEl);
 }
 
 function triggerTetrisGameOver() {
@@ -1082,6 +1181,11 @@ function startTetrisGame() {
     tetrisSpeedSetting = parseInt(tetrisSpeedSlider.value, 10) || 1;
     calculateTetrisDropInterval();
     
+    // Reset initial timer text displays
+    tetrisTimeEl.textContent = "0:00";
+    const tetrisTimeMobileInitial = document.getElementById('tetris-time-mobile');
+    if (tetrisTimeMobileInitial) tetrisTimeMobileInitial.textContent = "0:00";
+
     tetrisStatus = 'PLAYING';
     playChiptuneTrack('TETRIS');
     
@@ -1092,7 +1196,10 @@ function startTetrisGame() {
             tetrisTime++;
             const mins = Math.floor(tetrisTime / 60);
             const secs = tetrisTime % 60;
-            tetrisTimeEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            const formatted = `${mins}:${secs.toString().padStart(2, '0')}`;
+            tetrisTimeEl.textContent = formatted;
+            const tetrisTimeMobileEl = document.getElementById('tetris-time-mobile');
+            if (tetrisTimeMobileEl) tetrisTimeMobileEl.textContent = formatted;
         }
     }, 1000);
 
@@ -1128,6 +1235,500 @@ document.getElementById('tetris-reset-btn').addEventListener('click', startTetri
 document.getElementById('tetris-retry-btn').addEventListener('click', startTetrisGame);
 
 // ==========================================
+// PUYO PUYO GAME LOGIC
+// ==========================================
+const PUYO_COLS = 6;
+const PUYO_ROWS = 12;
+
+const PUYO_COLORS = [
+    '#ef4444', // Red
+    '#22c55e', // Green
+    '#eab308', // Yellow
+    '#a855f7', // Purple
+    '#3b82f6'  // Blue
+];
+
+let puyoBoard = [];
+let puyoCurrent = null;
+let puyoNext = null;
+let puyoScore = 0;
+let puyoChain = 0;
+let puyoLevel = 1;
+let puyoTime = 0;
+let puyoTimeTimer = null;
+let puyoDropInterval = 800; // ms
+let puyoSpeedSetting = 1; // 1-10
+let puyoStatus = 'GAMEOVER'; // 'PLAYING' | 'PAUSED' | 'GAMEOVER'
+let puyoState = 'PLAYING'; // 'PLAYING' | 'RESOLVING'
+let puyoLoopId = null;
+let lastPuyoDropTime = 0;
+
+const puyoGridEl = document.getElementById('puyo-grid');
+const puyoNextEl = document.getElementById('puyo-next-grid');
+const puyoNextMobileEl = document.getElementById('puyo-next-grid-mobile');
+const puyoScoreEl = document.getElementById('puyo-score');
+const puyoScoreMobileEl = document.getElementById('puyo-score-mobile');
+const puyoChainEl = document.getElementById('puyo-chain');
+const puyoChainMobileEl = document.getElementById('puyo-chain-mobile');
+const puyoLevelEl = document.getElementById('puyo-level');
+const puyoLevelMobileEl = document.getElementById('puyo-level-mobile');
+const puyoTimeEl = document.getElementById('puyo-time');
+const puyoTimeMobileEl = document.getElementById('puyo-time-mobile');
+const puyoSpeedSlider = document.getElementById('puyo-speed-slider');
+const puyoSpeedVal = document.getElementById('puyo-speed-val');
+
+if (puyoSpeedSlider) {
+    puyoSpeedSlider.addEventListener('input', () => {
+        const val = parseInt(puyoSpeedSlider.value, 10);
+        if (puyoSpeedVal) puyoSpeedVal.textContent = val;
+        puyoSpeedSetting = val;
+        calculatePuyoDropInterval();
+    });
+}
+
+function calculatePuyoDropInterval() {
+    const speedBase = 800 - (puyoSpeedSetting - 1) * 70;
+    const levelPenalty = (puyoLevel - 1) * 50;
+    puyoDropInterval = Math.max(100, speedBase - levelPenalty);
+}
+
+function createPuyoBoard() {
+    return Array.from({ length: PUYO_ROWS }, () => Array(PUYO_COLS).fill(0));
+}
+
+function isValidPuyoPosition(x, y) {
+    return x >= 0 && x < PUYO_COLS && y >= 0 && y < PUYO_ROWS && puyoBoard[y][x] === 0;
+}
+
+const PUYO_ORBIT_OFFSETS = [
+    { x: 0, y: -1 }, // 0: Up
+    { x: 1, y: 0 },  // 1: Right
+    { x: 0, y: 1 },  // 2: Down
+    { x: -1, y: 0 }  // 3: Left
+];
+
+function isValidPairPosition(x, y, rotation) {
+    // Pivot check
+    if (x < 0 || x >= PUYO_COLS || y >= PUYO_ROWS) return false;
+    if (y >= 0 && puyoBoard[y][x] !== 0) return false;
+    
+    // Orbit check
+    const offset = PUYO_ORBIT_OFFSETS[rotation];
+    const ox = x + offset.x;
+    const oy = y + offset.y;
+    if (ox < 0 || ox >= PUYO_COLS || oy >= PUYO_ROWS) return false;
+    if (oy >= 0 && puyoBoard[oy][ox] !== 0) return false;
+    
+    return true;
+}
+
+function rotatePuyo(dir) {
+    if (puyoStatus !== 'PLAYING' || puyoState !== 'PLAYING') return;
+    const nextRot = (puyoCurrent.rotation + dir + 4) % 4;
+    
+    // Test rotation with wall kick
+    const kicks = [0, -1, 1]; // center, kick left, kick right
+    for (const kick of kicks) {
+        if (isValidPairPosition(puyoCurrent.x + kick, puyoCurrent.y, nextRot)) {
+            puyoCurrent.x += kick;
+            puyoCurrent.rotation = nextRot;
+            playSound('flip');
+            renderPuyo();
+            return;
+        }
+    }
+}
+
+function movePuyo(dx, dy) {
+    if (puyoStatus !== 'PLAYING' || puyoState !== 'PLAYING') return false;
+    if (isValidPairPosition(puyoCurrent.x + dx, puyoCurrent.y + dy, puyoCurrent.rotation)) {
+        puyoCurrent.x += dx;
+        puyoCurrent.y += dy;
+        if (dx !== 0 || dy !== 0) playSound('move');
+        renderPuyo();
+        return true;
+    }
+    return false;
+}
+
+function hardDropPuyo() {
+    if (puyoStatus !== 'PLAYING' || puyoState !== 'PLAYING') return;
+    while (movePuyo(0, 1)) {
+        // Drop until we hit something
+    }
+    lockPuyo();
+}
+
+function lockPuyo() {
+    puyoState = 'RESOLVING';
+    
+    const x1 = puyoCurrent.x;
+    const y1 = puyoCurrent.y;
+    const offset = PUYO_ORBIT_OFFSETS[puyoCurrent.rotation];
+    const x2 = puyoCurrent.x + offset.x;
+    const y2 = puyoCurrent.y + offset.y;
+    
+    if (y1 >= 0 && y1 < PUYO_ROWS && x1 >= 0 && x1 < PUYO_COLS) {
+        puyoBoard[y1][x1] = puyoCurrent.color1;
+    }
+    if (y2 >= 0 && y2 < PUYO_ROWS && x2 >= 0 && x2 < PUYO_COLS) {
+        puyoBoard[y2][x2] = puyoCurrent.color2;
+    }
+    
+    playSound('lock');
+    puyoCurrent = null;
+    
+    resolvePuyoChains();
+}
+
+let puyoChainCount = 0;
+
+function resolvePuyoChains() {
+    // 1. Gravity settle ( Puyos drop individually )
+    let dropped = false;
+    do {
+        dropped = false;
+        for (let r = PUYO_ROWS - 2; r >= 0; r--) {
+            for (let c = 0; c < PUYO_COLS; c++) {
+                if (puyoBoard[r][c] !== 0 && puyoBoard[r + 1][c] === 0) {
+                    puyoBoard[r + 1][c] = puyoBoard[r][c];
+                    puyoBoard[r][c] = 0;
+                    dropped = true;
+                }
+            }
+        }
+    } while (dropped);
+
+    renderPuyo();
+
+    // 2. Find matches (groups of 4+)
+    const matches = findPuyoMatches();
+    if (matches.length > 0) {
+        puyoChainCount++;
+        puyoChain = puyoChainCount;
+        
+        // Match calculation score: Cleared * 15 * Chain count * level
+        puyoScore += matches.length * 15 * puyoChainCount * puyoLevel;
+        updatePuyoHUD();
+        playSound('clear');
+
+        // Mark matches for pop animation
+        const clearingKeys = new Set(matches.map(m => `${m.x},${m.y}`));
+        renderPuyo(clearingKeys);
+
+        // Wait 350ms for pop animation, then delete puyos and settle again
+        setTimeout(() => {
+            matches.forEach(m => {
+                puyoBoard[m.y][m.x] = 0;
+            });
+            resolvePuyoChains();
+        }, 350);
+    } else {
+        // End of chains
+        puyoChainCount = 0;
+        puyoChain = 0;
+        updatePuyoHUD();
+        
+        // Check game over (middle column row 0 has a puyo)
+        if (puyoBoard[0][2] !== 0 || puyoBoard[0][3] !== 0) {
+            triggerPuyoGameOver();
+            return;
+        }
+        
+        spawnPuyo();
+        puyoState = 'PLAYING';
+    }
+}
+
+function findPuyoMatches() {
+    const visited = Array.from({ length: PUYO_ROWS }, () => Array(PUYO_COLS).fill(false));
+    let matchedCells = [];
+
+    for (let r = 0; r < PUYO_ROWS; r++) {
+        for (let c = 0; c < PUYO_COLS; c++) {
+            if (puyoBoard[r][c] !== 0 && !visited[r][c]) {
+                const color = puyoBoard[r][c];
+                const group = [];
+                const queue = [{ x: c, y: r }];
+                visited[r][c] = true;
+                
+                while (queue.length > 0) {
+                    const curr = queue.shift();
+                    group.push(curr);
+                    
+                    const neighbors = [
+                        { x: curr.x - 1, y: curr.y },
+                        { x: curr.x + 1, y: curr.y },
+                        { x: curr.x, y: curr.y - 1 },
+                        { x: curr.x, y: curr.y + 1 }
+                    ];
+                    
+                    for (const n of neighbors) {
+                        if (n.x >= 0 && n.x < PUYO_COLS && n.y >= 0 && n.y < PUYO_ROWS) {
+                            if (puyoBoard[n.y][n.x] === color && !visited[n.y][n.x]) {
+                                visited[n.y][n.x] = true;
+                                queue.push(n);
+                            }
+                        }
+                    }
+                }
+                
+                if (group.length >= 4) {
+                    matchedCells = matchedCells.concat(group);
+                }
+            }
+        }
+    }
+    return matchedCells;
+}
+
+function spawnPuyo() {
+    puyoCurrent = {
+        x: 2,
+        y: 1,
+        color1: puyoNext.color1,
+        color2: puyoNext.color2,
+        rotation: 0
+    };
+    
+    puyoNext = {
+        color1: Math.floor(Math.random() * 4) + 1,
+        color2: Math.floor(Math.random() * 4) + 1
+    };
+    
+    renderPuyo();
+}
+
+function updatePuyoHUD() {
+    if (puyoScoreEl) puyoScoreEl.textContent = puyoScore;
+    if (puyoScoreMobileEl) puyoScoreMobileEl.textContent = puyoScore;
+
+    if (puyoChainEl) puyoChainEl.textContent = puyoChain;
+    if (puyoChainMobileEl) puyoChainMobileEl.textContent = puyoChain;
+
+    if (puyoLevelEl) puyoLevelEl.textContent = puyoLevel;
+    if (puyoLevelMobileEl) puyoLevelMobileEl.textContent = puyoLevel;
+}
+
+function renderPuyoPreview(color1, color2, containerEl) {
+    if (!containerEl) return;
+    containerEl.innerHTML = '';
+    
+    const size = 4;
+    const grid = Array.from({ length: size }, () => Array(size).fill(0));
+    
+    grid[1][1] = color2; // orbit
+    grid[2][1] = color1; // pivot
+    
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            const cellVal = grid[r][c];
+            const cell = document.createElement('div');
+            cell.className = 'preview-cell';
+            
+            if (cellVal) {
+                const block = document.createElement('div');
+                block.className = 'puyo';
+                block.style.backgroundColor = PUYO_COLORS[cellVal - 1];
+                block.style.width = '100%';
+                block.style.height = '100%';
+                
+                const pupilL = document.createElement('div');
+                pupilL.className = 'puyo-pupil-l';
+                const pupilR = document.createElement('div');
+                pupilR.className = 'puyo-pupil-r';
+                block.appendChild(pupilL);
+                block.appendChild(pupilR);
+                cell.appendChild(block);
+            }
+            containerEl.appendChild(cell);
+        }
+    }
+}
+
+function renderPuyo(clearingKeys = new Set()) {
+    if (!puyoGridEl) return;
+    puyoGridEl.innerHTML = '';
+
+    let px1 = -1, py1 = -1, px2 = -1, py2 = -1;
+    if (puyoCurrent) {
+        px1 = puyoCurrent.x;
+        py1 = puyoCurrent.y;
+        const offset = PUYO_ORBIT_OFFSETS[puyoCurrent.rotation];
+        px2 = puyoCurrent.x + offset.x;
+        py2 = puyoCurrent.y + offset.y;
+    }
+
+    for (let r = 0; r < PUYO_ROWS; r++) {
+        for (let c = 0; c < PUYO_COLS; c++) {
+            const key = `${c},${r}`;
+            let colorIndex = 0;
+            
+            if (c === px1 && r === py1) {
+                colorIndex = puyoCurrent.color1;
+            } else if (c === px2 && r === py2) {
+                colorIndex = puyoCurrent.color2;
+            } else if (puyoBoard[r] && puyoBoard[r][c]) {
+                colorIndex = puyoBoard[r][c];
+            }
+
+            const cell = document.createElement('div');
+            cell.className = 'flex items-center justify-center';
+            cell.style.width = '40px';
+            cell.style.height = '40px';
+
+            if (colorIndex) {
+                const block = document.createElement('div');
+                block.className = 'puyo';
+                block.style.backgroundColor = PUYO_COLORS[colorIndex - 1];
+                
+                if (clearingKeys.has(key)) {
+                    block.classList.add('clearing');
+                }
+                
+                const pupilL = document.createElement('div');
+                pupilL.className = 'puyo-pupil-l';
+                const pupilR = document.createElement('div');
+                pupilR.className = 'puyo-pupil-r';
+                block.appendChild(pupilL);
+                block.appendChild(pupilR);
+                
+                cell.appendChild(block);
+            } else {
+                cell.style.border = '1px solid rgba(255, 255, 255, 0.02)';
+            }
+            puyoGridEl.appendChild(cell);
+        }
+    }
+
+    if (puyoNext) {
+        renderPuyoPreview(puyoNext.color1, puyoNext.color2, puyoNextEl);
+        renderPuyoPreview(puyoNext.color1, puyoNext.color2, puyoNextMobileEl);
+    }
+}
+
+function updatePuyoGame(timestamp) {
+    if (puyoStatus !== 'PLAYING') return;
+
+    if (!lastPuyoDropTime) lastPuyoDropTime = timestamp;
+    const elapsed = timestamp - lastPuyoDropTime;
+
+    if (elapsed >= puyoDropInterval) {
+        lastPuyoDropTime = timestamp;
+        if (puyoState === 'PLAYING') {
+            if (!movePuyo(0, 1)) {
+                lockPuyo();
+            }
+        }
+    }
+
+    puyoLoopId = requestAnimationFrame(updatePuyoGame);
+}
+
+function triggerPuyoGameOver() {
+    puyoStatus = 'GAMEOVER';
+    stopChiptune();
+    playSound('gameover');
+    
+    const finalScoreEl = document.getElementById('puyo-final-score');
+    if (finalScoreEl) finalScoreEl.textContent = puyoScore;
+    
+    const overlay = document.getElementById('puyo-gameover-overlay');
+    if (overlay) overlay.classList.add('open');
+    if (puyoTimeTimer) clearInterval(puyoTimeTimer);
+}
+
+function startPuyoGame() {
+    const gameoverOverlay = document.getElementById('puyo-gameover-overlay');
+    if (gameoverOverlay) gameoverOverlay.classList.remove('open');
+    const pauseOverlay = document.getElementById('puyo-pause-overlay');
+    if (pauseOverlay) pauseOverlay.classList.remove('open');
+
+    puyoBoard = createPuyoBoard();
+    puyoNext = {
+        color1: Math.floor(Math.random() * 4) + 1,
+        color2: Math.floor(Math.random() * 4) + 1
+    };
+    
+    spawnPuyo();
+    puyoScore = 0;
+    puyoChain = 0;
+    puyoLevel = 1;
+    puyoTime = 0;
+    puyoSpeedSetting = parseInt(puyoSpeedSlider ? puyoSpeedSlider.value : 1, 10) || 1;
+    calculatePuyoDropInterval();
+    
+    puyoStatus = 'PLAYING';
+    puyoState = 'PLAYING';
+    updatePuyoHUD();
+    playChiptuneTrack('PUYO_PUYO');
+    
+    puyoTimeEl.textContent = "0:00";
+    if (puyoTimeMobileEl) puyoTimeMobileEl.textContent = "0:00";
+
+    if (puyoTimeTimer) clearInterval(puyoTimeTimer);
+    puyoTimeTimer = setInterval(() => {
+        if (puyoStatus === 'PLAYING') {
+            puyoTime++;
+            const mins = Math.floor(puyoTime / 60);
+            const secs = puyoTime % 60;
+            const formatted = `${mins}:${secs.toString().padStart(2, '0')}`;
+            puyoTimeEl.textContent = formatted;
+            if (puyoTimeMobileEl) puyoTimeMobileEl.textContent = formatted;
+
+            if (puyoTime % 30 === 0) {
+                puyoLevel = Math.min(10, puyoLevel + 1);
+                calculatePuyoDropInterval();
+                updatePuyoHUD();
+            }
+        }
+    }, 1000);
+
+    lastPuyoDropTime = 0;
+    renderPuyo();
+    
+    if (puyoLoopId) cancelAnimationFrame(puyoLoopId);
+    puyoLoopId = requestAnimationFrame(updatePuyoGame);
+}
+
+function stopPuyoGame() {
+    puyoStatus = 'GAMEOVER';
+    if (puyoTimeTimer) clearInterval(puyoTimeTimer);
+    if (puyoLoopId) cancelAnimationFrame(puyoLoopId);
+}
+
+function pausePuyoGame() {
+    if (puyoStatus === 'PLAYING') {
+        puyoStatus = 'PAUSED';
+        stopChiptune();
+        const pauseOverlay = document.getElementById('puyo-pause-overlay');
+        if (pauseOverlay) pauseOverlay.classList.add('open');
+    } else if (puyoStatus === 'PAUSED') {
+        puyoStatus = 'PLAYING';
+        playChiptuneTrack('PUYO_PUYO');
+        const pauseOverlay = document.getElementById('puyo-pause-overlay');
+        if (pauseOverlay) pauseOverlay.classList.remove('open');
+        lastPuyoDropTime = 0;
+        puyoLoopId = requestAnimationFrame(updatePuyoGame);
+    }
+}
+
+// Bind Puyo click events
+const puyoPauseBtn = document.getElementById('puyo-pause-btn');
+const puyoResetBtn = document.getElementById('puyo-reset-btn');
+const puyoRetryBtn = document.getElementById('puyo-retry-btn');
+const puyoHomeBtn = document.getElementById('puyo-home-btn');
+
+if (puyoPauseBtn) puyoPauseBtn.addEventListener('click', pausePuyoGame);
+if (puyoResetBtn) puyoResetBtn.addEventListener('click', startPuyoGame);
+if (puyoRetryBtn) puyoRetryBtn.addEventListener('click', startPuyoGame);
+if (puyoHomeBtn) puyoHomeBtn.addEventListener('click', () => switchView('MENU'));
+
+document.getElementById('tetris-pause-btn').addEventListener('click', pauseTetrisGame);
+document.getElementById('tetris-reset-btn').addEventListener('click', startTetrisGame);
+document.getElementById('tetris-retry-btn').addEventListener('click', startTetrisGame);
+
+// ==========================================
 // INPUT CONTROLS & BINDINGS (KEYBOARD & TOUCH)
 // ==========================================
 
@@ -1140,6 +1741,8 @@ function handleActionUp() {
             playSound('move');
             renderAttackGrid();
         }
+    } else if (currentMode === 'PUYO_PUYO' && puyoStatus === 'PLAYING' && puyoState === 'PLAYING') {
+        rotatePuyo(1); // Clockwise
     }
 }
 
@@ -1156,6 +1759,8 @@ function handleActionDown() {
             playSound('move');
             renderAttackGrid();
         }
+    } else if (currentMode === 'PUYO_PUYO' && puyoStatus === 'PLAYING' && puyoState === 'PLAYING') {
+        movePuyo(0, 1);
     }
 }
 
@@ -1168,6 +1773,8 @@ function handleActionLeft() {
             playSound('move');
             renderAttackGrid();
         }
+    } else if (currentMode === 'PUYO_PUYO' && puyoStatus === 'PLAYING' && puyoState === 'PLAYING') {
+        movePuyo(-1, 0);
     }
 }
 
@@ -1180,6 +1787,8 @@ function handleActionRight() {
             playSound('move');
             renderAttackGrid();
         }
+    } else if (currentMode === 'PUYO_PUYO' && puyoStatus === 'PLAYING' && puyoState === 'PLAYING') {
+        movePuyo(1, 0);
     }
 }
 
@@ -1188,6 +1797,8 @@ function handleActionZ() {
         holdPiece();
     } else if (currentMode === 'BLOCK_ATTACK' && attackStatus === 'PLAYING') {
         performSwap();
+    } else if (currentMode === 'PUYO_PUYO' && puyoStatus === 'PLAYING' && puyoState === 'PLAYING') {
+        rotatePuyo(-1); // Counter-Clockwise
     }
 }
 
@@ -1196,6 +1807,8 @@ function handleActionX(isDown) {
         if (isDown) hardDrop();
     } else if (currentMode === 'BLOCK_ATTACK' && attackStatus === 'PLAYING') {
         isPushingStack = isDown;
+    } else if (currentMode === 'PUYO_PUYO' && puyoStatus === 'PLAYING' && puyoState === 'PLAYING') {
+        if (isDown) hardDropPuyo();
     }
 }
 
@@ -1208,6 +1821,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.key.toLowerCase() === 'p') {
         if (currentMode === 'BLOCK_ATTACK') pauseAttackGame();
         if (currentMode === 'TETRIS') pauseTetrisGame();
+        if (currentMode === 'PUYO_PUYO') pausePuyoGame();
         return;
     }
 
@@ -1255,11 +1869,36 @@ document.addEventListener('keydown', (e) => {
                 handleActionZ();
                 break;
         }
+    } else if (currentMode === 'PUYO_PUYO') {
+        if (puyoStatus === 'GAMEOVER') {
+            if ([' ', 'z', 'Z', 'x', 'X', 'Enter'].includes(e.key)) startPuyoGame();
+            return;
+        }
+        if (puyoStatus !== 'PLAYING') return;
+
+        switch (e.key) {
+            case 'ArrowUp': handleActionUp(); break;
+            case 'ArrowDown': handleActionDown(); break;
+            case 'ArrowLeft': handleActionLeft(); break;
+            case 'ArrowRight': handleActionRight(); break;
+            case ' ':
+            case 'x':
+            case 'X':
+                handleActionX(true);
+                break;
+            case 'z':
+            case 'Z':
+                handleActionZ();
+                break;
+        }
     }
 });
 
 document.addEventListener('keyup', (e) => {
     if (currentMode === 'BLOCK_ATTACK' && e.key.toLowerCase() === 'x') {
+        handleActionX(false);
+    }
+    if (currentMode === 'PUYO_PUYO' && e.key.toLowerCase() === 'x') {
         handleActionX(false);
     }
 });
@@ -1283,6 +1922,32 @@ mobileX.addEventListener('touchstart', (e) => { e.preventDefault(); handleAction
 mobileX.addEventListener('mousedown', (e) => { e.preventDefault(); handleActionX(true); });
 mobileX.addEventListener('touchend', (e) => { e.preventDefault(); handleActionX(false); });
 mobileX.addEventListener('mouseup', (e) => { e.preventDefault(); handleActionX(false); });
+
+// Mobile virtual system buttons
+const mobileHome = document.getElementById('m-btn-home');
+const mobilePause = document.getElementById('m-btn-pause');
+const mobileReset = document.getElementById('m-btn-reset');
+
+if (mobileHome) {
+    mobileHome.addEventListener('click', () => switchView('MENU'));
+}
+if (mobilePause) {
+    mobilePause.addEventListener('click', () => {
+        if (currentMode === 'BLOCK_ATTACK') pauseAttackGame();
+        if (currentMode === 'TETRIS') pauseTetrisGame();
+        if (currentMode === 'PUYO_PUYO') pausePuyoGame();
+    });
+}
+if (mobileReset) {
+    mobileReset.addEventListener('click', () => {
+        if (currentMode === 'BLOCK_ATTACK') startAttackGame();
+        if (currentMode === 'TETRIS') startTetrisGame();
+        if (currentMode === 'PUYO_PUYO') startPuyoGame();
+    });
+}
+
+// Initial layout scale call
+resizeGameLayouts();
 
 // Launch
 switchView('MENU');
