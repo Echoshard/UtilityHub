@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diff Master - Side-by-Side Text Comparison</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a href="../index.html" class="hub-link" aria-label="Back to hub">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>Diff Master</h1>
+                    <p>Compare text files, highlight line differences, and merge changes offline.</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <!-- Inputs Panel (Top/Split) -->
+            <section class="inputs-section">
+                <div class="input-column">
+                    <div class="column-header">
+                        <h2>Original Text (Left)</h2>
+                        <label class="btn-file" for="fileLeft">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <span>Load File</span>
+                        </label>
+                        <input type="file" id="fileLeft" accept=".txt,.js,.json,.css,.html,.md,.py,.cpp,.c,.h">
+                    </div>
+                    <textarea id="textLeft" placeholder="Paste original text here..."></textarea>
+                </div>
+
+                <div class="input-column">
+                    <div class="column-header">
+                        <h2>Modified Text (Right)</h2>
+                        <label class="btn-file" for="fileRight">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <span>Load File</span>
+                        </label>
+                        <input type="file" id="fileRight" accept=".txt,.js,.json,.css,.html,.md,.py,.cpp,.c,.h">
+                    </div>
+                    <textarea id="textRight" placeholder="Paste modified text here..."></textarea>
+                </div>
+            </section>
+
+            <!-- Controls Bar -->
+            <section class="controls-bar">
+                <div class="controls-left">
+                    <button class="btn-action primary" id="compareBtn">Compare</button>
+                    <button class="btn-action danger" id="clearBtn">Clear</button>
+                </div>
+                <div class="controls-right">
+                    <span class="control-label">View Mode</span>
+                    <div class="segmented">
+                        <button class="segment active" data-mode="side-by-side">Side-by-Side</button>
+                        <button class="segment" data-mode="inline">Inline</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diff Output Panel -->
+            <section class="diff-output-section">
+                <!-- Side-by-Side View Container -->
+                <div class="diff-container side-by-side active" id="sideBySideView">
+                    <div class="diff-pane" id="paneLeft">
+                        <!-- Left lines injected here -->
+                    </div>
+                    <div class="diff-pane" id="paneRight">
+                        <!-- Right lines injected here -->
+                    </div>
+                </div>
+
+                <!-- Inline View Container -->
+                <div class="diff-container inline" id="inlineView">
+                    <!-- Inline lines injected here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

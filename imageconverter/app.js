@@ -26,6 +26,7 @@ const state = {
     cropDragHandle: null,
     resizeBox: null,
     resizePreview: null,
+    resizeDragHandle: null,
     history: [],
     adjustments: {
         brightness: 0,
@@ -72,6 +73,7 @@ const controls = {
     applyCrop: document.getElementById('applyCropBtn'),
     width: document.getElementById('widthInput'),
     height: document.getElementById('heightInput'),
+    percent: document.getElementById('percentInput'),
     lockRatio: document.getElementById('lockRatioCheck'),
     applyResize: document.getElementById('applyResizeBtn'),
     filterPreset: document.getElementById('filterPresetSelect'),
@@ -129,6 +131,7 @@ function setEnabled(enabled) {
         controls.applyCrop,
         controls.width,
         controls.height,
+        controls.percent,
         controls.applyResize,
         controls.filterPreset,
         controls.brightness,
@@ -296,8 +299,13 @@ function drawCropHandles(x, y, width, height) {
         [x, y + height / 2]
     ];
     ctx.fillStyle = '#f59e0b';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
     points.forEach(([px, py]) => {
-        ctx.fillRect(px - 5, py - 5, 10, 10);
+        ctx.beginPath();
+        ctx.arc(px, py, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
     });
 }
 
@@ -311,28 +319,84 @@ function drawResizeOverlay() {
     ctx.lineWidth = 2;
     ctx.setLineDash([10, 6]);
     ctx.strokeRect(a.x, a.y, w, h);
+    
+    // Draw the three active resize handles
+    const points = [
+        [a.x + w, a.y + h / 2], // Right
+        [a.x + w / 2, a.y + h], // Bottom
+        [a.x + w, a.y + h]      // Bottom-Right
+    ];
     ctx.fillStyle = '#14b8a6';
-    drawHandle(a.x + w, a.y + h);
-    ctx.setLineDash([]);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    points.forEach(([px, py]) => {
+        ctx.beginPath();
+        ctx.arc(px, py, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+    });
     ctx.restore();
 }
 
 function getCropHandle(point) {
     if (!state.cropRect) return null;
     const rect = normalizeRect(state.cropRect);
-    const hit = Math.max(6, 14 / state.zoom);
-    const insideX = point.x >= rect.x - hit && point.x <= rect.x + rect.w + hit;
-    const insideY = point.y >= rect.y - hit && point.y <= rect.y + rect.h + hit;
-    if (!insideX || !insideY) return nearestCropHandle(point);
-
-    const distances = [
-        { handle: 'left', value: Math.abs(point.x - rect.x) },
-        { handle: 'right', value: Math.abs(point.x - (rect.x + rect.w)) },
-        { handle: 'top', value: Math.abs(point.y - rect.y) },
-        { handle: 'bottom', value: Math.abs(point.y - (rect.y + rect.h)) }
-    ].sort((a, b) => a.value - b.value);
-
-    return distances[0].value <= hit ? distances[0].handle : nearestCropHandle(point);
+    
+    // Convert click point to screen space
+    const screenPoint = imageToScreen(point.x, point.y);
+    
+    // Handles in screen space:
+    const handles = {
+        top: imageToScreen(rect.x + rect.w / 2, rect.y),
+        right: imageToScreen(rect.x + rect.w, rect.y + rect.h / 2),
+        bottom: imageToScreen(rect.x + rect.w / 2, rect.y + rect.h),
+        left: imageToScreen(rect.x, rect.y + rect.h / 2)
+    };
+    
+    // Generous hit radius in screen pixels (e.g. 24px)
+    const hitRadius = 24;
+    let bestHandle = null;
+    let minDistance = Infinity;
+    
+    for (const [name, handlePos] of Object.entries(handles)) {
+        const dx = screenPoint.x - handlePos.x;
+        const dy = screenPoint.y - handlePos.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist <= hitRadius && dist < minDistance) {
+            minDistance = dist;
+            bestHandle = name;
+        }
+    }
+    
+    // If not close to any handle center, check proximity to the crop box edges
+    if (!bestHandle) {
+        const p = screenPoint;
+        const leftPos = imageToScreen(rect.x, 0).x;
+        const rightPos = imageToScreen(rect.x + rect.w, 0).x;
+        const topPos = imageToScreen(0, rect.y).y;
+        const bottomPos = imageToScreen(0, rect.y + rect.h).y;
+        
+        const distToLeft = Math.abs(p.x - leftPos);
+        const distToRight = Math.abs(p.x - rightPos);
+        const distToTop = Math.abs(p.y - topPos);
+        const distToBottom = Math.abs(p.y - bottomPos);
+        
+        const inVerticalSpan = p.y >= imageToScreen(0, rect.y).y - hitRadius && p.y <= imageToScreen(0, rect.y + rect.h).y + hitRadius;
+        const inHorizontalSpan = p.x >= imageToScreen(rect.x, 0).x - hitRadius && p.x <= imageToScreen(rect.x + rect.w, 0).x + hitRadius;
+        
+        const candidates = [];
+        if (distToLeft <= hitRadius && inVerticalSpan) candidates.push({ handle: 'left', dist: distToLeft });
+        if (distToRight <= hitRadius && inVerticalSpan) candidates.push({ handle: 'right', dist: distToRight });
+        if (distToTop <= hitRadius && inHorizontalSpan) candidates.push({ handle: 'top', dist: distToTop });
+        if (distToBottom <= hitRadius && inHorizontalSpan) candidates.push({ handle: 'bottom', dist: distToBottom });
+        
+        if (candidates.length > 0) {
+            candidates.sort((a, b) => a.dist - b.dist);
+            bestHandle = candidates[0].handle;
+        }
+    }
+    
+    return bestHandle || nearestCropHandle(point);
 }
 
 function nearestCropHandle(point) {
@@ -344,6 +408,129 @@ function nearestCropHandle(point) {
         { handle: 'bottom', value: Math.abs(point.y - (rect.y + rect.h)) }
     ].sort((a, b) => a.value - b.value);
     return distances[0].handle;
+}
+
+function getResizeHandle(point) {
+    if (!state.resizePreview) return null;
+    const w = state.resizePreview.width;
+    const h = state.resizePreview.height;
+    
+    const screenPoint = imageToScreen(point.x, point.y);
+    const handles = {
+        right: imageToScreen(w, h / 2),
+        bottom: imageToScreen(w / 2, h),
+        'bottom-right': imageToScreen(w, h)
+    };
+    
+    const hitRadius = 24;
+    let bestHandle = null;
+    let minDistance = Infinity;
+    
+    for (const [name, handlePos] of Object.entries(handles)) {
+        const dx = screenPoint.x - handlePos.x;
+        const dy = screenPoint.y - handlePos.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist <= hitRadius && dist < minDistance) {
+            minDistance = dist;
+            bestHandle = name;
+        }
+    }
+    
+    return bestHandle;
+}
+
+function updateCursor(point) {
+    if (state.isSpaceDown) {
+        canvas.style.cursor = 'grab';
+        return;
+    }
+    
+    if (state.tool === 'crop' && state.cropRect) {
+        const rect = normalizeRect(state.cropRect);
+        const screenPoint = imageToScreen(point.image.x, point.image.y);
+        const handles = {
+            top: imageToScreen(rect.x + rect.w / 2, rect.y),
+            right: imageToScreen(rect.x + rect.w, rect.y + rect.h / 2),
+            bottom: imageToScreen(rect.x + rect.w / 2, rect.y + rect.h),
+            left: imageToScreen(rect.x, rect.y + rect.h / 2)
+        };
+        
+        const hitRadius = 24;
+        let hoveredHandle = null;
+        let minDistance = Infinity;
+        
+        for (const [name, handlePos] of Object.entries(handles)) {
+            const dx = screenPoint.x - handlePos.x;
+            const dy = screenPoint.y - handlePos.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist <= hitRadius && dist < minDistance) {
+                minDistance = dist;
+                hoveredHandle = name;
+            }
+        }
+        
+        if (!hoveredHandle) {
+            const p = screenPoint;
+            const leftPos = imageToScreen(rect.x, 0).x;
+            const rightPos = imageToScreen(rect.x + rect.w, 0).x;
+            const topPos = imageToScreen(0, rect.y).y;
+            const bottomPos = imageToScreen(0, rect.y + rect.h).y;
+            
+            const distToLeft = Math.abs(p.x - leftPos);
+            const distToRight = Math.abs(p.x - rightPos);
+            const distToTop = Math.abs(p.y - topPos);
+            const distToBottom = Math.abs(p.y - bottomPos);
+            
+            const inVerticalSpan = p.y >= imageToScreen(0, rect.y).y - hitRadius && p.y <= imageToScreen(0, rect.y + rect.h).y + hitRadius;
+            const inHorizontalSpan = p.x >= imageToScreen(rect.x, 0).x - hitRadius && p.x <= imageToScreen(rect.x + rect.w, 0).x + hitRadius;
+            
+            const candidates = [];
+            if (distToLeft <= hitRadius && inVerticalSpan) candidates.push({ handle: 'left', dist: distToLeft });
+            if (distToRight <= hitRadius && inVerticalSpan) candidates.push({ handle: 'right', dist: distToRight });
+            if (distToTop <= hitRadius && inHorizontalSpan) candidates.push({ handle: 'top', dist: distToTop });
+            if (distToBottom <= hitRadius && inHorizontalSpan) candidates.push({ handle: 'bottom', dist: distToBottom });
+            
+            if (candidates.length > 0) {
+                candidates.sort((a, b) => a.dist - b.dist);
+                hoveredHandle = candidates[0].handle;
+            }
+        }
+        
+        if (hoveredHandle === 'top' || hoveredHandle === 'bottom') {
+            canvas.style.cursor = 'ns-resize';
+        } else if (hoveredHandle === 'left' || hoveredHandle === 'right') {
+            canvas.style.cursor = 'ew-resize';
+        } else {
+            canvas.style.cursor = 'crosshair';
+        }
+        return;
+    }
+    
+    if (state.tool === 'resize' && state.resizePreview) {
+        const handle = getResizeHandle(point.image);
+        if (handle === 'right') {
+            canvas.style.cursor = 'ew-resize';
+        } else if (handle === 'bottom') {
+            canvas.style.cursor = 'ns-resize';
+        } else if (handle === 'bottom-right') {
+            canvas.style.cursor = 'nwse-resize';
+        } else {
+            canvas.style.cursor = 'default';
+        }
+        return;
+    }
+    
+    if (['brush', 'eraser', 'bgEraser', 'heal'].includes(state.tool)) {
+        canvas.style.cursor = 'crosshair';
+        return;
+    }
+    
+    if (state.tool === 'move') {
+        canvas.style.cursor = 'grab';
+        return;
+    }
+    
+    canvas.style.cursor = 'default';
 }
 
 function dragCropSide(point) {
@@ -431,6 +618,7 @@ function undo() {
 function syncFields() {
     controls.width.value = state.editCanvas.width;
     controls.height.value = state.editCanvas.height;
+    controls.percent.value = 100;
     syncCropFields();
     updateMeta();
 }
@@ -553,6 +741,7 @@ function setTool(tool) {
         state.resizePreview = { width: state.editCanvas.width, height: state.editCanvas.height };
         controls.width.value = state.resizePreview.width;
         controls.height.value = state.resizePreview.height;
+        controls.percent.value = 100;
     }
     render();
 }
@@ -1070,7 +1259,10 @@ function handlePointerDown(event) {
     }
 
     if (state.tool === 'resize') {
-        state.resizeBox = { start: point.image };
+        state.resizeDragHandle = getResizeHandle(point.image);
+        if (state.resizeDragHandle) {
+            state.resizeBox = { start: point.image };
+        }
         return;
     }
 
@@ -1130,6 +1322,10 @@ function handlePointerMove(event) {
     const point = getPointer(event);
     state.lastPointer = point;
 
+    if (!state.isPointerDown) {
+        updateCursor(point);
+    }
+
     if (state.isPanning && state.isPointerDown) {
         state.panX += point.x - state.lastScreenX;
         state.panY += point.y - state.lastScreenY;
@@ -1146,12 +1342,34 @@ function handlePointerMove(event) {
         return;
     }
 
-    if (state.isPointerDown && state.tool === 'resize') {
-        const width = Math.max(1, Math.round(point.image.x));
+    if (state.isPointerDown && state.tool === 'resize' && state.resizeDragHandle) {
+        let width = state.resizePreview.width;
+        let height = state.resizePreview.height;
         const ratio = state.editCanvas.width / state.editCanvas.height;
-        const height = controls.lockRatio.checked ? Math.max(1, Math.round(width / ratio)) : Math.max(1, Math.round(point.image.y));
+        const forceRatio = event.shiftKey || controls.lockRatio.checked;
+
+        if (state.resizeDragHandle === 'right') {
+            width = Math.max(1, Math.round(point.image.x));
+            if (forceRatio) {
+                height = Math.max(1, Math.round(width / ratio));
+            }
+        } else if (state.resizeDragHandle === 'bottom') {
+            height = Math.max(1, Math.round(point.image.y));
+            if (forceRatio) {
+                width = Math.max(1, Math.round(height * ratio));
+            }
+        } else if (state.resizeDragHandle === 'bottom-right') {
+            width = Math.max(1, Math.round(point.image.x));
+            if (forceRatio) {
+                height = Math.max(1, Math.round(width / ratio));
+            } else {
+                height = Math.max(1, Math.round(point.image.y));
+            }
+        }
+
         controls.width.value = width;
         controls.height.value = height;
+        controls.percent.value = Math.round((width / state.editCanvas.width) * 100);
         state.resizePreview = { width, height };
         render();
         return;
@@ -1179,6 +1397,7 @@ function handlePointerUp(event) {
     state.isPointerDown = false;
     state.isPanning = false;
     state.cropDragHandle = null;
+    state.resizeDragHandle = null;
     state.resizeBox = null;
     state.lastStrokeImage = null;
     stage.classList.remove('panning');
@@ -1311,6 +1530,7 @@ controls.width.addEventListener('input', () => {
     if (controls.lockRatio.checked) {
         controls.height.value = Math.max(1, Math.round(width / (state.editCanvas.width / state.editCanvas.height)));
     }
+    controls.percent.value = Math.round((width / state.editCanvas.width) * 100);
     state.resizePreview = { width, height: parseInt(controls.height.value, 10) || state.editCanvas.height };
     render();
 });
@@ -1320,7 +1540,18 @@ controls.height.addEventListener('input', () => {
     if (controls.lockRatio.checked) {
         controls.width.value = Math.max(1, Math.round(height * (state.editCanvas.width / state.editCanvas.height)));
     }
+    controls.percent.value = Math.round((parseInt(controls.width.value, 10) / state.editCanvas.width) * 100);
     state.resizePreview = { width: parseInt(controls.width.value, 10) || state.editCanvas.width, height };
+    render();
+});
+controls.percent.addEventListener('input', () => {
+    const percent = parseFloat(controls.percent.value);
+    if (!Number.isFinite(percent) || percent <= 0) return;
+    const width = Math.max(1, Math.round(state.editCanvas.width * (percent / 100)));
+    const height = Math.max(1, Math.round(state.editCanvas.height * (percent / 100)));
+    controls.width.value = width;
+    controls.height.value = height;
+    state.resizePreview = { width, height };
     render();
 });
 controls.applyResize.addEventListener('click', applyResize);

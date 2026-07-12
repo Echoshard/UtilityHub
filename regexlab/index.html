@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RegExpLab - Regex Tester & Trainer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a href="../index.html" class="hub-link" aria-label="Back to hub">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>RegExpLab</h1>
+                    <p>Visual regex builder, testing playground, and interactive trainer.</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <!-- Left Panel: Editor & Tester -->
+            <section class="panel editor-panel">
+                <h2>RegExp Editor</h2>
+                
+                <div class="regex-input-container">
+                    <span class="regex-delimiter">/</span>
+                    <input type="text" id="regexInput" placeholder="Enter regular expression..." value="[a-zA-Z]+">
+                    <span class="regex-delimiter">/</span>
+                    <div class="flags-box">
+                        <input type="text" id="flagsInput" placeholder="flags" value="g" title="g = global, i = case-insensitive, m = multiline, s = dotAll, u = unicode">
+                    </div>
+                </div>
+                <div class="validation-status" id="validationStatus">
+                    <svg class="icon-success hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <svg class="icon-error hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span id="validationText">Valid Regular Expression</span>
+                </div>
+
+                <div class="editor-header">
+                    <h2>Test String</h2>
+                    <span class="matches-count" id="matchesCount">0 matches</span>
+                </div>
+
+                <!-- High-fidelity highlight container with transparent textarea and background highlight div -->
+                <div class="test-area-container">
+                    <div class="highlight-overlay" id="highlightOverlay"></div>
+                    <textarea id="testInput" spellcheck="false" placeholder="Type or paste sample text here to test your regular expression..."></textarea>
+                </div>
+            </section>
+
+            <!-- Right Panel: Tabs System -->
+            <aside class="panel side-panel">
+                <nav class="tab-headers">
+                    <button class="tab-header active" data-tab="breakdown">Matches</button>
+                    <button class="tab-header" data-tab="cheatsheet">Cheat Sheet</button>
+                    <button class="tab-header" data-tab="trainer">Trainer</button>
+                </nav>
+
+                <div class="tab-contents">
+                    <!-- Tab 1: Matches Breakdown -->
+                    <div class="tab-content active" id="tab-breakdown">
+                        <div class="breakdown-container">
+                            <table class="breakdown-table">
+                                <thead>
+                                    <tr>
+                                        <th>Match</th>
+                                        <th>Range</th>
+                                        <th>Captured Groups</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="breakdownBody">
+                                    <tr>
+                                        <td colspan="3" class="empty-message">No matches yet. Write a valid regex and input some text.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Cheat Sheet -->
+                    <div class="tab-content" id="tab-cheatsheet">
+                        <div class="search-box">
+                            <input type="text" id="cheatSearch" placeholder="Search tokens (e.g. digit, group, lookahead)...">
+                        </div>
+                        <div class="cheatsheet-list" id="cheatsheetList">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Trainer -->
+                    <div class="tab-content" id="tab-trainer">
+                        <div class="trainer-card">
+                            <div class="trainer-header" style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span class="lesson-badge" id="lessonBadge">Lesson 1 of 10</span>
+                                </div>
+                                <select id="lessonSelect" class="select-input" style="width: 100%; padding: 6px 10px; font-size: 0.78rem;">
+                                    <!-- Populated dynamically -->
+                                </select>
+                                <h3 id="lessonTitle">Matching Character Literals</h3>
+                            </div>
+                            
+                            <div class="lesson-description" id="lessonDesc">
+                                Learn how to match basic characters. The pattern simply matches the exact sequence of letters.
+                            </div>
+
+                            <div class="lesson-goal">
+                                <strong>Goal:</strong> Write a pattern that matches the target words.
+                            </div>
+
+                            <div class="trainer-split">
+                                <div class="trainer-column">
+                                    <div class="column-title success">Must Match</div>
+                                    <ul class="match-list" id="mustMatchList">
+                                        <!-- Injected dynamically -->
+                                    </ul>
+                                </div>
+                                <div class="trainer-column">
+                                    <div class="column-title danger">Should NOT Match</div>
+                                    <ul class="match-list" id="shouldNotMatchList">
+                                        <!-- Injected dynamically -->
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="validation-bar" id="trainerValidationBar">
+                                <div class="status-indicator" id="trainerStatusIndicator">Not Met</div>
+                                <button class="btn-action primary" id="nextLessonBtn" disabled>Next Lesson</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

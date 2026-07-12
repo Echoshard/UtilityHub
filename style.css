@@ -29,6 +29,10 @@
     --datastudio-glow: linear-gradient(135deg, #06b6d4, #7dd3fc);
     --sfxforge-glow: linear-gradient(135deg, #f59e0b, #f43f5e);
     --tree-online-glow: linear-gradient(135deg, #a855f7, #06b6d4);
+    --badgemaker-glow: linear-gradient(135deg, #10b981, #3b82f6);
+    --regexlab-glow: linear-gradient(135deg, #a855f7, #2dd4bf);
+    --diffmaster-glow: linear-gradient(135deg, #f43f5e, #10b981);
+    --palettecrafter-glow: linear-gradient(135deg, #60a5fa, #a855f7);
 
     --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-display: 'Outfit', var(--font-ui);
@@ -233,9 +237,12 @@ body {
 .passwordgenerator-card:hover .card-glow { background: var(--passwordgenerator-glow); }
 .pomodoro-card:hover .card-glow { background: var(--pomodoro-glow); }
 .rsvpreader-card:hover .card-glow { background: var(--rsvpreader-glow); }
-.datastudio-card:hover .card-glow { background: var(--datastudio-glow); }
 .sfxforge-card:hover .card-glow { background: var(--sfxforge-glow); }
 .tree-online-card:hover .card-glow { background: var(--tree-online-glow); }
+.badgemaker-card:hover .card-glow { background: var(--badgemaker-glow); }
+.regexlab-card:hover .card-glow { background: var(--regexlab-glow); }
+.diffmaster-card:hover .card-glow { background: var(--diffmaster-glow); }
+.palettecrafter-card:hover .card-glow { background: var(--palettecrafter-glow); }
 
 /* Card Icon Containers */
 .card-icon-container {
@@ -377,6 +384,30 @@ body {
     border-color: rgba(168, 85, 247, 0.3);
 }
 .tree-online-card:hover .card-icon { stroke: #a855f7; }
+
+.badgemaker-card:hover .card-icon-container {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+.badgemaker-card:hover .card-icon { stroke: #10b981; }
+
+.regexlab-card:hover .card-icon-container {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.3);
+}
+.regexlab-card:hover .card-icon { stroke: #a855f7; }
+
+.diffmaster-card:hover .card-icon-container {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: rgba(244, 63, 94, 0.3);
+}
+.diffmaster-card:hover .card-icon { stroke: #f43f5e; }
+
+.palettecrafter-card:hover .card-icon-container {
+    background: rgba(96, 165, 250, 0.1);
+    border-color: rgba(96, 165, 250, 0.3);
+}
+.palettecrafter-card:hover .card-icon { stroke: #60a5fa; }
 
 /* Disabled Cards Styling */
 .app-card.disabled {

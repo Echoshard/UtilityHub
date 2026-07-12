@@ -5,6 +5,23 @@ const phi = (1 + Math.sqrt(5)) / 2;
 const ip = 1 / phi;
 
 const GEOMETRIES = {
+    2: { // Coin (D2)
+        vertices: [
+            // Top face (z = 0.15)
+            [1, 0, 0.15], [0.707, 0.707, 0.15], [0, 1, 0.15], [-0.707, 0.707, 0.15],
+            [-1, 0, 0.15], [-0.707, -0.707, 0.15], [0, -1, 0.15], [0.707, -0.707, 0.15],
+            // Bottom face (z = -0.15)
+            [1, 0, -0.15], [0.707, 0.707, -0.15], [0, 1, -0.15], [-0.707, 0.707, -0.15],
+            [-1, 0, -0.15], [-0.707, -0.707, -0.15], [0, -1, -0.15], [0.707, -0.707, -0.15]
+        ],
+        faces: [
+            [7, 6, 5, 4, 3, 2, 1, 0], // Heads (Face 0)
+            [8, 9, 10, 11, 12, 13, 14, 15], // Tails (Face 1)
+            [0, 1, 9, 8], [1, 2, 10, 9], [2, 3, 11, 10], [3, 4, 12, 11],
+            [4, 5, 13, 12], [5, 6, 14, 13], [6, 7, 15, 14], [7, 0, 8, 15]
+        ],
+        scale: 35
+    },
     4: { // Tetrahedron (D4)
         vertices: [
             [1, 1, 1], [-1, -1, 1], [-1, 1, -1], [1, -1, -1]
@@ -465,34 +482,43 @@ function drawScene() {
         
         // Write Number ONLY on the top-facing face
         if (item.faceIdx === die.topFaceIdx) {
-            let sumX = 0, sumY = 0;
-            item.faceIndices.forEach(vi => {
-                const rv = item.rotVerts[vi];
-                const f = cameraDistance / (cameraDistance - rv[2] * 0.35);
-                sumX += die.x + rv[0] * scale * diceScaleFactor * f;
-                sumY += die.y - rv[1] * scale * diceScaleFactor * f - die.z;
-            });
-            const cx = sumX / item.faceIndices.length;
-            const cy = sumY / item.faceIndices.length;
-            
-            let valText = '';
-            if (die.isSettled) {
-                valText = die.value;
+            if (die.sides === 2 && item.faceIdx > 1) {
+                // Do not write anything on the narrow side panels
             } else {
-                valText = Math.floor(Math.random() * die.sides) + 1;
+                let sumX = 0, sumY = 0;
+                item.faceIndices.forEach(vi => {
+                    const rv = item.rotVerts[vi];
+                    const f = cameraDistance / (cameraDistance - rv[2] * 0.35);
+                    sumX += die.x + rv[0] * scale * diceScaleFactor * f;
+                    sumY += die.y - rv[1] * scale * diceScaleFactor * f - die.z;
+                });
+                const cx = sumX / item.faceIndices.length;
+                const cy = sumY / item.faceIndices.length;
+                
+                let valText = '';
+                if (die.sides === 2) {
+                    valText = (item.faceIdx === 0) ? 'Heads' : 'Tails';
+                } else {
+                    if (die.isSettled) {
+                        valText = die.value;
+                    } else {
+                        valText = Math.floor(Math.random() * die.sides) + 1;
+                    }
+                }
+                
+                ctx.fillStyle = theme.text;
+                const fontFactor = die.sides === 2 ? 0.38 : 0.65;
+                ctx.font = `bold ${scale * diceScaleFactor * fontFactor}px Outfit, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                if (theme.textGlow !== 'transparent') {
+                    ctx.shadowColor = theme.stroke;
+                    ctx.shadowBlur = 8;
+                }
+                ctx.fillText(valText, cx, cy);
+                ctx.shadowBlur = 0;
             }
-            
-            ctx.fillStyle = theme.text;
-            ctx.font = `bold ${scale * diceScaleFactor * 0.65}px Outfit, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            if (theme.textGlow !== 'transparent') {
-                ctx.shadowColor = theme.stroke;
-                ctx.shadowBlur = 8;
-            }
-            ctx.fillText(valText, cx, cy);
-            ctx.shadowBlur = 0;
         }
     });
 }
@@ -595,7 +621,7 @@ function rollDice() {
         return;
     }
     
-    const validSides = [4, 6, 8, 10, 12, 20];
+    const validSides = [2, 4, 6, 8, 10, 12, 20];
     if (!validSides.includes(parsed.sides)) {
         parsed.sidesGeometry = 6;
     } else {
@@ -666,6 +692,23 @@ function showSumResult() {
     const rawParsed = rollBtn.dataset.parsed;
     if (!rawParsed) return;
     const parsed = JSON.parse(rawParsed);
+    
+    // Custom formatted display for coin flips (D2 with 0 modifier)
+    if (parsed.sides === 2 && parsed.modifier === 0) {
+        const headsCount = parsed.rolls.filter(r => r === 1).length;
+        const tailsCount = parsed.rolls.filter(r => r === 2).length;
+        
+        if (parsed.count === 1) {
+            const face = parsed.rolls[0] === 1 ? 'Heads' : 'Tails';
+            resultSum.textContent = face;
+            resultBreakdown.innerHTML = `Result: <span>${face}</span> (Coin Flip)`;
+        } else {
+            resultSum.textContent = `${headsCount}H / ${tailsCount}T`;
+            const coinNames = parsed.rolls.map(r => r === 1 ? 'Heads' : 'Tails');
+            resultBreakdown.innerHTML = `Result: <span>${headsCount} Heads, ${tailsCount} Tails</span> (Breakdown: ${coinNames.join(', ')})`;
+        }
+        return;
+    }
     
     resultSum.textContent = parsed.total;
     

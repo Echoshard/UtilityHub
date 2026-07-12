@@ -275,6 +275,19 @@ select:disabled {
     grid-template-columns: repeat(2, 1fr);
 }
 
+.percent-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.percent-row span {
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
 .button-row { margin-top: 9px; }
 
 .color-row {

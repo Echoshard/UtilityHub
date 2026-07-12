@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palette Crafter - A11y Color Palette Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Color Blindness SVG Filters -->
+    <svg style="display: none;">
+        <defs>
+            <!-- Deuteranopia (common green-blindness) -->
+            <filter id="deuteranopia">
+                <feColorMatrix type="matrix" values="0.625, 0.375, 0, 0, 0,  0.7, 0.3, 0, 0, 0,  0, 0.3, 0.7, 0, 0,  0, 0, 0, 1, 0" />
+            </filter>
+            <!-- Protanopia (red-blindness) -->
+            <filter id="protanopia">
+                <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0,  0.558, 0.442, 0, 0, 0,  0, 0.242, 0.758, 0, 0,  0, 0, 0, 1, 0" />
+            </filter>
+            <!-- Tritanopia (blue-blindness) -->
+            <filter id="tritanopia">
+                <feColorMatrix type="matrix" values="0.95, 0.05,  0, 0, 0,  0,  0.433, 0.567, 0, 0,  0,  0.475, 0.525, 0, 0,  0, 0, 0, 1, 0" />
+            </filter>
+            <!-- Achromatopsia (monochromacy) -->
+            <filter id="achromatopsia">
+                <feColorMatrix type="matrix" values="0.299, 0.587, 0.114, 0, 0,  0.299, 0.587, 0.114, 0, 0,  0.299, 0.587, 0.114, 0, 0,  0, 0, 0, 1, 0" />
+            </filter>
+        </defs>
+    </svg>
+
+    <div class="app-shell" id="appShell">
+        <header class="topbar">
+            <div class="brand">
+                <a href="../index.html" class="hub-link" aria-label="Back to hub">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>Palette Crafter</h1>
+                    <p>A11y-aware color palette designer with export formats and color-blindness simulation.</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <!-- Sidebar: Parameters -->
+            <aside class="panel sidebar-panel">
+                <h2>Base Configurations</h2>
+
+                <!-- Seed Color -->
+                <div class="control-group">
+                    <label class="control-label">Base Seed Color</label>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="baseColor" value="#a855f7">
+                        <input type="text" id="baseHex" value="#a855f7" placeholder="#000000" maxlength="7">
+                    </div>
+                </div>
+
+                <!-- Brand Presets -->
+                <div class="control-group">
+                    <label class="control-label">Brand Presets</label>
+                    <select id="presetSelect" class="select-input">
+                        <option value="">-- Choose Brand --</option>
+                    </select>
+                </div>
+
+                <!-- Harmony Rule -->
+                <div class="control-group">
+                    <label class="control-label">Harmony Rule</label>
+                    <select id="harmonyRule" class="select-input">
+                        <option value="monochromatic">Monochromatic (Shades)</option>
+                        <option value="analogous">Analogous</option>
+                        <option value="complementary">Complementary</option>
+                        <option value="split-complementary">Split-Complementary</option>
+                        <option value="triadic">Triadic</option>
+                        <option value="tetradic">Tetradic (Double Complementary)</option>
+                    </select>
+                </div>
+
+                <!-- Swatch Steps count -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <label class="control-label">Swatches Count</label>
+                        <span class="range-val" id="swatchCountVal">6</span>
+                    </div>
+                    <input type="range" id="swatchCount" min="3" max="10" value="6" step="1" class="slider-input">
+                </div>
+
+                <!-- Saturation Adjustment -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <label class="control-label">Saturation Shift</label>
+                        <span class="range-val" id="satVal">0%</span>
+                    </div>
+                    <input type="range" id="satShift" min="-50" max="50" value="0" step="5" class="slider-input">
+                </div>
+
+                <!-- Simulating color blindness filter dropdown -->
+                <div class="control-group">
+                    <label class="control-label">A11y Sim Filter</label>
+                    <select id="simFilter" class="select-input">
+                        <option value="none">Normal Vision (No Filter)</option>
+                        <option value="deuteranopia">Deuteranopia (Green blind - 5%)</option>
+                        <option value="protanopia">Protanopia (Red blind - 1%)</option>
+                        <option value="tritanopia">Tritanopia (Blue blind - &lt;1%)</option>
+                        <option value="achromatopsia">Achromatopsia (Monochrome - &lt;1%)</option>
+                    </select>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Export Operations -->
+                <div class="export-actions">
+                    <button class="btn-action primary" id="exportCssBtn">Export CSS Vars</button>
+                    <button class="btn-action" id="exportTailwindBtn">Export Tailwind</button>
+                    <button class="btn-action" id="exportHexBtn">Copy HEX List</button>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <section class="panel content-panel">
+                <div class="swatches-header">
+                    <h2>Generated Swatches</h2>
+                    <p class="sub-text">Click hex codes or values to copy them instantly.</p>
+                </div>
+
+                <!-- Swatches Grid Deck -->
+                <div class="swatches-container" id="swatchesContainer">
+                    <!-- Swatch cards injected dynamically -->
+                </div>
+
+                <!-- A11y Detail Section -->
+                <div class="a11y-section">
+                    <h2>Contrast & Typography Preview</h2>
+                    
+                    <div class="a11y-preview-grid">
+                        <div class="preview-card" id="darkPreview">
+                            <span class="badge dark">On Dark Text (#111827)</span>
+                            <div class="preview-text" style="color: #111827;">
+                                <h3>Aa Bb Cc 123</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+                            </div>
+                            <div class="preview-meta">
+                                <span class="meta-ratio" id="darkRatio">4.5:1</span>
+                                <span class="meta-score" id="darkScore">PASS (AA)</span>
+                            </div>
+                        </div>
+
+                        <div class="preview-card" id="lightPreview">
+                            <span class="badge light">On Light Text (#ffffff)</span>
+                            <div class="preview-text" style="color: #ffffff;">
+                                <h3>Aa Bb Cc 123</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+                            </div>
+                            <div class="preview-meta">
+                                <span class="meta-ratio" id="lightRatio">4.5:1</span>
+                                <span class="meta-score" id="lightScore">PASS (AA)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Export Overlay Dialog -->
+    <div class="dialog-overlay" id="exportDialog">
+        <div class="dialog-box">
+            <h3 id="dialogTitle">Export Tokens</h3>
+            <textarea id="dialogCode" readonly></textarea>
+            <div class="dialog-buttons">
+                <button class="btn-action primary" id="dialogCopy">Copy to Clipboard</button>
+                <button class="btn-action danger" id="dialogClose">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

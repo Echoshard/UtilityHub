@@ -1,0 +1,11 @@
+{
+  "presets": [
+    { "name": "Vibrant Purple (Default)", "color": "#A855F7" },
+    { "name": "Google Blue", "color": "#4285F4" },
+    { "name": "Spotify Green", "color": "#1DB954" },
+    { "name": "Netflix Red", "color": "#E50914" },
+    { "name": "Tailwind Teal", "color": "#06B6D4" },
+    { "name": "Github Dark Slate", "color": "#24292E" },
+    { "name": "Microsoft Orange", "color": "#F25022" }
+  ]
+}
