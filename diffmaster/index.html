@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diff Master - Side-by-Side Text Comparison</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -34,7 +37,7 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                             <span>Load File</span>
                         </label>
-                        <input type="file" id="fileLeft" accept=".txt,.js,.json,.css,.html,.md,.py,.cpp,.c,.h">
+                        <input type="file" id="fileLeft" accept=".txt,.js,.json,.css,.html,.md,.py,.cpp,.c,.h,.cs,.vb,.php">
                     </div>
                     <textarea id="textLeft" placeholder="Paste original text here..."></textarea>
                 </div>
@@ -46,7 +49,7 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                             <span>Load File</span>
                         </label>
-                        <input type="file" id="fileRight" accept=".txt,.js,.json,.css,.html,.md,.py,.cpp,.c,.h">
+                        <input type="file" id="fileRight" accept=".txt,.js,.json,.css,.html,.md,.py,.cpp,.c,.h,.cs,.vb,.php">
                     </div>
                     <textarea id="textRight" placeholder="Paste modified text here..."></textarea>
                 </div>
@@ -57,6 +60,7 @@
                 <div class="controls-left">
                     <button class="btn-action primary" id="compareBtn">Compare</button>
                     <button class="btn-action danger" id="clearBtn">Clear</button>
+                    <button class="btn-action success" id="downloadBtn" title="Download the original/merged text file">Download Merged</button>
                 </div>
                 <div class="controls-right">
                     <span class="control-label">View Mode</span>

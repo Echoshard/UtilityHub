@@ -9,6 +9,7 @@ const fileRight = document.getElementById('fileRight');
 // Controls
 const compareBtn = document.getElementById('compareBtn');
 const clearBtn = document.getElementById('clearBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 const segments = document.querySelectorAll('.segment');
 
 // Views
@@ -20,6 +21,7 @@ const paneRight = document.getElementById('paneRight');
 // State
 let currentViewMode = 'side-by-side';
 let diffResult = [];
+let leftFileName = 'merged_diff.txt';
 
 // Sample Text on load
 const SAMPLE_LEFT = `// UtilityHub Diff Example
@@ -101,6 +103,14 @@ fileRight.addEventListener('change', (e) => readFile(e.target, textRight));
 function readFile(input, targetTextArea) {
     const file = input.files[0];
     if (!file) return;
+    if (targetTextArea === textLeft) {
+        const dotIdx = file.name.lastIndexOf('.');
+        if (dotIdx !== -1) {
+            leftFileName = file.name.substring(0, dotIdx) + '_merged' + file.name.substring(dotIdx);
+        } else {
+            leftFileName = file.name + '_merged.txt';
+        }
+    }
     const reader = new FileReader();
     reader.onload = (e) => {
         targetTextArea.value = e.target.result;
@@ -116,10 +126,25 @@ clearBtn.addEventListener('click', () => {
     paneLeft.innerHTML = '';
     paneRight.innerHTML = '';
     inlineView.innerHTML = '';
+    leftFileName = 'merged_diff.txt';
 });
 
 // Compare action
 compareBtn.addEventListener('click', performDiff);
+
+// Download action
+downloadBtn.addEventListener('click', () => {
+    const text = textLeft.value;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = leftFileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
 
 // --- LCS DIFF ALGORITHM ---
 function computeLCS(arr1, arr2) {
