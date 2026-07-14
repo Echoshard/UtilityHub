@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Finder - Search &amp; Copy Emojis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <a href="../index.html" class="hub-link" aria-label="Back to hub">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Hub</span>
+                </a>
+                <div>
+                    <h1>Emoji Finder</h1>
+                    <p>Search 1,900+ emojis semantically and copy with one click. 100% offline.</p>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <span class="emoji-count" id="emojiCount"></span>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="search-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search anything… try &quot;engineering&quot;, &quot;celebrate&quot;, &quot;spooky&quot;" autocomplete="off" spellcheck="false" autofocus>
+                <kbd class="search-shortcut" id="searchShortcut">/</kbd>
+                <button id="clearSearch" class="clear-btn" title="Clear search" aria-label="Clear search">&times;</button>
+            </div>
+
+            <div class="control-cluster">
+                <label class="cluster-label" for="copyMode">Copy as</label>
+                <select id="copyMode" class="select-input">
+                    <option value="emoji">Emoji 🔧</option>
+                    <option value="codepoint">Codepoint U+1F527</option>
+                    <option value="html">HTML &amp;#x1F527;</option>
+                    <option value="shortcode">Shortcode :wrench:</option>
+                </select>
+            </div>
+
+            <div class="control-cluster">
+                <span class="cluster-label">Skin tone</span>
+                <div class="tone-picker" id="tonePicker" role="radiogroup" aria-label="Skin tone">
+                    <button class="tone-swatch active" data-tone="" style="--tone:#ffcc4d" title="Default"></button>
+                    <button class="tone-swatch" data-tone="&#x1F3FB;" style="--tone:#f7dece" title="Light"></button>
+                    <button class="tone-swatch" data-tone="&#x1F3FC;" style="--tone:#f3d2a2" title="Medium-Light"></button>
+                    <button class="tone-swatch" data-tone="&#x1F3FD;" style="--tone:#d5ab88" title="Medium"></button>
+                    <button class="tone-swatch" data-tone="&#x1F3FE;" style="--tone:#af7e57" title="Medium-Dark"></button>
+                    <button class="tone-swatch" data-tone="&#x1F3FF;" style="--tone:#7c533e" title="Dark"></button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="category-bar" id="categoryBar"></nav>
+
+        <main class="results-area" id="resultsArea">
+            <section class="recent-section" id="recentSection" hidden>
+                <div class="section-head">
+                    <h2>🕘 Recently Copied</h2>
+                    <button id="clearRecent" class="link-btn">Clear</button>
+                </div>
+                <div class="emoji-grid" id="recentGrid"></div>
+            </section>
+            <div id="resultsContainer"></div>
+        </main>
+
+        <footer class="detail-bar" id="detailBar">
+            <span class="detail-emoji" id="detailEmoji">👋</span>
+            <div class="detail-info">
+                <span class="detail-name" id="detailName">Hover an emoji — click to copy. Press Enter to copy the top search result.</span>
+                <span class="detail-keywords" id="detailKeywords"></span>
+            </div>
+            <span class="detail-code" id="detailCode"></span>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="emoji-data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

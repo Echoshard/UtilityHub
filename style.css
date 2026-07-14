@@ -33,6 +33,8 @@
     --regexlab-glow: linear-gradient(135deg, #a855f7, #2dd4bf);
     --diffmaster-glow: linear-gradient(135deg, #f43f5e, #10b981);
     --palettecrafter-glow: linear-gradient(135deg, #60a5fa, #a855f7);
+    --emojifinder-glow: linear-gradient(135deg, #fbbf24, #f472b6);
+    --pdfforge-glow: linear-gradient(135deg, #f43f5e, #a855f7);
 
     --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-display: 'Outfit', var(--font-ui);
@@ -243,6 +245,8 @@ body {
 .regexlab-card:hover .card-glow { background: var(--regexlab-glow); }
 .diffmaster-card:hover .card-glow { background: var(--diffmaster-glow); }
 .palettecrafter-card:hover .card-glow { background: var(--palettecrafter-glow); }
+.emojifinder-card:hover .card-glow { background: var(--emojifinder-glow); }
+.pdfforge-card:hover .card-glow { background: var(--pdfforge-glow); }
 
 /* Card Icon Containers */
 .card-icon-container {
@@ -408,6 +412,18 @@ body {
     border-color: rgba(96, 165, 250, 0.3);
 }
 .palettecrafter-card:hover .card-icon { stroke: #60a5fa; }
+
+.emojifinder-card:hover .card-icon-container {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+}
+.emojifinder-card:hover .card-icon { stroke: #fbbf24; }
+
+.pdfforge-card:hover .card-icon-container {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: rgba(244, 63, 94, 0.3);
+}
+.pdfforge-card:hover .card-icon { stroke: #f43f5e; }
 
 /* Disabled Cards Styling */
 .app-card.disabled {

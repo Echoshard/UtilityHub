@@ -130,6 +130,20 @@ An interactive directory structure visualizer.
 *   **Reverse Parser**: Paste an existing ASCII tree diagram from clipboard (or custom input prompt) to automatically convert it back into the editable indentation structure.
 *   **Save & Share**: Clipboard copy, file download, and URL state encoding to share customized trees with others.
 
+### 21. [Emoji Finder](emojifinder/index.html)
+A fully offline emoji search and copy tool covering 1,900+ emojis (Emojipedia-style).
+*   **Live Semantic Search**: Results filter as you type, with a synonym layer that maps concepts to emojis — "engineering" surfaces 🔧 🧰 ⚙️, "celebrate" surfaces 🎉 🥳 🎊 — plus light stemming ("running" matches "run").
+*   **One-Click Copy**: Click any emoji to copy it. Choose the copy format: raw emoji, Unicode codepoint (`U+1F527`), HTML entity, or `:shortcode:`. Press Enter to copy the top search result.
+*   **Skin Tones & Categories**: Global skin tone selector applied to all supported emojis, category filter chips, and a hover detail bar showing name, keywords, and codepoints. Defaults to the 100 most common emojis; searches show the top 100 matches.
+*   **Recently Copied**: Your last 20 copies persist locally for quick reuse.
+
+### 22. [PDF Forge](pdfforge/index.html)
+A fully offline PDF combiner, splitter, and page editor.
+*   **Combine**: Load multiple PDFs (file picker or drag & drop), reorder them, and merge every page into one document.
+*   **Page Thumbnails**: Every page renders as a clickable thumbnail. Click to select pages, then extract them to a new PDF or remove them (with per-document restore).
+*   **Split**: Break the combined page sequence apart — every N pages, custom ranges (`1-3, 4, 5-8`), or one file per page.
+*   **Private by Design**: Powered by locally bundled pdf-lib and PDF.js — documents never leave your machine.
+
 ---
 
 ## 🚀 Getting Started
