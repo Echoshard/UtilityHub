@@ -827,6 +827,54 @@ sampleBtn.addEventListener('click', () => {
 });
 
 // ==========================================
+// DRAG & DROP FILE SUPPORT
+// ==========================================
+inputText.addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+inputText.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    inputText.classList.add('drag-over');
+});
+
+inputText.addEventListener('dragleave', () => {
+    inputText.classList.remove('drag-over');
+});
+
+inputText.addEventListener('drop', (e) => {
+    e.preventDefault();
+    inputText.classList.remove('drag-over');
+    
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    
+    const ext = file.name.split('.').pop().toLowerCase();
+    const extMap = {
+        'json': 'json',
+        'yaml': 'yaml',
+        'yml': 'yaml',
+        'xml': 'xml',
+        'toon': 'toon',
+        'tn': 'toon'
+    };
+    const format = extMap[ext];
+    if (format) {
+        inputFormat = format;
+        document.querySelectorAll('[data-format]').forEach(b => {
+            b.classList.toggle('active', b.dataset.format === format);
+        });
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        inputText.value = evt.target.result;
+        doParse();
+    };
+    reader.readAsText(file);
+});
+
+// ==========================================
 // INIT
 // ==========================================
 renderOutputCode();

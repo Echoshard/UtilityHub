@@ -900,9 +900,9 @@ body {
 /* PRINT STYLES - Optimized for High Fidelity PDF output */
 /* ---------------------------------------------------- */
 @media print {
-    /* Set page margins */
+    /* Set page margins to 0 to hide browser headers/footers */
     @page {
-        margin: 15mm 20mm;
+        margin: 0;
         size: A4 portrait;
     }
     
@@ -911,6 +911,7 @@ body {
         color: #000000 !important;
         height: auto !important;
         overflow: visible !important;
+        margin: 15mm 20mm !important; /* Move margin to body so print content doesn't touch the page edge */
     }
     
     /* Hide layout UI elements completely */
