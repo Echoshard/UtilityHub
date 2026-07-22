@@ -27,7 +27,14 @@ const state = {
     resizeBox: null,
     resizePreview: null,
     resizeDragHandle: null,
+    resizeMove: null,
+    resizeRotate: null,
     history: [],
+    layers: [],
+    activeLayerId: null,
+    nextLayerId: 1,
+    layerMove: null,
+    layerDragId: null,
     adjustments: {
         brightness: 0,
         contrast: 0,
@@ -75,7 +82,7 @@ const controls = {
     height: document.getElementById('heightInput'),
     percent: document.getElementById('percentInput'),
     lockRatio: document.getElementById('lockRatioCheck'),
-    applyResize: document.getElementById('applyResizeBtn'),
+    resizeTitle: document.getElementById('resizeTitle'),
     filterPreset: document.getElementById('filterPresetSelect'),
     brightness: document.getElementById('brightnessRange'),
     brightnessValue: document.getElementById('brightnessValue'),
@@ -90,7 +97,24 @@ const controls = {
     applyBackground: document.getElementById('applyBackgroundBtn'),
     format: document.getElementById('formatSelect'),
     quality: document.getElementById('qualityRange'),
-    qualityValue: document.getElementById('qualityValue')
+    qualityValue: document.getElementById('qualityValue'),
+    exportSizeMode: document.getElementById('exportSizeModeSelect'),
+    exportPercentFields: document.getElementById('exportPercentFields'),
+    exportCustomFields: document.getElementById('exportCustomFields'),
+    exportPercent: document.getElementById('exportPercentInput'),
+    exportWidth: document.getElementById('exportWidthInput'),
+    exportHeight: document.getElementById('exportHeightInput'),
+    exportLockRatio: document.getElementById('exportLockRatioCheck'),
+    exportConfigured: document.getElementById('exportConfiguredBtn'),
+    layersList: document.getElementById('layersList'),
+    layerOpacity: document.getElementById('layerOpacityRange'),
+    layerOpacityValue: document.getElementById('layerOpacityValue'),
+    newLayer: document.getElementById('newLayerBtn'),
+    duplicateLayer: document.getElementById('duplicateLayerBtn'),
+    canvasPreset: document.getElementById('canvasPresetSelect'),
+    canvasWidth: document.getElementById('canvasWidthInput'),
+    canvasHeight: document.getElementById('canvasHeightInput'),
+    resizeCanvas: document.getElementById('resizeCanvasBtn')
 };
 
 const adjustmentSliders = [
@@ -114,6 +138,389 @@ function clamp(value, min, max) {
     return Math.min(max, Math.max(min, value));
 }
 
+function cloneCanvas(source) {
+    const copy = document.createElement('canvas');
+    copy.width = source.width;
+    copy.height = source.height;
+    copy.getContext('2d').drawImage(source, 0, 0);
+    return copy;
+}
+
+function activeLayer() {
+    return state.layers.find(layer => layer.id === state.activeLayerId) || null;
+}
+
+function resizeSourceFor(layer = activeLayer()) {
+    return layer?.transformSource || state.editCanvas;
+}
+
+function resizeSourceBoundsFor(layer = activeLayer()) {
+    const source = resizeSourceFor(layer);
+    return layer?.transformSourceBounds || getContentBounds(source);
+}
+
+function flattenLayerTransform(layer = activeLayer()) {
+    if (!layer?.transformSource) return;
+    layer.transformSource = null;
+    layer.transformSourceBounds = null;
+    layer.transform = null;
+}
+
+function layerCanvas(layer) {
+    if (!layer) return null;
+    if (layer.id === state.activeLayerId) return state.editCanvas;
+    return layer.transformSource && layer.transform ? transformedLayerCanvas(layer, layer.transform) : layer.canvas;
+}
+
+function transformedLayerCanvas(layer, transform, canvasWidth = state.editCanvas.width, canvasHeight = state.editCanvas.height) {
+    const next = document.createElement('canvas');
+    next.width = canvasWidth;
+    next.height = canvasHeight;
+    const sourceBounds = layer.transformSourceBounds || getContentBounds(layer.transformSource);
+    const nextCtx = next.getContext('2d');
+    nextCtx.save();
+    nextCtx.translate(transform.x + transform.width / 2, transform.y + transform.height / 2);
+    nextCtx.rotate(transform.angle || 0);
+    nextCtx.drawImage(
+        layer.transformSource,
+        sourceBounds.x,
+        sourceBounds.y,
+        sourceBounds.width,
+        sourceBounds.height,
+        -transform.width / 2,
+        -transform.height / 2,
+        transform.width,
+        transform.height
+    );
+    nextCtx.restore();
+    return next;
+}
+
+function ensureLayerTransformSource(layer = activeLayer()) {
+    if (layer.transformSource) return;
+    layer.transformSource = cloneCanvas(state.editCanvas);
+    layer.transformSourceBounds = getContentBounds(layer.transformSource);
+}
+
+function commitLayerTransform(layer, transform) {
+    const next = transformedLayerCanvas(layer, transform);
+    editCtx.clearRect(0, 0, state.editCanvas.width, state.editCanvas.height);
+    editCtx.drawImage(next, 0, 0);
+    layer.canvas = cloneCanvas(next);
+    layer.transform = { ...transform };
+}
+
+function commitActiveLayer() {
+    const layer = activeLayer();
+    if (layer) layer.canvas = cloneCanvas(state.editCanvas);
+}
+
+function loadLayerIntoEditor(layer) {
+    state.editCanvas.width = layer.canvas.width;
+    state.editCanvas.height = layer.canvas.height;
+    editCtx.clearRect(0, 0, state.editCanvas.width, state.editCanvas.height);
+    editCtx.drawImage(layer.canvas, 0, 0);
+}
+
+function activateLayer(id) {
+    if (id === state.activeLayerId) return;
+    commitActiveLayer();
+    const layer = state.layers.find(item => item.id === id);
+    if (!layer) return;
+    state.activeLayerId = id;
+    loadLayerIntoEditor(layer);
+    state.selection = null;
+    controls.clearSelection.disabled = true;
+    resetAdjustments();
+    renderLayersList();
+    if (state.tool === 'resize') {
+        setTool('resize');
+        return;
+    }
+    render();
+}
+
+function compositeCanvas(activeOverride = null) {
+    const out = document.createElement('canvas');
+    out.width = state.editCanvas.width;
+    out.height = state.editCanvas.height;
+    const outCtx = out.getContext('2d');
+    state.layers.forEach(layer => {
+        if (!layer.visible) return;
+        outCtx.save();
+        outCtx.globalAlpha = layer.opacity;
+        const source = layer.id === state.activeLayerId && activeOverride ? activeOverride : layerCanvas(layer);
+        outCtx.drawImage(source, 0, 0);
+        outCtx.restore();
+    });
+    return out;
+}
+
+function blankCanvas(width = state.editCanvas.width, height = state.editCanvas.height) {
+    const blank = document.createElement('canvas');
+    blank.width = width;
+    blank.height = height;
+    return blank;
+}
+
+function topLayerAt(point) {
+    const x = Math.floor(point.x);
+    const y = Math.floor(point.y);
+    if (x < 0 || y < 0 || x >= state.editCanvas.width || y >= state.editCanvas.height) return null;
+    for (let index = state.layers.length - 1; index >= 0; index--) {
+        const layer = state.layers[index];
+        if (!layer.visible || layer.opacity === 0) continue;
+        const alpha = layerCanvas(layer).getContext('2d').getImageData(x, y, 1, 1).data[3];
+        if (alpha > 0) return layer;
+    }
+    return activeLayer();
+}
+
+function getContentBounds(source) {
+    const { width, height } = source;
+    const pixels = source.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, width, height).data;
+    let minX = width, minY = height, maxX = -1, maxY = -1;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            if (pixels[(y * width + x) * 4 + 3] === 0) continue;
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+        }
+    }
+    return maxX < 0
+        ? { x: 0, y: 0, width, height }
+        : { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 };
+}
+
+function renderLayersList() {
+    controls.layersList.replaceChildren();
+    [...state.layers].reverse().forEach(layer => {
+        const row = document.createElement('div');
+        row.className = `layer-row${layer.id === state.activeLayerId ? ' active' : ''}${layer.isBackground ? ' background-layer' : ''}`;
+        row.draggable = !layer.isBackground;
+        row.dataset.layerId = layer.id;
+
+        const visibility = document.createElement('button');
+        visibility.className = 'layer-visibility';
+        visibility.type = 'button';
+        visibility.title = layer.visible ? 'Hide layer' : 'Show layer';
+        visibility.setAttribute('aria-label', visibility.title);
+        visibility.textContent = layer.visible ? '◉' : '○';
+        visibility.addEventListener('click', event => {
+            event.stopPropagation();
+            pushHistory();
+            layer.visible = !layer.visible;
+            renderLayersList();
+            render();
+        });
+
+        const name = document.createElement('span');
+        name.className = 'layer-name';
+        name.textContent = layer.name;
+
+        const remove = document.createElement('button');
+        remove.className = 'layer-delete';
+        remove.type = 'button';
+        remove.textContent = '🗑';
+        remove.title = layer.isBackground ? 'Background Canvas cannot be deleted' : 'Delete layer';
+        remove.setAttribute('aria-label', remove.title);
+        remove.disabled = layer.isBackground;
+        remove.addEventListener('click', event => {
+            event.stopPropagation();
+            deleteLayer(layer.id);
+        });
+
+        row.append(visibility, name, remove);
+        row.addEventListener('click', () => activateLayer(layer.id));
+        row.addEventListener('dragstart', event => {
+            if (!layer.isBackground) {
+                pushHistory();
+                state.layerDragId = layer.id;
+                row.classList.add('dragging');
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/layer-id', layer.id);
+            }
+        });
+        row.addEventListener('dragover', event => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            const dragged = controls.layersList.querySelector(`[data-layer-id="${state.layerDragId}"]`);
+            if (!dragged || dragged === row) return;
+            const bounds = row.getBoundingClientRect();
+            const insertBefore = layer.isBackground || event.clientY < bounds.top + bounds.height / 2;
+            const reference = insertBefore ? row : row.nextElementSibling;
+            if (reference === dragged || (!reference && dragged === controls.layersList.lastElementChild)) return;
+            animateLayerRowReorder(dragged, reference);
+        });
+        row.addEventListener('drop', event => {
+            event.preventDefault();
+            commitLayerRowOrder();
+        });
+        row.addEventListener('dragend', () => {
+            if (!state.layerDragId) return;
+            state.layerDragId = null;
+            renderLayersList();
+        });
+        controls.layersList.append(row);
+    });
+
+    const layer = activeLayer();
+    controls.layerOpacity.disabled = !layer;
+    controls.duplicateLayer.disabled = !layer;
+    controls.layerOpacity.value = layer ? Math.round(layer.opacity * 100) : 100;
+    controls.layerOpacityValue.textContent = controls.layerOpacity.value;
+    updateMeta();
+}
+
+function animateLayerRowReorder(dragged, reference) {
+    const rows = [...controls.layersList.children];
+    const before = new Map(rows.map(row => [row, row.getBoundingClientRect()]));
+    controls.layersList.insertBefore(dragged, reference);
+    [...controls.layersList.children].forEach(row => {
+        const previous = before.get(row);
+        if (!previous) return;
+        const current = row.getBoundingClientRect();
+        const delta = previous.top - current.top;
+        if (!delta) return;
+        row.style.transition = 'none';
+        row.style.transform = `translateY(${delta}px)`;
+        requestAnimationFrame(() => {
+            row.style.transition = 'transform 160ms ease';
+            row.style.transform = '';
+        });
+    });
+}
+
+function commitLayerRowOrder() {
+    const idsTopToBottom = [...controls.layersList.children].map(row => row.dataset.layerId);
+    const byId = new Map(state.layers.map(layer => [layer.id, layer]));
+    state.layers = idsTopToBottom.reverse().map(id => byId.get(id)).filter(Boolean);
+    state.layerDragId = null;
+    renderLayersList();
+    render();
+}
+
+function addLayerFromImage(img, name) {
+    const layerCanvasElement = document.createElement('canvas');
+    layerCanvasElement.width = state.editCanvas.width;
+    layerCanvasElement.height = state.editCanvas.height;
+    const scale = Math.min(1, layerCanvasElement.width / img.naturalWidth, layerCanvasElement.height / img.naturalHeight);
+    const width = Math.max(1, Math.round(img.naturalWidth * scale));
+    const height = Math.max(1, Math.round(img.naturalHeight * scale));
+    const x = Math.round((layerCanvasElement.width - width) / 2);
+    const y = Math.round((layerCanvasElement.height - height) / 2);
+    layerCanvasElement.getContext('2d').drawImage(img, x, y, width, height);
+    commitActiveLayer();
+    const layer = {
+        id: `layer-${state.nextLayerId++}`,
+        name: name || `Layer ${state.layers.length + 1}`,
+        canvas: layerCanvasElement,
+        visible: true,
+        opacity: 1
+    };
+    state.layers.push(layer);
+    state.activeLayerId = layer.id;
+    loadLayerIntoEditor(layer);
+    renderLayersList();
+    render();
+}
+
+function createNewLayer() {
+    if (!state.hasImage) return;
+    pushHistory();
+    const layerCanvasElement = blankCanvas();
+    const layer = {
+        id: `layer-${state.nextLayerId++}`,
+        name: `Layer ${state.layers.filter(item => !item.isBackground).length + 1}`,
+        canvas: layerCanvasElement,
+        visible: true,
+        opacity: 1
+    };
+    state.layers.push(layer);
+    state.activeLayerId = layer.id;
+    loadLayerIntoEditor(layer);
+    renderLayersList();
+    render();
+}
+
+function deleteLayer(id) {
+    const layer = state.layers.find(item => item.id === id);
+    if (!layer || layer.isBackground) return;
+    pushHistory();
+    const index = state.layers.indexOf(layer);
+    const wasActive = layer.id === state.activeLayerId;
+    state.layers.splice(index, 1);
+    if (wasActive) {
+        const next = state.layers[Math.min(index, state.layers.length - 1)];
+        state.activeLayerId = next.id;
+        loadLayerIntoEditor(next);
+    }
+    renderLayersList();
+    render();
+}
+
+function createBackgroundDocument(width = 1280, height = 720) {
+    const background = document.createElement('canvas');
+    background.width = width;
+    background.height = height;
+
+    state.fileName = 'image';
+    state.hasImage = true;
+    state.history = [];
+    state.originalCanvas = cloneCanvas(background);
+    const layer = {
+        id: `layer-${state.nextLayerId++}`,
+        name: 'Background Canvas',
+        canvas: background,
+        visible: true,
+        opacity: 1,
+        isBackground: true
+    };
+    state.layers = [layer];
+    state.activeLayerId = layer.id;
+    loadLayerIntoEditor(layer);
+    state.cropRect = { x: 0, y: 0, w: width, h: height };
+    emptyState.classList.add('hidden');
+    setEnabled(true);
+    syncFields();
+    renderLayersList();
+    fitToViewport();
+    setTool('move');
+}
+
+function resizeBackgroundCanvas(requestedWidth = null, requestedHeight = null) {
+    const width = clamp(requestedWidth || parseInt(controls.canvasWidth.value, 10) || state.editCanvas.width, 1, 10000);
+    const height = clamp(requestedHeight || parseInt(controls.canvasHeight.value, 10) || state.editCanvas.height, 1, 10000);
+    pushHistory(false);
+
+    state.layers.forEach(layer => {
+        const hasTransform = layer.transformSource && layer.transform;
+        const resized = hasTransform
+            ? transformedLayerCanvas(layer, layer.transform, width, height)
+            : blankCanvas(width, height);
+        if (!layer.isBackground && !hasTransform) {
+            resized.getContext('2d').drawImage(layer.canvas, 0, 0);
+        }
+        layer.canvas = resized;
+    });
+
+    const backgroundLayer = state.layers.find(layer => layer.isBackground);
+    if (backgroundLayer) state.originalCanvas = backgroundLayer.canvas;
+    loadLayerIntoEditor(activeLayer());
+    state.cropRect = { x: 0, y: 0, w: width, h: height };
+    state.selection = null;
+    if (state.tool === 'resize') {
+        state.resizePreview = { x: 0, y: 0, width, height, baseWidth: width, baseHeight: height };
+    }
+    controls.canvasWidth.value = width;
+    controls.canvasHeight.value = height;
+    syncFields();
+    renderLayersList();
+    render();
+}
+
 function setEnabled(enabled) {
     [
         controls.undo,
@@ -132,18 +539,19 @@ function setEnabled(enabled) {
         controls.width,
         controls.height,
         controls.percent,
-        controls.applyResize,
         controls.filterPreset,
         controls.brightness,
         controls.contrast,
         controls.saturation,
         controls.previewAdjust,
         controls.applyAdjust,
-        controls.applyBackground
+        controls.applyBackground,
+        controls.exportConfigured
     ].forEach(el => {
         el.disabled = !enabled;
     });
     controls.clearSelection.disabled = true;
+    controls.layerOpacity.disabled = !enabled;
 }
 
 function updateMeta() {
@@ -151,7 +559,9 @@ function updateMeta() {
         imageMeta.textContent = 'No image loaded';
         return;
     }
-    imageMeta.textContent = `${state.fileName} - ${state.editCanvas.width} x ${state.editCanvas.height} - ${Math.round(state.zoom * 100)}%`;
+    const layer = activeLayer();
+    const layerText = layer ? ` - ${layer.name}` : '';
+    imageMeta.textContent = `${state.fileName} - ${state.editCanvas.width} x ${state.editCanvas.height}${layerText} - ${Math.round(state.zoom * 100)}%`;
 }
 
 function resizeViewport() {
@@ -226,24 +636,123 @@ function render() {
 
     const imageX = state.panX;
     const imageY = state.panY;
-    const displayWidth = state.tool === 'resize' && state.resizePreview ? state.resizePreview.width : state.editCanvas.width;
-    const displayHeight = state.tool === 'resize' && state.resizePreview ? state.resizePreview.height : state.editCanvas.height;
-    const imageW = displayWidth * state.zoom;
-    const imageH = displayHeight * state.zoom;
+    const isCanvasResize = state.tool === 'resize' && activeLayer()?.isBackground && state.resizePreview;
+    const imageW = state.editCanvas.width * state.zoom;
+    const imageH = state.editCanvas.height * state.zoom;
+    const previewOffsetX = 0;
+    const previewOffsetY = 0;
 
     ctx.save();
     ctx.imageSmoothingEnabled = state.zoom < 2;
-    ctx.drawImage(state.editCanvas, imageX, imageY, imageW, imageH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.38)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(Math.round(imageX) + 0.5, Math.round(imageY) + 0.5, imageW, imageH);
+    const liveTransform = state.tool === 'resize' && !activeLayer()?.isBackground && state.resizePreview
+        ? state.resizePreview
+        : state.tool === 'move' && state.layerMove
+            ? state.layerMove.transform
+            : null;
+    const isLiveLayerTransform = Boolean(liveTransform);
+    ctx.drawImage(compositeCanvas(isLiveLayerTransform ? blankCanvas() : null), imageX + previewOffsetX, imageY + previewOffsetY, imageW, imageH);
+    if (isLiveLayerTransform) {
+        drawLiveLayerTransform(imageX, imageY, liveTransform);
+        darkenOutsideCanvas(imageX, imageY, state.editCanvas.width * state.zoom, state.editCanvas.height * state.zoom);
+    }
+    if (!isCanvasResize) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.38)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(Math.round(imageX) + 0.5, Math.round(imageY) + 0.5, imageW, imageH);
+    }
     ctx.restore();
+
+    drawCanvasBoundary(
+        imageX,
+        imageY,
+        isCanvasResize ? state.resizePreview.width : state.editCanvas.width,
+        isCanvasResize ? state.resizePreview.height : state.editCanvas.height
+    );
 
     drawSelectionOverlay();
     drawHealMaskOverlay();
     drawCropOverlay();
     drawResizeOverlay();
     drawBrushPreview();
+}
+
+function drawCanvasBoundary(x, y, canvasWidth = state.editCanvas.width, canvasHeight = state.editCanvas.height) {
+    const width = canvasWidth * state.zoom;
+    const height = canvasHeight * state.zoom;
+    const label = `Canvas ${canvasWidth} x ${canvasHeight}`;
+    ctx.save();
+    ctx.setLineDash([8, 5]);
+    ctx.strokeStyle = 'rgba(45, 212, 191, 0.82)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(Math.round(x) + 0.5, Math.round(y) + 0.5, width, height);
+    ctx.setLineDash([]);
+    ctx.font = '700 12px Inter, system-ui, sans-serif';
+    const labelWidth = ctx.measureText(label).width + 16;
+    ctx.fillStyle = 'rgba(4, 12, 16, 0.88)';
+    ctx.fillRect(x + 8, y + 8, labelWidth, 25);
+    ctx.fillStyle = '#5eead4';
+    ctx.fillText(label, x + 16, y + 25);
+    ctx.restore();
+}
+
+function resizedLayerPreviewCanvas() {
+    const preview = state.resizePreview;
+    const sourceBounds = preview.sourceBounds || getContentBounds(state.editCanvas);
+    const next = document.createElement('canvas');
+    next.width = state.editCanvas.width;
+    next.height = state.editCanvas.height;
+    const nextCtx = next.getContext('2d');
+    nextCtx.imageSmoothingEnabled = true;
+    nextCtx.imageSmoothingQuality = 'high';
+    nextCtx.save();
+    nextCtx.translate(preview.x + preview.width / 2, preview.y + preview.height / 2);
+    nextCtx.rotate(preview.angle || 0);
+    nextCtx.drawImage(
+        state.editCanvas,
+        sourceBounds.x,
+        sourceBounds.y,
+        sourceBounds.width,
+        sourceBounds.height,
+        -preview.width / 2,
+        -preview.height / 2,
+        preview.width,
+        preview.height
+    );
+    nextCtx.restore();
+    return next;
+}
+
+function drawLiveLayerTransform(imageX, imageY, preview) {
+    const source = resizeSourceFor();
+    const bounds = preview.sourceBounds || resizeSourceBoundsFor();
+    ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.translate(imageX + (preview.x + preview.width / 2) * state.zoom, imageY + (preview.y + preview.height / 2) * state.zoom);
+    ctx.rotate(preview.angle || 0);
+    ctx.drawImage(
+        source,
+        bounds.x,
+        bounds.y,
+        bounds.width,
+        bounds.height,
+        -preview.width * state.zoom / 2,
+        -preview.height * state.zoom / 2,
+        preview.width * state.zoom,
+        preview.height * state.zoom
+    );
+    ctx.restore();
+}
+
+function darkenOutsideCanvas(x, y, width, height) {
+    const view = screenSize();
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.48)';
+    ctx.fillRect(0, 0, view.width, Math.max(0, y));
+    ctx.fillRect(0, y + height, view.width, Math.max(0, view.height - y - height));
+    ctx.fillRect(0, y, Math.max(0, x), height);
+    ctx.fillRect(x + width, y, Math.max(0, view.width - x - width), height);
+    ctx.restore();
 }
 
 function drawBrushPreview() {
@@ -311,20 +820,30 @@ function drawCropHandles(x, y, width, height) {
 
 function drawResizeOverlay() {
     if (state.tool !== 'resize' || !state.resizePreview) return;
-    const a = imageToScreen(0, 0);
-    const w = state.resizePreview.width * state.zoom;
-    const h = state.resizePreview.height * state.zoom;
+    const preview = state.resizePreview;
+    const a = imageToScreen(preview.x, preview.y);
+    const w = preview.width * state.zoom;
+    const h = preview.height * state.zoom;
+    const centerX = a.x + w / 2;
+    const centerY = a.y + h / 2;
+    const angle = preview.angle || 0;
     ctx.save();
     ctx.strokeStyle = '#14b8a6';
     ctx.lineWidth = 2;
     ctx.setLineDash([10, 6]);
-    ctx.strokeRect(a.x, a.y, w, h);
+    ctx.translate(centerX, centerY);
+    ctx.rotate(angle);
+    if (!activeLayer()?.isBackground) ctx.strokeRect(-w / 2, -h / 2, w, h);
+    ctx.setLineDash([]);
     
     // Draw the three active resize handles
     const points = [
-        [a.x + w, a.y + h / 2], // Right
-        [a.x + w / 2, a.y + h], // Bottom
-        [a.x + w, a.y + h]      // Bottom-Right
+        [-w / 2, -h / 2], // Top-Left
+        [w / 2, -h / 2], // Top-Right
+        [w / 2, 0], // Right
+        [0, h / 2], // Bottom
+        [-w / 2, h / 2], // Bottom-Left
+        [w / 2, h / 2] // Bottom-Right
     ];
     ctx.fillStyle = '#14b8a6';
     ctx.strokeStyle = '#ffffff';
@@ -335,6 +854,18 @@ function drawResizeOverlay() {
         ctx.fill();
         ctx.stroke();
     });
+    if (!activeLayer()?.isBackground) {
+        const rotateOffset = 34;
+        ctx.beginPath();
+        ctx.moveTo(0, -h / 2);
+        ctx.lineTo(0, -h / 2 - rotateOffset);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, -h / 2 - rotateOffset, 10, 0, Math.PI * 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fill();
+        ctx.stroke();
+    }
     ctx.restore();
 }
 
@@ -412,15 +943,36 @@ function nearestCropHandle(point) {
 
 function getResizeHandle(point) {
     if (!state.resizePreview) return null;
-    const w = state.resizePreview.width;
-    const h = state.resizePreview.height;
+    const preview = state.resizePreview;
+    const x = preview.x;
+    const y = preview.y;
+    const w = preview.width;
+    const h = preview.height;
+    const angle = preview.angle || 0;
+    const centerX = x + w / 2;
+    const centerY = y + h / 2;
+    const turn = (px, py) => {
+        const dx = px - centerX;
+        const dy = py - centerY;
+        return {
+            x: centerX + dx * Math.cos(angle) - dy * Math.sin(angle),
+            y: centerY + dx * Math.sin(angle) + dy * Math.cos(angle)
+        };
+    };
     
     const screenPoint = imageToScreen(point.x, point.y);
     const handles = {
-        right: imageToScreen(w, h / 2),
-        bottom: imageToScreen(w / 2, h),
-        'bottom-right': imageToScreen(w, h)
+        'top-left': imageToScreen(...Object.values(turn(x, y))),
+        'top-right': imageToScreen(...Object.values(turn(x + w, y))),
+        right: imageToScreen(...Object.values(turn(x + w, y + h / 2))),
+        bottom: imageToScreen(...Object.values(turn(x + w / 2, y + h))),
+        'bottom-left': imageToScreen(...Object.values(turn(x, y + h))),
+        'bottom-right': imageToScreen(...Object.values(turn(x + w, y + h)))
     };
+    if (!activeLayer()?.isBackground) {
+        const rotatePoint = turn(x + w / 2, y - 34 / state.zoom);
+        handles.rotate = imageToScreen(rotatePoint.x, rotatePoint.y);
+    }
     
     const hitRadius = 24;
     let bestHandle = null;
@@ -437,6 +989,19 @@ function getResizeHandle(point) {
     }
     
     return bestHandle;
+}
+
+function pointIsInsideResizePreview(point) {
+    if (!state.resizePreview) return false;
+    const preview = state.resizePreview;
+    const centerX = preview.x + preview.width / 2;
+    const centerY = preview.y + preview.height / 2;
+    const angle = -(preview.angle || 0);
+    const dx = point.x - centerX;
+    const dy = point.y - centerY;
+    const localX = dx * Math.cos(angle) - dy * Math.sin(angle) + preview.width / 2;
+    const localY = dx * Math.sin(angle) + dy * Math.cos(angle) + preview.height / 2;
+    return localX >= 0 && localX <= preview.width && localY >= 0 && localY <= preview.height;
 }
 
 function updateCursor(point) {
@@ -512,8 +1077,12 @@ function updateCursor(point) {
             canvas.style.cursor = 'ew-resize';
         } else if (handle === 'bottom') {
             canvas.style.cursor = 'ns-resize';
-        } else if (handle === 'bottom-right') {
+        } else if (handle === 'top-left' || handle === 'bottom-right') {
             canvas.style.cursor = 'nwse-resize';
+        } else if (handle === 'top-right' || handle === 'bottom-left') {
+            canvas.style.cursor = 'nesw-resize';
+        } else if (handle === 'rotate') {
+            canvas.style.cursor = 'grab';
         } else {
             canvas.style.cursor = 'default';
         }
@@ -593,12 +1162,22 @@ function drawHealMaskOverlay() {
     ctx.restore();
 }
 
-function pushHistory() {
+function pushHistory(cloneSurfaces = true) {
     if (!state.hasImage) return;
-    const snapshot = document.createElement('canvas');
-    snapshot.width = state.editCanvas.width;
-    snapshot.height = state.editCanvas.height;
-    snapshot.getContext('2d').drawImage(state.editCanvas, 0, 0);
+    commitActiveLayer();
+    const snapshot = {
+        activeLayerId: state.activeLayerId,
+        originalCanvas: cloneSurfaces ? cloneCanvas(state.originalCanvas) : state.originalCanvas,
+        layers: state.layers.map(layer => ({
+            ...layer,
+            canvas: cloneSurfaces ? cloneCanvas(layer.canvas) : layer.canvas,
+            transformSource: layer.transformSource
+                ? (cloneSurfaces ? cloneCanvas(layer.transformSource) : layer.transformSource)
+                : null,
+            transformSourceBounds: layer.transformSourceBounds ? { ...layer.transformSourceBounds } : null,
+            transform: layer.transform ? { ...layer.transform } : null
+        }))
+    };
     state.history.push(snapshot);
     if (state.history.length > 30) state.history.shift();
     controls.undo.disabled = state.history.length === 0;
@@ -607,10 +1186,13 @@ function pushHistory() {
 function undo() {
     const snapshot = state.history.pop();
     if (!snapshot) return;
-    state.editCanvas.width = snapshot.width;
-    state.editCanvas.height = snapshot.height;
-    editCtx.drawImage(snapshot, 0, 0);
+    state.layers = snapshot.layers;
+    state.activeLayerId = snapshot.activeLayerId;
+    state.originalCanvas = snapshot.originalCanvas;
+    const layer = activeLayer();
+    if (layer) loadLayerIntoEditor(layer);
     syncFields();
+    renderLayersList();
     controls.undo.disabled = state.history.length === 0;
     render();
 }
@@ -618,6 +1200,12 @@ function undo() {
 function syncFields() {
     controls.width.value = state.editCanvas.width;
     controls.height.value = state.editCanvas.height;
+    controls.canvasWidth.value = state.editCanvas.width;
+    controls.canvasHeight.value = state.editCanvas.height;
+    controls.exportWidth.value = state.editCanvas.width;
+    controls.exportHeight.value = state.editCanvas.height;
+    const canvasSize = `${state.editCanvas.width}x${state.editCanvas.height}`;
+    controls.canvasPreset.value = [...controls.canvasPreset.options].some(option => option.value === canvasSize) ? canvasSize : 'custom';
     controls.percent.value = 100;
     syncCropFields();
     updateMeta();
@@ -637,6 +1225,11 @@ function loadFile(file) {
     reader.onload = () => {
         const img = new Image();
         img.onload = () => {
+            if (state.hasImage) {
+                pushHistory();
+                addLayerFromImage(img, file.name.replace(/\.[^.]+$/, '') || 'Image');
+                return;
+            }
             state.fileName = file.name.replace(/\.[^.]+$/, '') || 'image';
             state.hasImage = true;
             state.history = [];
@@ -658,11 +1251,23 @@ function loadFile(file) {
             editCtx.clearRect(0, 0, state.editCanvas.width, state.editCanvas.height);
             editCtx.drawImage(img, 0, 0);
 
+            const baseLayer = {
+                id: `layer-${state.nextLayerId++}`,
+                name: 'Background Canvas',
+                canvas: cloneCanvas(state.editCanvas),
+                visible: true,
+                opacity: 1,
+                isBackground: true
+            };
+            state.layers = [baseLayer];
+            state.activeLayerId = baseLayer.id;
+
             emptyState.classList.add('hidden');
             setEnabled(true);
             syncFields();
             fitToViewport();
             updateTargetUI();
+            renderLayersList();
             setTool('move');
         };
         img.src = reader.result;
@@ -738,10 +1343,22 @@ function setTool(tool) {
         syncCropFields();
     }
     if (tool === 'resize' && state.hasImage) {
-        state.resizePreview = { width: state.editCanvas.width, height: state.editCanvas.height };
+        const layer = activeLayer();
+        const bounds = layer?.isBackground
+            ? { x: 0, y: 0, width: state.editCanvas.width, height: state.editCanvas.height }
+            : (layer?.transform || getContentBounds(state.editCanvas));
+        const sourceBounds = layer?.isBackground ? bounds : resizeSourceBoundsFor(layer);
+        state.resizePreview = {
+            ...bounds,
+            baseWidth: bounds.width,
+            baseHeight: bounds.height,
+            angle: bounds.angle || 0,
+            sourceBounds
+        };
         controls.width.value = state.resizePreview.width;
         controls.height.value = state.resizePreview.height;
         controls.percent.value = 100;
+        controls.resizeTitle.textContent = layer?.isBackground ? 'Resize Background Canvas' : 'Resize Selected Layer';
     }
     render();
 }
@@ -1026,6 +1643,7 @@ function createMagicWand(point) {
 function eraseSelection() {
     if (!state.selection) return;
     pushHistory();
+    flattenLayerTransform();
     const image = editCtx.getImageData(0, 0, state.editCanvas.width, state.editCanvas.height);
     for (let i = 0; i < state.selection.data.length; i++) {
         if (state.selection.data[i]) image.data[i * 4 + 3] = 0;
@@ -1045,50 +1663,93 @@ function applyCrop() {
         w: parseInt(controls.cropW.value, 10) || state.cropRect.w,
         h: parseInt(controls.cropH.value, 10) || state.cropRect.h
     });
-    const next = document.createElement('canvas');
-    next.width = Math.max(1, Math.round(rect.w));
-    next.height = Math.max(1, Math.round(rect.h));
-    next.getContext('2d').drawImage(state.editCanvas, rect.x, rect.y, rect.w, rect.h, 0, 0, next.width, next.height);
-    state.editCanvas.width = next.width;
-    state.editCanvas.height = next.height;
-    editCtx.drawImage(next, 0, 0);
-    state.cropRect = { x: 0, y: 0, w: next.width, h: next.height };
+    commitActiveLayer();
+    const width = Math.max(1, Math.round(rect.w));
+    const height = Math.max(1, Math.round(rect.h));
+    state.layers.forEach(layer => {
+        const next = document.createElement('canvas');
+        next.width = width;
+        next.height = height;
+        next.getContext('2d').drawImage(layer.canvas, rect.x, rect.y, rect.w, rect.h, 0, 0, width, height);
+        layer.canvas = next;
+        flattenLayerTransform(layer);
+    });
+    loadLayerIntoEditor(activeLayer());
+    state.cropRect = { x: 0, y: 0, w: width, h: height };
     state.selection = null;
     syncFields();
-    fitToViewport();
 }
 
 function applyResize() {
-    const width = Math.max(1, parseInt(controls.width.value, 10) || state.editCanvas.width);
-    const height = Math.max(1, parseInt(controls.height.value, 10) || state.editCanvas.height);
+    const preview = state.resizePreview || getContentBounds(state.editCanvas);
+    const width = Math.max(1, parseInt(controls.width.value, 10) || preview.width);
+    const height = Math.max(1, parseInt(controls.height.value, 10) || preview.height);
+    if (activeLayer()?.isBackground) {
+        resizeBackgroundCanvas(width, height);
+        return;
+    }
     pushHistory();
+    const layer = activeLayer();
+    if (!layer.transformSource) {
+        layer.transformSource = cloneCanvas(state.editCanvas);
+        layer.transformSourceBounds = getContentBounds(layer.transformSource);
+    }
+    const source = layer.transformSource;
+    const sourceBounds = layer.transformSourceBounds;
     const next = document.createElement('canvas');
-    next.width = width;
-    next.height = height;
+    next.width = state.editCanvas.width;
+    next.height = state.editCanvas.height;
     const nextCtx = next.getContext('2d');
     nextCtx.imageSmoothingEnabled = true;
     nextCtx.imageSmoothingQuality = 'high';
-    nextCtx.drawImage(state.editCanvas, 0, 0, width, height);
-    state.editCanvas.width = width;
-    state.editCanvas.height = height;
+    nextCtx.save();
+    nextCtx.translate(preview.x + width / 2, preview.y + height / 2);
+    nextCtx.rotate(preview.angle || 0);
+    nextCtx.drawImage(
+        source,
+        sourceBounds.x,
+        sourceBounds.y,
+        sourceBounds.width,
+        sourceBounds.height,
+        -width / 2,
+        -height / 2,
+        width,
+        height
+    );
+    nextCtx.restore();
+    editCtx.clearRect(0, 0, state.editCanvas.width, state.editCanvas.height);
     editCtx.drawImage(next, 0, 0);
+    layer.transform = { x: preview.x, y: preview.y, width, height, angle: preview.angle || 0 };
     state.selection = null;
-    syncFields();
-    fitToViewport();
+    state.resizePreview = {
+        x: preview.x,
+        y: preview.y,
+        width,
+        height,
+        baseWidth: width,
+        baseHeight: height,
+        angle: preview.angle || 0,
+        sourceBounds
+    };
+    controls.percent.value = 100;
+    updateMeta();
+    render();
 }
 
 function rotate(direction) {
     pushHistory();
-    const next = document.createElement('canvas');
-    next.width = state.editCanvas.height;
-    next.height = state.editCanvas.width;
-    const nctx = next.getContext('2d');
-    nctx.translate(next.width / 2, next.height / 2);
-    nctx.rotate(direction * Math.PI / 2);
-    nctx.drawImage(state.editCanvas, -state.editCanvas.width / 2, -state.editCanvas.height / 2);
-    state.editCanvas.width = next.width;
-    state.editCanvas.height = next.height;
-    editCtx.drawImage(next, 0, 0);
+    commitActiveLayer();
+    state.layers.forEach(layer => {
+        const next = document.createElement('canvas');
+        next.width = layer.canvas.height;
+        next.height = layer.canvas.width;
+        const nctx = next.getContext('2d');
+        nctx.translate(next.width / 2, next.height / 2);
+        nctx.rotate(direction * Math.PI / 2);
+        nctx.drawImage(layer.canvas, -layer.canvas.width / 2, -layer.canvas.height / 2);
+        layer.canvas = next;
+    });
+    loadLayerIntoEditor(activeLayer());
     state.selection = null;
     syncFields();
     fitToViewport();
@@ -1096,6 +1757,7 @@ function rotate(direction) {
 
 function flip(horizontal) {
     pushHistory();
+    flattenLayerTransform();
     const next = document.createElement('canvas');
     next.width = state.editCanvas.width;
     next.height = state.editCanvas.height;
@@ -1110,6 +1772,7 @@ function flip(horizontal) {
 
 function flattenBackground() {
     pushHistory();
+    flattenLayerTransform();
     const next = document.createElement('canvas');
     next.width = state.editCanvas.width;
     next.height = state.editCanvas.height;
@@ -1126,12 +1789,21 @@ function flattenBackground() {
 function resetImage() {
     if (!state.hasImage) return;
     pushHistory();
-    state.editCanvas.width = state.originalCanvas.width;
-    state.editCanvas.height = state.originalCanvas.height;
-    editCtx.drawImage(state.originalCanvas, 0, 0);
+    const baseLayer = {
+        id: `layer-${state.nextLayerId++}`,
+        name: 'Background Canvas',
+        canvas: cloneCanvas(state.originalCanvas),
+        visible: true,
+        opacity: 1,
+        isBackground: true
+    };
+    state.layers = [baseLayer];
+    state.activeLayerId = baseLayer.id;
+    loadLayerIntoEditor(baseLayer);
     state.selection = null;
     state.cropRect = { x: 0, y: 0, w: state.editCanvas.width, h: state.editCanvas.height };
     resetAdjustments();
+    renderLayersList();
     syncFields();
     fitToViewport();
 }
@@ -1184,13 +1856,14 @@ function previewAdjustments() {
     if (!state.hasImage) return;
     const next = adjustedCanvas();
     ctx.save();
-    ctx.drawImage(next, state.panX, state.panY, state.editCanvas.width * state.zoom, state.editCanvas.height * state.zoom);
+    ctx.drawImage(compositeCanvas(next), state.panX, state.panY, state.editCanvas.width * state.zoom, state.editCanvas.height * state.zoom);
     ctx.restore();
 }
 
 function applyAdjustments() {
     if (!state.hasImage) return;
     pushHistory();
+    flattenLayerTransform();
     const next = adjustedCanvas();
     editCtx.clearRect(0, 0, state.editCanvas.width, state.editCanvas.height);
     editCtx.drawImage(next, 0, 0);
@@ -1198,20 +1871,34 @@ function applyAdjustments() {
     render();
 }
 
-function exportImage() {
+function exportImage(quickPng = false) {
     if (!state.hasImage) return;
-    const type = controls.format.value;
-    const quality = parseInt(controls.quality.value, 10) / 100;
+    const type = quickPng ? 'image/png' : controls.format.value;
+    const quality = quickPng ? 1 : parseInt(controls.quality.value, 10) / 100;
+    let width = state.editCanvas.width;
+    let height = state.editCanvas.height;
+
+    if (!quickPng && controls.exportSizeMode.value === 'percent') {
+        const percent = clamp(parseFloat(controls.exportPercent.value) || 100, 1, 1000) / 100;
+        width = Math.max(1, Math.round(width * percent));
+        height = Math.max(1, Math.round(height * percent));
+    } else if (!quickPng && controls.exportSizeMode.value === 'custom') {
+        width = clamp(parseInt(controls.exportWidth.value, 10) || width, 1, 10000);
+        height = clamp(parseInt(controls.exportHeight.value, 10) || height, 1, 10000);
+    }
+
     const out = document.createElement('canvas');
-    out.width = state.editCanvas.width;
-    out.height = state.editCanvas.height;
+    out.width = width;
+    out.height = height;
     const outCtx = out.getContext('2d');
 
-    if (type === 'image/jpeg' || !controls.transparent.checked) {
+    if (type === 'image/jpeg' || (!quickPng && !controls.transparent.checked)) {
         outCtx.fillStyle = controls.backgroundColor.value;
         outCtx.fillRect(0, 0, out.width, out.height);
     }
-    outCtx.drawImage(state.editCanvas, 0, 0);
+    outCtx.imageSmoothingEnabled = true;
+    outCtx.imageSmoothingQuality = 'high';
+    outCtx.drawImage(compositeCanvas(), 0, 0, width, height);
     out.toBlob(blob => {
         if (!blob) return;
         const ext = type === 'image/jpeg' ? 'jpg' : type.split('/')[1];
@@ -1224,6 +1911,13 @@ function exportImage() {
     }, type, quality);
 }
 
+function updateExportControls() {
+    const mode = controls.exportSizeMode.value;
+    controls.exportPercentFields.classList.toggle('hidden', mode !== 'percent');
+    controls.exportCustomFields.classList.toggle('hidden', mode !== 'custom');
+    controls.quality.disabled = controls.format.value === 'image/png';
+}
+
 function handlePointerDown(event) {
     if (!state.hasImage) return;
     canvas.setPointerCapture(event.pointerId);
@@ -1231,9 +1925,31 @@ function handlePointerDown(event) {
     state.isPointerDown = true;
     state.lastPointer = point;
 
-    if (state.isSpaceDown || event.button === 1 || state.tool === 'move') {
+    if (state.isSpaceDown || event.button === 1) {
         state.isPanning = true;
         stage.classList.add('panning');
+        return;
+    }
+
+    if (state.tool === 'move') {
+        const hitLayer = topLayerAt(point.image);
+        if (hitLayer) activateLayer(hitLayer.id);
+        if (!activeLayer() || activeLayer().isBackground) {
+            state.isPointerDown = false;
+            canvas.releasePointerCapture(event.pointerId);
+            return;
+        }
+        pushHistory();
+        const layer = activeLayer();
+        ensureLayerTransformSource(layer);
+        const sourceBounds = resizeSourceBoundsFor(layer);
+        state.layerMove = {
+            start: point.image,
+            transform: layer.transform
+                ? { ...layer.transform }
+                : { x: sourceBounds.x, y: sourceBounds.y, width: sourceBounds.width, height: sourceBounds.height, angle: 0 }
+        };
+        canvas.style.cursor = 'grabbing';
         return;
     }
 
@@ -1261,7 +1977,24 @@ function handlePointerDown(event) {
     if (state.tool === 'resize') {
         state.resizeDragHandle = getResizeHandle(point.image);
         if (state.resizeDragHandle) {
-            state.resizeBox = { start: point.image };
+            state.resizeBox = {
+                start: point.image,
+                preview: { ...state.resizePreview }
+            };
+            if (state.resizeDragHandle === 'rotate') {
+                const preview = state.resizePreview;
+                state.resizeRotate = {
+                    pointerAngle: Math.atan2(point.image.y - (preview.y + preview.height / 2), point.image.x - (preview.x + preview.width / 2)),
+                    initialAngle: preview.angle || 0
+                };
+            }
+        } else if (!activeLayer()?.isBackground && pointIsInsideResizePreview(point.image)) {
+            state.resizeMove = {
+                start: point.image,
+                x: state.resizePreview.x,
+                y: state.resizePreview.y
+            };
+            canvas.style.cursor = 'grabbing';
         }
         return;
     }
@@ -1273,6 +2006,7 @@ function handlePointerDown(event) {
 
     if (['brush', 'eraser', 'bgEraser', 'heal'].includes(state.tool)) {
         pushHistory();
+        flattenLayerTransform();
         if (state.tool === 'bgEraser') {
             state.targetColor = sampleColor(point.image.x, point.image.y);
             updateTargetUI();
@@ -1335,6 +2069,17 @@ function handlePointerMove(event) {
         return;
     }
 
+    if (state.isPointerDown && state.tool === 'move' && state.layerMove) {
+        state.layerMove.transform = {
+            ...state.layerMove.transform,
+            x: Math.round(state.layerMove.transform.x + point.image.x - state.layerMove.start.x),
+            y: Math.round(state.layerMove.transform.y + point.image.y - state.layerMove.start.y)
+        };
+        state.layerMove.start = point.image;
+        render();
+        return;
+    }
+
     if (state.isPointerDown && state.tool === 'crop' && state.cropRect) {
         dragCropSide(point.image);
         syncCropFields();
@@ -1342,35 +2087,88 @@ function handlePointerMove(event) {
         return;
     }
 
+    if (state.isPointerDown && state.tool === 'resize' && state.resizeMove) {
+        state.resizePreview = {
+            ...state.resizePreview,
+            x: Math.round(state.resizeMove.x + point.image.x - state.resizeMove.start.x),
+            y: Math.round(state.resizeMove.y + point.image.y - state.resizeMove.start.y)
+        };
+        render();
+        return;
+    }
+
     if (state.isPointerDown && state.tool === 'resize' && state.resizeDragHandle) {
+        if (state.resizeDragHandle === 'rotate' && state.resizeRotate) {
+            const preview = state.resizePreview;
+            const pointerAngle = Math.atan2(point.image.y - (preview.y + preview.height / 2), point.image.x - (preview.x + preview.width / 2));
+            state.resizePreview = {
+                ...preview,
+                angle: state.resizeRotate.initialAngle + pointerAngle - state.resizeRotate.pointerAngle
+            };
+            render();
+            return;
+        }
         let width = state.resizePreview.width;
         let height = state.resizePreview.height;
-        const ratio = state.editCanvas.width / state.editCanvas.height;
+        let x = state.resizePreview.x;
+        let y = state.resizePreview.y;
+        const ratio = state.resizePreview.baseWidth / state.resizePreview.baseHeight;
         const forceRatio = event.shiftKey || controls.lockRatio.checked;
+        const initial = state.resizeBox?.preview || state.resizePreview;
+        const initialRight = initial.x + initial.width;
+        const initialBottom = initial.y + initial.height;
+
+        const lockCornerRatio = (rawWidth, rawHeight) => {
+            if (!forceRatio) return {
+                width: Math.max(1, Math.round(rawWidth)),
+                height: Math.max(1, Math.round(rawHeight))
+            };
+            const widthScale = rawWidth / initial.width;
+            const heightScale = rawHeight / initial.height;
+            const scale = Math.abs(widthScale - 1) >= Math.abs(heightScale - 1) ? widthScale : heightScale;
+            return {
+                width: Math.max(1, Math.round(initial.width * scale)),
+                height: Math.max(1, Math.round(initial.height * scale))
+            };
+        };
 
         if (state.resizeDragHandle === 'right') {
-            width = Math.max(1, Math.round(point.image.x));
+            width = Math.max(1, Math.round(point.image.x - state.resizePreview.x));
             if (forceRatio) {
                 height = Math.max(1, Math.round(width / ratio));
             }
         } else if (state.resizeDragHandle === 'bottom') {
-            height = Math.max(1, Math.round(point.image.y));
+            height = Math.max(1, Math.round(point.image.y - state.resizePreview.y));
             if (forceRatio) {
                 width = Math.max(1, Math.round(height * ratio));
             }
+        } else if (state.resizeDragHandle === 'top-left') {
+            ({ width, height } = lockCornerRatio(initialRight - point.image.x, initialBottom - point.image.y));
+            x = initialRight - width;
+            y = initialBottom - height;
+        } else if (state.resizeDragHandle === 'top-right') {
+            ({ width, height } = lockCornerRatio(point.image.x - initial.x, initialBottom - point.image.y));
+            x = initial.x;
+            y = initialBottom - height;
+        } else if (state.resizeDragHandle === 'bottom-left') {
+            ({ width, height } = lockCornerRatio(initialRight - point.image.x, point.image.y - initial.y));
+            x = initialRight - width;
+            y = initial.y;
         } else if (state.resizeDragHandle === 'bottom-right') {
-            width = Math.max(1, Math.round(point.image.x));
-            if (forceRatio) {
-                height = Math.max(1, Math.round(width / ratio));
-            } else {
-                height = Math.max(1, Math.round(point.image.y));
-            }
+            ({ width, height } = lockCornerRatio(point.image.x - initial.x, point.image.y - initial.y));
+            x = initial.x;
+            y = initial.y;
+        }
+
+        if (activeLayer()?.isBackground) {
+            x = 0;
+            y = 0;
         }
 
         controls.width.value = width;
         controls.height.value = height;
-        controls.percent.value = Math.round((width / state.editCanvas.width) * 100);
-        state.resizePreview = { width, height };
+        controls.percent.value = Math.round((width / state.resizePreview.baseWidth) * 100);
+        state.resizePreview = { ...state.resizePreview, x, y, width, height };
         render();
         return;
     }
@@ -1394,13 +2192,21 @@ function handlePointerUp(event) {
     if (state.tool === 'heal' && controls.spotHeal.checked && state.healMask) {
         applySpotHeal();
     }
+    const shouldCommitResize = state.tool === 'resize' && (state.resizeDragHandle || state.resizeMove);
     state.isPointerDown = false;
     state.isPanning = false;
     state.cropDragHandle = null;
     state.resizeDragHandle = null;
     state.resizeBox = null;
+    state.resizeMove = null;
+    state.resizeRotate = null;
+    if (state.layerMove) commitLayerTransform(activeLayer(), state.layerMove.transform);
+    state.layerMove = null;
     state.lastStrokeImage = null;
     stage.classList.remove('panning');
+    if (state.tool === 'move') canvas.style.cursor = 'grab';
+    if (state.tool === 'resize') canvas.style.cursor = 'default';
+    if (shouldCommitResize) applyResize();
     try {
         canvas.releasePointerCapture(event.pointerId);
     } catch {
@@ -1433,7 +2239,10 @@ function updateBrushSize(delta) {
     render();
 }
 
-fileInput.addEventListener('change', event => loadFile(event.target.files[0]));
+fileInput.addEventListener('change', event => {
+    [...event.target.files].forEach(loadFile);
+    fileInput.value = '';
+});
 
 stage.addEventListener('dragover', event => {
     event.preventDefault();
@@ -1443,7 +2252,7 @@ stage.addEventListener('dragleave', () => stage.classList.remove('dragging'));
 stage.addEventListener('drop', event => {
     event.preventDefault();
     stage.classList.remove('dragging');
-    loadFile(event.dataTransfer.files[0]);
+    [...event.dataTransfer.files].filter(file => file.type.startsWith('image/')).forEach(loadFile);
 });
 
 canvas.addEventListener('pointerdown', event => {
@@ -1527,34 +2336,39 @@ controls.applyCrop.addEventListener('click', applyCrop);
 controls.width.addEventListener('input', () => {
     const width = parseInt(controls.width.value, 10);
     if (!Number.isFinite(width) || width < 1) return;
+    if (!state.resizePreview) return;
     if (controls.lockRatio.checked) {
-        controls.height.value = Math.max(1, Math.round(width / (state.editCanvas.width / state.editCanvas.height)));
+        controls.height.value = Math.max(1, Math.round(width / (state.resizePreview.baseWidth / state.resizePreview.baseHeight)));
     }
-    controls.percent.value = Math.round((width / state.editCanvas.width) * 100);
-    state.resizePreview = { width, height: parseInt(controls.height.value, 10) || state.editCanvas.height };
+    controls.percent.value = Math.round((width / state.resizePreview.baseWidth) * 100);
+    state.resizePreview = { ...state.resizePreview, width, height: parseInt(controls.height.value, 10) || state.resizePreview.height };
     render();
 });
 controls.height.addEventListener('input', () => {
     const height = parseInt(controls.height.value, 10);
     if (!Number.isFinite(height) || height < 1) return;
+    if (!state.resizePreview) return;
     if (controls.lockRatio.checked) {
-        controls.width.value = Math.max(1, Math.round(height * (state.editCanvas.width / state.editCanvas.height)));
+        controls.width.value = Math.max(1, Math.round(height * (state.resizePreview.baseWidth / state.resizePreview.baseHeight)));
     }
-    controls.percent.value = Math.round((parseInt(controls.width.value, 10) / state.editCanvas.width) * 100);
-    state.resizePreview = { width: parseInt(controls.width.value, 10) || state.editCanvas.width, height };
+    controls.percent.value = Math.round((parseInt(controls.width.value, 10) / state.resizePreview.baseWidth) * 100);
+    state.resizePreview = { ...state.resizePreview, width: parseInt(controls.width.value, 10) || state.resizePreview.width, height };
     render();
 });
 controls.percent.addEventListener('input', () => {
     const percent = parseFloat(controls.percent.value);
     if (!Number.isFinite(percent) || percent <= 0) return;
-    const width = Math.max(1, Math.round(state.editCanvas.width * (percent / 100)));
-    const height = Math.max(1, Math.round(state.editCanvas.height * (percent / 100)));
+    if (!state.resizePreview) return;
+    const width = Math.max(1, Math.round(state.resizePreview.baseWidth * (percent / 100)));
+    const height = Math.max(1, Math.round(state.resizePreview.baseHeight * (percent / 100)));
     controls.width.value = width;
     controls.height.value = height;
-    state.resizePreview = { width, height };
+    state.resizePreview = { ...state.resizePreview, width, height };
     render();
 });
-controls.applyResize.addEventListener('click', applyResize);
+controls.width.addEventListener('change', applyResize);
+controls.height.addEventListener('change', applyResize);
+controls.percent.addEventListener('change', applyResize);
 
 adjustmentSliders.forEach(([key, input, label]) => {
     input.addEventListener('input', () => {
@@ -1579,7 +2393,8 @@ controls.flipY.addEventListener('click', () => flip(false));
 controls.applyBackground.addEventListener('click', flattenBackground);
 controls.reset.addEventListener('click', resetImage);
 controls.undo.addEventListener('click', undo);
-controls.download.addEventListener('click', exportImage);
+controls.download.addEventListener('click', () => exportImage(true));
+controls.exportConfigured.addEventListener('click', () => exportImage(false));
 controls.clearSelection.addEventListener('click', () => {
     if (state.selection) {
         state.selection = null;
@@ -1590,6 +2405,65 @@ controls.clearSelection.addEventListener('click', () => {
 controls.quality.addEventListener('input', () => {
     controls.qualityValue.textContent = controls.quality.value;
 });
+controls.format.addEventListener('change', updateExportControls);
+controls.exportSizeMode.addEventListener('change', updateExportControls);
+controls.exportWidth.addEventListener('input', () => {
+    const width = parseInt(controls.exportWidth.value, 10);
+    if (!controls.exportLockRatio.checked || !Number.isFinite(width) || width < 1) return;
+    controls.exportHeight.value = Math.max(1, Math.round(width * state.editCanvas.height / state.editCanvas.width));
+});
+controls.exportHeight.addEventListener('input', () => {
+    const height = parseInt(controls.exportHeight.value, 10);
+    if (!controls.exportLockRatio.checked || !Number.isFinite(height) || height < 1) return;
+    controls.exportWidth.value = Math.max(1, Math.round(height * state.editCanvas.width / state.editCanvas.height));
+});
+
+controls.layerOpacity.addEventListener('pointerdown', () => pushHistory());
+controls.layerOpacity.addEventListener('keydown', () => pushHistory());
+controls.layerOpacity.addEventListener('input', () => {
+    const layer = activeLayer();
+    if (!layer) return;
+    layer.opacity = parseInt(controls.layerOpacity.value, 10) / 100;
+    controls.layerOpacityValue.textContent = controls.layerOpacity.value;
+    render();
+});
+
+controls.duplicateLayer.addEventListener('click', () => {
+    const layer = activeLayer();
+    if (!layer) return;
+    pushHistory();
+    commitActiveLayer();
+    const duplicate = {
+        ...layer,
+        id: `layer-${state.nextLayerId++}`,
+        name: `${layer.name} copy`,
+        canvas: cloneCanvas(layer.canvas)
+    };
+    const index = state.layers.indexOf(layer);
+    state.layers.splice(index + 1, 0, duplicate);
+    state.activeLayerId = duplicate.id;
+    loadLayerIntoEditor(duplicate);
+    renderLayersList();
+    render();
+});
+
+controls.newLayer.addEventListener('click', createNewLayer);
+
+controls.canvasPreset.addEventListener('change', () => {
+    if (controls.canvasPreset.value === 'custom') return;
+    const [width, height] = controls.canvasPreset.value.split('x').map(Number);
+    controls.canvasWidth.value = width;
+    controls.canvasHeight.value = height;
+    resizeBackgroundCanvas(width, height);
+});
+
+[controls.canvasWidth, controls.canvasHeight].forEach(input => {
+    input.addEventListener('input', () => {
+        controls.canvasPreset.value = 'custom';
+    });
+});
+
+controls.resizeCanvas.addEventListener('click', () => resizeBackgroundCanvas());
 
 document.addEventListener('keydown', event => {
     const tag = event.target.tagName;
@@ -1628,3 +2502,5 @@ window.addEventListener('resize', resizeViewport);
 
 setEnabled(false);
 resizeViewport();
+createBackgroundDocument(1280, 720);
+updateExportControls();
