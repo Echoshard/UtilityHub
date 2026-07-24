@@ -52,6 +52,20 @@
                 </svg>
                 <span>All tools run entirely in your browser &mdash; no data is saved or sent to a server. Download to run offline at <a href="https://github.com/Echoshard/UtilityHub" target="_blank" rel="noopener noreferrer">GitHub</a>.</span>
             </div>
+
+            <!-- Live Search Bar -->
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="app-search" class="search-input" placeholder="Search apps by name or description..." autocomplete="off" spellcheck="false">
+                    <button type="button" id="search-clear-btn" class="search-clear-btn" title="Clear search">&times;</button>
+                    <span class="search-shortcut-badge">/</span>
+                </div>
+                <div id="search-counter" class="search-results-counter"></div>
+            </div>
         </header>
 
         <main class="hub-main">
@@ -59,7 +73,7 @@
                 <h3 class="category-title">Productivity &amp; Text</h3>
                 <div class="hub-grid">
                     <!-- MarkDowner -->
-                    <a href="MarkdownViewer/index.html" class="app-card md-card">
+                    <a href="MarkdownViewer/index.html" class="app-card md-card" data-tags="markdown md text editor preview document notes writer format pdf export txt">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -79,7 +93,7 @@
                     </a>
 
                     <!-- ReadAloud -->
-                    <a href="TTS/index.html" class="app-card tts-card">
+                    <a href="TTS/index.html" class="app-card tts-card" data-tags="tts text to speech voice audio read aloud speaker speech synthesizer talking mp3 narration">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -96,7 +110,7 @@
                     </a>
 
                     <!-- RSVP Reader -->
-                    <a href="rsvpreader/index.html" class="app-card rsvpreader-card">
+                    <a href="rsvpreader/index.html" class="app-card rsvpreader-card" data-tags="rsvp speed reading flash reader wpm fast read word chunking book reader speedreader">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -113,7 +127,7 @@
                     </a>
 
                     <!-- CalcSheet -->
-                    <a href="calcsheet/index.html" class="app-card calcsheet-card">
+                    <a href="calcsheet/index.html" class="app-card calcsheet-card" data-tags="calcsheet spreadsheet excel csv table math formulas calculation grid sheet chart numbers graph data analysis xls xlsx datahub">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -134,7 +148,7 @@
 
 
                     <!-- Pomodoro Timer -->
-                    <a href="pomodoro/index.html" class="app-card pomodoro-card">
+                    <a href="pomodoro/index.html" class="app-card pomodoro-card" data-tags="pomodoro timer clock focus stopwatch countdown productivity time management work breaks technique 25 5">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -154,7 +168,7 @@
                     </a>
 
                     <!-- Data Studio -->
-                    <a href="datastudio/index.html" class="app-card datastudio-card">
+                    <a href="datastudio/index.html" class="app-card datastudio-card" data-tags="data studio datastudio datahub data hub csv json yaml xml toon converter tree parser structured data view format export import">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -173,7 +187,7 @@
                     </a>
 
                     <!-- Tree Generator -->
-                    <a href="tree-online/index.html" class="app-card tree-online-card">
+                    <a href="tree-online/index.html" class="app-card tree-online-card" data-tags="tree generator ascii folder directory structure hierarchy tree diagram file tree text tree map online">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -193,7 +207,7 @@
                     </a>
 
                     <!-- RegExpLab -->
-                    <a href="regexlab/index.html" class="app-card regexlab-card">
+                    <a href="regexlab/index.html" class="app-card regexlab-card" data-tags="regex regular expression regexp lab tester builder cheat sheet pattern match string validator regexlab">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -210,7 +224,7 @@
                     </a>
 
                     <!-- Diff Master -->
-                    <a href="diffmaster/index.html" class="app-card diffmaster-card">
+                    <a href="diffmaster/index.html" class="app-card diffmaster-card" data-tags="diff master compare comparison text compare code diff file compare merge side-by-side delta changes git">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -233,7 +247,7 @@
                 <div class="hub-grid">
 
                     <!-- Badge Maker -->
-                    <a href="badgemaker/index.html" class="app-card badgemaker-card">
+                    <a href="badgemaker/index.html" class="app-card badgemaker-card" data-tags="badge maker design emblem logo shield ribbon banner button custom graphics reveal fire animation avatar creator">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -252,7 +266,7 @@
                     </a>
 
                     <!-- ImageLab -->
-                    <a href="imageconverter/index.html" class="app-card imageconverter-card">
+                    <a href="imageconverter/index.html" class="app-card imageconverter-card" data-tags="imagelab image converter editor photo crop paint filters png jpg webp convert resize rotate graphics picture image editor">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -272,7 +286,7 @@
                     </a>
 
                     <!-- Palette Crafter -->
-                    <a href="palettecrafter/index.html" class="app-card palettecrafter-card">
+                    <a href="palettecrafter/index.html" class="app-card palettecrafter-card" data-tags="palette crafter color colors hex rgb hsl wcag contrast accessibility design tokens harmonies theme swatches color picker">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -293,7 +307,7 @@
 
 
                     <!-- SFX Forge -->
-                    <a href="sfxforge/index.html" class="app-card sfxforge-card">
+                    <a href="sfxforge/index.html" class="app-card sfxforge-card" data-tags="sfx forge sound effects fx audio retro 8bit synth wav game sound procedural noise generator bleep bloop soundboard sound generator">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -319,7 +333,7 @@
                 <h3 class="category-title">Games &amp; Fun</h3>
                 <div class="hub-grid">
                     <!-- Block Attack Arcade -->
-                    <a href="blockgame/index.html" class="app-card blockgame-card">
+                    <a href="blockgame/index.html" class="app-card blockgame-card" data-tags="block attack arcade game tetris puzzle bricks retro play falling blocks high score brick breaker">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -338,7 +352,7 @@
                     </a>
 
                     <!-- 3D Dice Roller -->
-                    <a href="diceroller/index.html" class="app-card diceroller-card">
+                    <a href="diceroller/index.html" class="app-card diceroller-card" data-tags="dice roller 3d roll d20 d6 d4 d8 d10 d12 rpg tabletop board game chance random simulation tray die">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -359,7 +373,7 @@
                     </a>
 
                     <!-- Home Row Blaster -->
-                    <a href="typinggame/index.html" class="app-card typinggame-card">
+                    <a href="typinggame/index.html" class="app-card typinggame-card" data-tags="typing academy speed wpm type test tutor keyboard game blaster home row accuracy words test practice typewriting">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -390,7 +404,7 @@
                 <h3 class="category-title">Utilities</h3>
                 <div class="hub-grid">
                     <!-- QR Pulse -->
-                    <a href="QRCode/index.html" class="app-card qr-card">
+                    <a href="QRCode/index.html" class="app-card qr-card" data-tags="qr pulse qrcode qr code bar code barcode link generator scan custom logo colors download matrix scanner">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -413,7 +427,7 @@
                     </a>
 
                     <!-- PasswordSmith -->
-                    <a href="passwordgenerator/index.html" class="app-card passwordgenerator-card">
+                    <a href="passwordgenerator/index.html" class="app-card passwordgenerator-card" data-tags="password passwordmaker password-smith password-generator pass passphrase pin security secret key generator strength random lock vault">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -433,7 +447,7 @@
                     </a>
 
                     <!-- IconForge -->
-                    <a href="icongenerator/index.html" class="app-card icongenerator-card">
+                    <a href="icongenerator/index.html" class="app-card icongenerator-card" data-tags="icon iconforge favicon app icon pwa manifest ico png generator apple touch icon graphic design icon maker">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -453,7 +467,7 @@
                     </a>
 
                     <!-- AudioForge -->
-                    <a href="audioforge/index.html" class="app-card audioforge-card">
+                    <a href="audioforge/index.html" class="app-card audioforge-card" data-tags="audio audioforge sound waveform edit editor fade wav mp3 clip music trim cutter track recorder audio editor">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -471,7 +485,7 @@
                     </a>
 
                     <!-- PDF Forge -->
-                    <a href="pdfforge/index.html" class="app-card pdfforge-card">
+                    <a href="pdfforge/index.html" class="app-card pdfforge-card" data-tags="pdf pdfforge merge split combine remove pages document pdf editor extract reorder reader offline page remover joiner">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -490,7 +504,7 @@
                     </a>
 
                     <!-- Emoji Finder -->
-                    <a href="emojifinder/index.html" class="app-card emojifinder-card">
+                    <a href="emojifinder/index.html" class="app-card emojifinder-card" data-tags="emoji emojifinder emoticon smileys search finder copy unicode symbols skin tones reaction picker smiley search">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -509,7 +523,7 @@
                     </a>
 
                     <!-- Media Slideshow -->
-                    <a href="mediaslideshow/index.html" class="app-card slideshow-card">
+                    <a href="mediaslideshow/index.html" class="app-card slideshow-card" data-tags="slideshow media slideshow photo video gallery presentation picture player music transition slideshows photo viewer">
                         <div class="card-glow"></div>
                         <div class="card-icon-container">
                             <svg viewBox="0 0 24 24" class="card-icon" fill="none" stroke-width="2"
@@ -601,6 +615,86 @@
                 const visibleCards = section.querySelectorAll('.app-card:not(.disabled)');
                 if (visibleCards.length === 0) {
                     section.style.display = 'none';
+                }
+            });
+        }
+
+        // --- LIVE SEARCH FILTERING ---
+        const searchInput = document.getElementById('app-search');
+        const searchClearBtn = document.getElementById('search-clear-btn');
+        const searchCounter = document.getElementById('search-counter');
+        const activeCards = document.querySelectorAll('.app-card:not(.disabled)');
+        const totalAppsCount = activeCards.length;
+
+        function filterApps() {
+            const query = searchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            activeCards.forEach(card => {
+                const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+                const desc = card.querySelector('.card-description')?.textContent.toLowerCase() || '';
+                const badge = card.querySelector('.card-badge')?.textContent.toLowerCase() || '';
+                const tags = card.getAttribute('data-tags')?.toLowerCase() || '';
+                
+                const matches = title.includes(query) || desc.includes(query) || badge.includes(query) || tags.includes(query);
+
+                if (matches) {
+                    card.classList.remove('search-hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('search-hidden');
+                }
+            });
+
+            // Toggle clear button visibility
+            if (searchClearBtn) {
+                searchClearBtn.style.display = query.length > 0 ? 'block' : 'none';
+            }
+
+            // Update category section visibility if showing categories
+            if (SHOW_CATEGORIES) {
+                sections.forEach(section => {
+                    const hasVisibleCards = Array.from(section.querySelectorAll('.app-card:not(.disabled)'))
+                        .some(card => !card.classList.contains('search-hidden'));
+                    section.style.display = hasVisibleCards ? '' : 'none';
+                });
+            }
+
+            // Update result counter text
+            if (searchCounter) {
+                if (query.length === 0) {
+                    searchCounter.textContent = '';
+                } else if (visibleCount === 0) {
+                    searchCounter.textContent = 'No matching apps found';
+                } else if (visibleCount === 1) {
+                    searchCounter.textContent = 'Showing 1 app';
+                } else {
+                    searchCounter.textContent = `Showing ${visibleCount} of ${totalAppsCount} apps`;
+                }
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterApps);
+
+            // Clear search button listener
+            if (searchClearBtn) {
+                searchClearBtn.addEventListener('click', () => {
+                    searchInput.value = '';
+                    filterApps();
+                    searchInput.focus();
+                });
+            }
+
+            // Global keyboard shortcuts ('/' or 'Ctrl+K' to focus search, 'Escape' to clear and blur)
+            document.addEventListener('keydown', (e) => {
+                if ((e.key === '/' || (e.ctrlKey && e.key.toLowerCase() === 'k')) && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+                    searchInput.value = '';
+                    filterApps();
+                    searchInput.blur();
                 }
             });
         }

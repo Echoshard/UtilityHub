@@ -152,6 +152,127 @@ body {
     flex-shrink: 0;
 }
 
+/* Search Bar Styling */
+.search-wrapper {
+    margin-top: 22px;
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 18px;
+    width: 20px;
+    height: 20px;
+    stroke: var(--text-muted);
+    pointer-events: none;
+    transition: var(--transition);
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 44px;
+    font-family: var(--font-ui);
+    font-size: 0.98rem;
+    color: var(--text-primary);
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    backdrop-filter: blur(20px);
+    outline: none;
+    text-align: center;
+    transition: var(--transition);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.search-input::placeholder {
+    color: #64748b;
+}
+
+.search-input:focus {
+    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(15, 23, 42, 0.75);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.25), inset 0 0 10px rgba(99, 102, 241, 0.1);
+}
+
+.search-container:focus-within .search-icon {
+    stroke: #818cf8;
+}
+
+.search-shortcut-badge {
+    position: absolute;
+    right: 16px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.search-container:focus-within .search-shortcut-badge {
+    opacity: 0;
+}
+
+.search-clear-btn {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    display: none;
+    border-radius: 50%;
+    line-height: 1;
+    transition: var(--transition);
+}
+
+.search-clear-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.search-results-counter {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    min-height: 20px;
+    transition: opacity 0.2s ease;
+}
+
+/* App Card Live Shrink Animation */
+.app-card.search-hidden {
+    opacity: 0 !important;
+    transform: scale(0) !important;
+    flex-basis: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-width: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden;
+    height: 0 !important;
+    overflow: hidden !important;
+    gap: 0 !important;
+}
+
 /* Category Sections */
 .hub-main {
     display: flex;
