@@ -803,6 +803,7 @@ function buildTreeNode(key, value, isRoot = false) {
 
         row.addEventListener('click', (e) => {
             if (e.target === toggle || e.target.classList.contains('tree-load-more')) return;
+            if (window.getSelection && window.getSelection().toString().length > 0) return;
             toggle.click();
         });
     } else {
