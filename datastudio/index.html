@@ -37,7 +37,16 @@
                 </section>
 
                 <section class="grow">
-                    <h2>Source</h2>
+                    <div class="panel-section-header">
+                        <h2>Source</h2>
+                        <div class="stats-badge" id="inputStats" title="Input document statistics">
+                            <span class="stat-item" title="Characters"><span class="stat-num" id="inputChars">0</span> <span class="stat-unit">c</span></span>
+                            <span class="stat-divider">•</span>
+                            <span class="stat-item" title="Words"><span class="stat-num" id="inputWords">0</span> <span class="stat-unit">w</span></span>
+                            <span class="stat-divider">•</span>
+                            <span class="stat-item" title="Tokens"><span class="stat-num" id="inputTokens">0</span> <span class="stat-unit">t</span></span>
+                        </div>
+                    </div>
                     <textarea id="inputText" spellcheck="false" placeholder="Paste JSON, YAML, XML, or TOON here..."></textarea>
                 </section>
 
@@ -52,7 +61,18 @@
 
             <section class="tree-stage">
                 <div class="tree-toolbar">
-                    <h2>Tree Explorer</h2>
+                    <div class="tree-header-group">
+                        <h2>Tree Explorer</h2>
+                        <div class="stats-badge" id="treeStats" title="Parsed tree statistics">
+                            <span class="stat-item" title="Nodes"><span class="stat-num" id="treeNodes">0</span> <span class="stat-unit">nodes</span></span>
+                            <span class="stat-divider">•</span>
+                            <span class="stat-item" title="Characters"><span class="stat-num" id="treeChars">0</span> <span class="stat-unit">c</span></span>
+                            <span class="stat-divider">•</span>
+                            <span class="stat-item" title="Words"><span class="stat-num" id="treeWords">0</span> <span class="stat-unit">w</span></span>
+                            <span class="stat-divider">•</span>
+                            <span class="stat-item" title="Tokens"><span class="stat-num" id="treeTokens">0</span> <span class="stat-unit">t</span></span>
+                        </div>
+                    </div>
                     <div class="button-row">
                         <button class="button" id="expandAllBtn">Expand All</button>
                         <button class="button" id="collapseAllBtn">Collapse All</button>
@@ -75,8 +95,20 @@
                 </section>
 
                 <section class="grow">
-                    <h2>Converted</h2>
-                    <pre class="code-view" id="outputCode"><code id="outputCodeInner">Converted output appears here...</code></pre>
+                    <div class="panel-section-header">
+                        <h2>Converted</h2>
+                        <div class="stats-badge" id="outputStats" title="Converted output statistics">
+                            <span class="stat-item" title="Characters"><span class="stat-num" id="outputChars">0</span> <span class="stat-unit">c</span></span>
+                            <span class="stat-divider">•</span>
+                            <span class="stat-item" title="Words"><span class="stat-num" id="outputWords">0</span> <span class="stat-unit">w</span></span>
+                            <span class="stat-divider">•</span>
+                            <span class="stat-item" title="Tokens"><span class="stat-num" id="outputTokens">0</span> <span class="stat-unit">t</span></span>
+                        </div>
+                    </div>
+                    <div class="output-container">
+                        <div class="large-file-banner" id="largeFileBanner" style="display:none;"></div>
+                        <pre class="code-view" id="outputCode"><code id="outputCodeInner">Converted output appears here...</code></pre>
+                    </div>
                 </section>
 
                 <section>

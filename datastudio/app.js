@@ -13,11 +13,98 @@ const treeContainer = document.getElementById('treeContainer');
 const copyOutputBtn = document.getElementById('copyOutputBtn');
 const downloadOutputBtn = document.getElementById('downloadOutputBtn');
 const errorPill = document.getElementById('errorPill');
+const largeFileBanner = document.getElementById('largeFileBanner');
+
+const inputCharsEl = document.getElementById('inputChars');
+const inputWordsEl = document.getElementById('inputWords');
+const inputTokensEl = document.getElementById('inputTokens');
+
+const treeNodesEl = document.getElementById('treeNodes');
+const treeCharsEl = document.getElementById('treeChars');
+const treeWordsEl = document.getElementById('treeWords');
+const treeTokensEl = document.getElementById('treeTokens');
+
+const outputCharsEl = document.getElementById('outputChars');
+const outputWordsEl = document.getElementById('outputWords');
+const outputTokensEl = document.getElementById('outputTokens');
 
 let currentValue = undefined;
 let inputFormat = 'json';
 let outputFormat = 'json';
 let outputRaw = '';
+
+// ==========================================
+// STATISTICS CALCULATOR (Chars, Words, Tokens, Nodes)
+// ==========================================
+function calculateStats(text) {
+    if (!text) return { chars: 0, words: 0, tokens: 0 };
+    const chars = text.length;
+    const trimmed = text.trim();
+    const words = trimmed ? trimmed.split(/\s+/).length : 0;
+    const matches = text.match(/[\w]+|[^\s\w]/g);
+    let tokens = 0;
+    if (matches) {
+        for (let i = 0; i < matches.length; i++) {
+            tokens += (matches[i].length > 4) ? Math.ceil(matches[i].length / 4) : 1;
+        }
+    }
+    return { chars, words, tokens };
+}
+
+function countNodes(val) {
+    if (val === undefined) return 0;
+    if (val === null || typeof val !== 'object') return 1;
+    let count = 1;
+    if (Array.isArray(val)) {
+        for (let i = 0; i < val.length; i++) {
+            count += countNodes(val[i]);
+        }
+    } else {
+        const keys = Object.keys(val);
+        for (let i = 0; i < keys.length; i++) {
+            count += countNodes(val[keys[i]]);
+        }
+    }
+    return count;
+}
+
+function updateInputStats() {
+    const stats = calculateStats(inputText.value);
+    if (inputCharsEl) inputCharsEl.textContent = stats.chars.toLocaleString();
+    if (inputWordsEl) inputWordsEl.textContent = stats.words.toLocaleString();
+    if (inputTokensEl) inputTokensEl.textContent = stats.tokens.toLocaleString();
+}
+
+function updateTreeStats() {
+    if (currentValue === undefined) {
+        if (treeNodesEl) treeNodesEl.textContent = '0';
+        if (treeCharsEl) treeCharsEl.textContent = '0';
+        if (treeWordsEl) treeWordsEl.textContent = '0';
+        if (treeTokensEl) treeTokensEl.textContent = '0';
+        return;
+    }
+    const nodes = countNodes(currentValue);
+    const jsonStr = JSON.stringify(currentValue);
+    const stats = calculateStats(jsonStr);
+    if (treeNodesEl) treeNodesEl.textContent = nodes.toLocaleString();
+    if (treeCharsEl) treeCharsEl.textContent = stats.chars.toLocaleString();
+    if (treeWordsEl) treeWordsEl.textContent = stats.words.toLocaleString();
+    if (treeTokensEl) treeTokensEl.textContent = stats.tokens.toLocaleString();
+}
+
+function updateOutputStats() {
+    const stats = calculateStats(outputRaw);
+    if (outputCharsEl) outputCharsEl.textContent = stats.chars.toLocaleString();
+    if (outputWordsEl) outputWordsEl.textContent = stats.words.toLocaleString();
+    if (outputTokensEl) outputTokensEl.textContent = stats.tokens.toLocaleString();
+}
+
+function updateAllStats() {
+    updateInputStats();
+    updateTreeStats();
+    updateOutputStats();
+}
+
 
 // ==========================================
 // JSON (native)
@@ -615,8 +702,10 @@ function highlightByFormat(format, text) {
 }
 
 // ==========================================
-// COLLAPSIBLE TREE RENDERER
+// COLLAPSIBLE LAZY TREE RENDERER
 // ==========================================
+const PAGE_SIZE = 100;
+
 function valueClassFor(value) {
     if (value === null) return 'tree-null';
     if (typeof value === 'string') return 'tree-string';
@@ -631,9 +720,10 @@ function formatLeafValue(value) {
     return String(value);
 }
 
-function buildTreeNode(key, value) {
+function buildTreeNode(key, value, isRoot = false) {
     const wrapper = document.createElement('div');
     wrapper.className = 'tree-node';
+    if (isRoot) wrapper.classList.add('tree-root');
 
     const row = document.createElement('div');
     row.className = 'tree-row';
@@ -641,7 +731,7 @@ function buildTreeNode(key, value) {
     const isExpandable = value !== null && typeof value === 'object';
     const toggle = document.createElement('button');
     toggle.className = 'tree-toggle' + (isExpandable ? '' : ' leaf');
-    toggle.textContent = isExpandable ? '▾' : '';
+    toggle.textContent = isExpandable ? (isRoot ? '▾' : '▸') : '';
     row.appendChild(toggle);
 
     if (key !== null) {
@@ -652,6 +742,8 @@ function buildTreeNode(key, value) {
     }
 
     let childrenContainer = null;
+    let isRendered = false;
+    let isCollapsed = !isRoot;
 
     if (isExpandable) {
         const isArray = Array.isArray(value);
@@ -663,9 +755,55 @@ function buildTreeNode(key, value) {
         row.appendChild(metaSpan);
 
         childrenContainer = document.createElement('div');
-        childrenContainer.className = 'tree-children';
-        entries.forEach(([k, v]) => {
-            childrenContainer.appendChild(buildTreeNode(k, v));
+        childrenContainer.className = 'tree-children' + (isCollapsed ? ' collapsed' : '');
+
+        let loadedCount = 0;
+
+        function renderNextChunk() {
+            const nextEntries = entries.slice(loadedCount, loadedCount + PAGE_SIZE);
+            const frag = document.createDocumentFragment();
+            for (const [k, v] of nextEntries) {
+                frag.appendChild(buildTreeNode(k, v, false));
+            }
+            loadedCount += nextEntries.length;
+
+            const oldMore = childrenContainer.querySelector('.tree-load-more');
+            if (oldMore) oldMore.remove();
+
+            childrenContainer.appendChild(frag);
+
+            if (loadedCount < entries.length) {
+                const remaining = entries.length - loadedCount;
+                const loadMoreBtn = document.createElement('button');
+                loadMoreBtn.className = 'tree-load-more';
+                loadMoreBtn.textContent = `+ Load more (${remaining.toLocaleString()} remaining)...`;
+                loadMoreBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    renderNextChunk();
+                });
+                childrenContainer.appendChild(loadMoreBtn);
+            }
+        }
+
+        if (isRoot) {
+            renderNextChunk();
+            isRendered = true;
+        }
+
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!isRendered) {
+                renderNextChunk();
+                isRendered = true;
+            }
+            isCollapsed = !isCollapsed;
+            childrenContainer.classList.toggle('collapsed', isCollapsed);
+            toggle.textContent = isCollapsed ? '▸' : '▾';
+        });
+
+        row.addEventListener('click', (e) => {
+            if (e.target === toggle || e.target.classList.contains('tree-load-more')) return;
+            toggle.click();
         });
     } else {
         const valueSpan = document.createElement('span');
@@ -677,12 +815,6 @@ function buildTreeNode(key, value) {
     wrapper.appendChild(row);
     if (childrenContainer) wrapper.appendChild(childrenContainer);
 
-    toggle.addEventListener('click', () => {
-        if (!childrenContainer) return;
-        const collapsed = childrenContainer.classList.toggle('collapsed');
-        toggle.textContent = collapsed ? '▸' : '▾';
-    });
-
     return wrapper;
 }
 
@@ -692,19 +824,48 @@ function renderTree(value) {
         treeContainer.innerHTML = '<p class="placeholder-text">Parse some data to explore it here.</p>';
         return;
     }
-    const root = buildTreeNode(null, value);
-    root.classList.add('tree-root');
+    const root = buildTreeNode(null, value, true);
     treeContainer.appendChild(root);
 }
 
 expandAllBtn.addEventListener('click', () => {
-    treeContainer.querySelectorAll('.tree-children.collapsed').forEach(el => el.classList.remove('collapsed'));
-    treeContainer.querySelectorAll('.tree-toggle').forEach(t => { if (!t.classList.contains('leaf')) t.textContent = '▾'; });
+    if (currentValue === undefined) return;
+    const totalNodes = countNodes(currentValue);
+    const targetDepth = totalNodes > 500 ? 3 : 50;
+
+    function expandRecursive(container, depth) {
+        if (depth <= 0) return;
+        const nodes = container.querySelectorAll(':scope > .tree-node');
+        nodes.forEach(node => {
+            const toggle = node.querySelector(':scope > .tree-row > .tree-toggle:not(.leaf)');
+            const children = node.querySelector(':scope > .tree-children');
+            if (toggle) {
+                if (children && children.classList.contains('collapsed')) {
+                    toggle.click();
+                }
+                if (children) {
+                    expandRecursive(children, depth - 1);
+                }
+            }
+        });
+    }
+
+    expandRecursive(treeContainer, targetDepth);
 });
 
 collapseAllBtn.addEventListener('click', () => {
-    treeContainer.querySelectorAll('.tree-children').forEach(el => el.classList.add('collapsed'));
-    treeContainer.querySelectorAll('.tree-toggle').forEach(t => { if (!t.classList.contains('leaf')) t.textContent = '▸'; });
+    const containers = treeContainer.querySelectorAll('.tree-children');
+    containers.forEach(c => {
+        if (!c.parentElement.classList.contains('tree-root')) {
+            c.classList.add('collapsed');
+        }
+    });
+    const toggles = treeContainer.querySelectorAll('.tree-toggle:not(.leaf)');
+    toggles.forEach(t => {
+        if (!t.closest('.tree-root > .tree-row')) {
+            t.textContent = '▸';
+        }
+    });
 });
 
 // ==========================================
@@ -723,16 +884,29 @@ function renderOutputCode() {
     if (!outputRaw) {
         outputCode.classList.add('is-empty');
         outputCodeInner.textContent = 'Converted output appears here...';
+        if (largeFileBanner) largeFileBanner.style.display = 'none';
         return;
     }
     outputCode.classList.remove('is-empty');
-    outputCodeInner.innerHTML = highlightByFormat(outputFormat, outputRaw);
+
+    const MAX_HIGHLIGHT_SIZE = 100000;
+    if (outputRaw.length > MAX_HIGHLIGHT_SIZE) {
+        if (largeFileBanner) {
+            largeFileBanner.style.display = 'block';
+            largeFileBanner.textContent = `⚡ Fast Mode: Highlighting paused for output >100KB (${(outputRaw.length / 1024).toFixed(1)} KB)`;
+        }
+        outputCodeInner.textContent = outputRaw;
+    } else {
+        if (largeFileBanner) largeFileBanner.style.display = 'none';
+        outputCodeInner.innerHTML = highlightByFormat(outputFormat, outputRaw);
+    }
 }
 
 function updateOutput() {
     if (currentValue === undefined) {
         outputRaw = '';
         renderOutputCode();
+        updateOutputStats();
         return;
     }
     try {
@@ -742,6 +916,7 @@ function updateOutput() {
     } catch (e) {
         showError('Convert error: ' + e.message);
     }
+    updateOutputStats();
 }
 
 function doParse() {
@@ -752,19 +927,33 @@ function doParse() {
         outputRaw = '';
         renderOutputCode();
         showError(null);
+        updateAllStats();
         return;
     }
-    try {
-        currentValue = parseByFormat(inputFormat, text);
-        showError(null);
-        renderTree(currentValue);
-        updateOutput();
-    } catch (e) {
-        showError('Parse error: ' + e.message);
-    }
+
+    parseBtn.classList.add('loading');
+    parseBtn.textContent = 'Parsing...';
+
+    setTimeout(() => {
+        try {
+            currentValue = parseByFormat(inputFormat, text);
+            showError(null);
+            renderTree(currentValue);
+            updateOutput();
+        } catch (e) {
+            showError('Parse error: ' + e.message);
+            updateOutput();
+        } finally {
+            parseBtn.classList.remove('loading');
+            parseBtn.textContent = 'Parse';
+            updateAllStats();
+        }
+    }, 15);
 }
 
 parseBtn.addEventListener('click', doParse);
+
+inputText.addEventListener('input', updateInputStats);
 
 document.querySelectorAll('[data-format]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -790,6 +979,7 @@ clearBtn.addEventListener('click', () => {
     outputRaw = '';
     renderOutputCode();
     showError(null);
+    updateAllStats();
 });
 
 copyOutputBtn.addEventListener('click', () => {
@@ -878,3 +1068,5 @@ inputText.addEventListener('drop', (e) => {
 // INIT
 // ==========================================
 renderOutputCode();
+updateAllStats();
+
